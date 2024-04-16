@@ -397,3 +397,8 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Temp files
+test_nand.txt
+test_result.txt
+
