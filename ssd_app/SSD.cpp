@@ -42,9 +42,15 @@ void SSD::Read(uint32_t address)
 			nand_[i] = 0;
 		}
 	}
+	else
+	{
+		in.seekg(0);
+		in.read(reinterpret_cast<char*>(nand_), sizeof(nand_));
+
+	}
 
 	std::ostringstream ss;
-	ss << nand_[address];
+	ss << std::hex << nand_[address];
 	int zero_fills = 8 - ss.str().length();
 
 	std::string result = "0x";
