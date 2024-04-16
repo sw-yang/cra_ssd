@@ -7,9 +7,7 @@
 #include <regex>
 #include "SSD.h"
 
-using namespace std;
-
-vector<string> split(const string& str) 
+vector<string> Command::split(const string& str)
 {
 	vector<string> tokens;
 	istringstream tokenStream(str);
@@ -24,11 +22,11 @@ vector<string> split(const string& str)
 	return tokens;
 }
 
-bool isNumber(const std::string& str) 
+bool Command::isNumber(const string& str)
 {
 	for (char c : str) 
 	{
-		if (!std::isdigit(c)) 
+		if (!isdigit(c)) 
 		{
 			return false;
 		}
@@ -36,26 +34,26 @@ bool isNumber(const std::string& str)
 	return true;
 }
 
-bool isValidHex(const string& str) 
+bool Command::isValidHex(const string& str)
 {
 	regex pattern("^0x[0-9a-fA-F]{8}$");
 	return regex_match(str, pattern);
 }
 
-unsigned int hexStringToInt(const std::string& hexStr) {
+unsigned int Command::hexStringToInt(const string& hexStr) {
 	unsigned int result;
 	stringstream ss;
-	ss << std::hex << hexStr;
+	ss << hex << hexStr;
 	ss >> result;
 	return result;
 }
 
-Command convertToCommand(const vector<string> command) 
+Command Command::convertToCommand(const vector<string> command)
 {
-	return {command[0][0], (unsigned int)stoi(command[1]), hexStringToInt (command[2])};
+	return Command(command[0][0], (unsigned int)stoi(command[1]), hexStringToInt(command[2]));
 }
 
-bool isInvalidCommand(const vector<string> command) 
+bool Command::isInvalidCommand(const vector<string> command)
 {
 	if (command.size() != 3) return true; 
 	if (!(command[0] == "R" || command[0] == "W")) return true; 
@@ -69,24 +67,25 @@ Command SSD::Parse(string command)
 {
 	// Parse command and return Command instance
 	// Throw exception for invalid case
-	vector<string> result = split(command);
-	if (isInvalidCommand(result)) throw std::invalid_argument("Invalid command!");
-	return convertToCommand(result);
+	Command cmd(' ', 0, 0);
+	vector<string> result = cmd.split(command);
+	if (cmd.isInvalidCommand(result)) throw invalid_argument("Invalid command!");
+	return cmd.convertToCommand(result);
 }
 
 void SSD::Read(uint32_t address)
 {
 	if (address >= 100)
 	{
-		throw std::exception("Invalid address");
+		throw exception("Invalid address");
 	}
 
 	ReadNandFile();
 
-	std::ofstream out(result_file_, std::ios::trunc);
+	ofstream out(result_file_, ios::trunc);
 	if (!out.is_open())
 	{
-		throw std::exception("Fail to open result file");
+		throw exception("Fail to open result file");
 	}
 
 	out << IntToHex(nand_[address]);
@@ -100,15 +99,15 @@ void SSD::Write(uint32_t address, uint32_t value)
 
 void SSD::ReadNandFile()
 {
-	std::ifstream in(nand_file_, std::ios::binary);
+	ifstream in(nand_file_, ios::binary);
 	if (!in.is_open())
 	{
-		throw std::exception("Fail to open nand file");
+		throw exception("Fail to open nand file");
 	}
 
 	// check file size
-	in.seekg(0, std::ios::end);
-	std::streampos fileSize = in.tellg();
+	in.seekg(0, ios::end);
+	streampos fileSize = in.tellg();
 	if (fileSize != 400)
 	{
 		// Invalid nand file data
@@ -124,13 +123,13 @@ void SSD::ReadNandFile()
 	}
 }
 
-std::string SSD::IntToHex(uint32_t integer)
+string SSD::IntToHex(uint32_t integer)
 {
-	std::ostringstream ss;
-	ss << std::hex << integer;
+	ostringstream ss;
+	ss << hex << integer;
 	int zero_fills = 8 - ss.str().length();
 
-	std::string result = "0x";
+	string result = "0x";
 	for (int i = 0; i < zero_fills; ++i) {
 		result += "0";
 	}
