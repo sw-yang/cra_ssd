@@ -1,18 +1,24 @@
 #include "pch.h"
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
+
 #include "../ssd_app_test/TestShell.cpp"
-class MockSSDApp {
+
+using namespace std;
+
+class MockSSDApp : public ISSDApp
+{
 public:
-	MOCK_METHOD(void, write, (int addr, int data), ());
-	MOCK_METHOD(void, read, (int addr), ());
+	MOCK_METHOD(void, Write, (int addr, int data), (override));
+	MOCK_METHOD(void, Read, (int addr), (override));
 };
 
-TEST(TestCaseName, TestName) {
+TEST(TestCaseName, TestName) 
+{
 	MockSSDApp app;
-	TestShell testshell;
-	EXPECT_CALL(app, write(0, 0x12345678))
-		.Times(1);
+	TestShell test_shell;
 
-	app.write(0, 0x12345678);
+	test_shell.set_ssd_app(&app);
+
+	EXPECT_EQ(test_shell.get_ssd_app(), &app);
 }
