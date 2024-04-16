@@ -99,7 +99,7 @@ TEST_F(SSDTest, ReadDefaultValue)
 	EXPECT_EQ("0x00000000", ReadResultFile());
 }
 
-TEST_F(SSDTest, ReadWrittenValue)
+TEST_F(SSDTest, ReadWrittenValueFrom0)
 {
 	uint32_t data[100] = { 0, };
 	data[0] = 0x48a7;
@@ -108,4 +108,16 @@ TEST_F(SSDTest, ReadWrittenValue)
 	ssd->Read(0);
 
 	EXPECT_EQ("0x000048a7", ReadResultFile());
+}
+
+TEST_F(SSDTest, ReadWrittenValueFromOtherAddress)
+{
+	uint32_t address = 57;
+	uint32_t data[100] = { 0, };
+	data[address] = 0xff25abcd;
+	WriteTestFiles(data, sizeof(data));
+
+	ssd->Read(address);
+
+	EXPECT_EQ("0xff25abcd", ReadResultFile());
 }
