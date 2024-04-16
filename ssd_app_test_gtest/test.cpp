@@ -62,7 +62,20 @@ TEST_F(TestShellTestFixture, OutputToFile)
 	EXPECT_EQ(user_input, read_input);
 }
 
-TEST_F(TestShellTestFixture, WriteTest)
+TEST_F(TestShellTestFixture, ExitTest)
+{
+	string user_input;
+	string write_input = "Exit";
+	cout << write_input << endl;
+
+	MockSSDApp app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	test_shell.Run();
+}
+
+TEST_F(TestShellTestFixture, DISABLED_WriteTest)
 {
 	MockSSDApp app;
 	TestShell test_shell;

@@ -34,13 +34,13 @@ void TestShell::Run(void)
 
         switch (cmd)
         {
-        READ :
+        case READ :
             break;
-        WRITE:
+        case WRITE:
             break;
-        HELP:
+        case HELP:
             break;
-        EXIT:
+        case EXIT:
             isGoing = false;
             break;
         default:
