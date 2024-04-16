@@ -94,8 +94,21 @@ void SSD::Read(uint32_t address)
 
 void SSD::Write(uint32_t address, uint32_t value)
 {
-	// Write value to address from nand
-	// Throw exception for invalid case
+	if (address >= 100)
+	{
+		throw std::exception("Invalid address");
+	}
+
+	ReadNandFile();
+
+	std::ofstream out(nand_file_, std::ios::trunc);
+	if (!out.is_open())
+	{
+		throw std::exception("Fail to open result file");
+	}
+
+	nand_[address] = value;
+	out.write(reinterpret_cast<const char*>(nand_), sizeof(nand_));
 }
 
 void SSD::ReadNandFile()

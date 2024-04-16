@@ -77,7 +77,7 @@ public:
 	const std::string test_result = "test_result.txt";
 };
 
-TEST_F(SSDTest, ThrowExceptionWhenInvalidAddress)
+TEST_F(SSDTest, ThrowExceptionWhenInvalidAddressWhileRead)
 {
 	try
 	{
@@ -120,4 +120,59 @@ TEST_F(SSDTest, ReadWrittenValueFromOtherAddress)
 	ssd->Read(address);
 
 	EXPECT_EQ("0xff25abcd", ReadResultFile());
+}
+
+TEST_F(SSDTest, ResetNandDataWhenFileIsInvalid)
+{
+	uint32_t data[50] = { 0, };	// invalid size
+	data[0] = 0x48a7;
+	WriteTestFiles(data, sizeof(data));
+
+	ssd->Read(0);
+
+	EXPECT_EQ("0x00000000", ReadResultFile());
+}
+
+TEST_F(SSDTest, ThrowExceptionWhenInvalidAddressWhileWrite)
+{
+	try
+	{
+		ssd->Write(100, 0);
+		FAIL();
+	}
+	catch (std::exception& e)
+	{
+		EXPECT_EQ(std::string{ "Invalid address" }, std::string{ e.what() });
+	}
+}
+
+TEST_F(SSDTest, WriteFirstTime)
+{
+	ClearTestFiles();
+
+	uint32_t address = 33;
+	uint32_t data = 0xabcd;
+	ssd->Write(address, data);
+
+	uint32_t nand_data[100];
+	std::ifstream in(test_nand, std::ios::binary);
+	in.read(reinterpret_cast<char*>(nand_data), sizeof(nand_data));
+
+	EXPECT_EQ(nand_data[address], data);
+}
+
+TEST_F(SSDTest, OverWrite)
+{
+	uint32_t address = 57;
+	uint32_t nand_data[100] = { 0, };
+	nand_data[address] = 0xff25abcd;
+	WriteTestFiles(nand_data, sizeof(nand_data));
+
+	uint32_t new_data = 0x777;
+	ssd->Write(address, new_data);
+
+	std::ifstream in(test_nand, std::ios::binary);
+	in.read(reinterpret_cast<char*>(nand_data), sizeof(nand_data));
+
+	EXPECT_EQ(nand_data[address], new_data);
 }
