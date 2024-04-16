@@ -3,21 +3,22 @@
 #include <string>
 #include <fstream>
 
+struct Command
+{
+	char cmd;
+	uint32_t address;
+	uint32_t value;
+};
+
 class SSD
 {
 public:
 	SSD() {}
-	void Parse();
-	void Run();
+	Command Parse(std::string command);
+	void Read(uint32_t address);
+	void Write(uint32_t address, uint32_t value);
 
 private:
-	void Read();
-	void Write();
-
-	std::string cmd_;
-	std::string address_;
-	std::string value_;
-
 	uint32_t nand_[100];
 	FILE* nand_file_;
 };

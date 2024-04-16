@@ -1,22 +1,20 @@
 #include "SSD.h"
 
-void SSD::Parse()
+Command SSD::Parse(std::string command)
 {
-	// Parse cmd and args
+	// Parse command and return Command instance
+	// Throw exception for invalid case
+	return {};
+}
+
+void SSD::Read(uint32_t address)
+{
+	// Read address from nand
 	// Throw exception for invalid case
 }
 
-void SSD::Run()
+void SSD::Write(uint32_t address, uint32_t value)
 {
-	// Call Read / Write method
-}
-
-void SSD::Read()
-{
-
-}
-
-void SSD::Write()
-{
-
+	// Write value to address from nand
+	// Throw exception for invalid case
 }
