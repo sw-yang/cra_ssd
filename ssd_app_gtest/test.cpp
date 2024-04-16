@@ -15,10 +15,30 @@ TEST(SSDTest, ThrowExceptionWhenInvalidAddress)
 	}
 }
 
-TEST(SSDTest, DISABLED_ReadDefaultValue)
+TEST(SSDTest, ReadDefaultValue)
 {
-	SSD ssd;
-	EXPECT_TRUE(true);
+	const std::string test_nand = "test_nand.txt";
+	const std::string test_result = "test_result.txt";
+
+	// Erase test_nand file data
+	std::ofstream out;
+	out.open(test_nand, std::ios::binary | std::ios::trunc);
+	out.close();
+	out.open(test_result, std::ios::trunc);
+	out.close();
+
+	// Read
+	SSD ssd(test_nand, test_result);
+	ssd.Read(0);
+
+	// Check test_result
+	std::ifstream in(test_result);
+	std::string ret;
+	if (in.is_open()) {
+		in >> ret;
+	}
+
+	EXPECT_EQ("0x00000000", ret);
 }
 
 TEST(SSDTest, DISABLED_ReadWrittenValue)
