@@ -1,4 +1,7 @@
 #include <stdexcept>
+#include <fstream>
+#include <sstream>
+#include <iostream>
 #include "SSD.h"
 #include <string>
 #include <vector>
@@ -79,8 +82,18 @@ void SSD::Read(uint32_t address)
 	{
 		throw std::exception("Invalid address");
 	}
-	// Read address from nand
-	// Throw exception for invalid case
+
+	std::ifstream in(nand_file_, std::ios::binary);
+	if (!in.is_open()) {
+		throw std::exception("Fail to open nand file");
+	}
+
+	std::ofstream out(result_file_, std::ios::trunc);
+	if (!out.is_open()) {
+		throw std::exception("Fail to open result file");
+	}
+
+	out << "0x00000000";
 }
 
 void SSD::Write(uint32_t address, uint32_t value)
