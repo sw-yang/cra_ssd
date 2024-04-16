@@ -130,7 +130,12 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ISSDApp.h" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="TestShell.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="TestShell.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -9,6 +9,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+*.txt
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -400,3 +401,4 @@ FodyWeavers.xsd
 # Temp files
 test_nand.txt
 test_result.txt
+
