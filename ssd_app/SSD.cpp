@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include "SSD.h"
 #include <string>
 #include <vector>
@@ -74,6 +75,10 @@ Command SSD::Parse(string command)
 
 void SSD::Read(uint32_t address)
 {
+	if (address >= 100)
+	{
+		throw std::exception("Invalid address");
+	}
 	// Read address from nand
 	// Throw exception for invalid case
 }
