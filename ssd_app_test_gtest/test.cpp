@@ -7,6 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+using namespace testing;
 using namespace std;
 
 class MockSSDApp : public ISSDApp
@@ -59,4 +60,17 @@ TEST_F(TestShellTestFixture, OutputToFile)
 	EXPECT_EQ(user_input, write_input);
 	getline(cin, user_input);
 	EXPECT_EQ(user_input, read_input);
+}
+
+TEST_F(TestShellTestFixture, WriteTest)
+{
+	MockSSDApp app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	ISSDApp* Issd_app = test_shell.get_ssd_app();
+
+	EXPECT_EQ(Issd_app, &app);
+	EXPECT_CALL(app, Write(_, _)).Times(1);
+	test_shell.Run();
 }

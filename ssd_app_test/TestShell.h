@@ -6,6 +6,7 @@ class TestShell
 public:
     void Run()
     {
+        Write(11,0x12345678);
     }
     void set_ssd_app(ISSDApp* app)
     {
