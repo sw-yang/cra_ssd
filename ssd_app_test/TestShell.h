@@ -4,7 +4,9 @@
 enum TestShellCMD
 {
     READ,
+    FULLREAD,
     WRITE,
+    FULLWRITE,
     HELP,
     EXIT,
 };
@@ -19,7 +21,9 @@ private:
     void Input(void);
     bool CheckValidity(void);
     void Read(int addr);
+    void FullRead();
     void Write(int addr, int data);
+    void FullWrite(int data);
     void Help(void);
     ISSDApp* ssd_app;
     TestShellCMD cmd;

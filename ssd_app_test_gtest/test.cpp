@@ -62,6 +62,90 @@ TEST_F(TestShellTestFixture, OutputToFile)
 	EXPECT_EQ(user_input, read_input);
 }
 
+TEST_F(TestShellTestFixture, WriteTest)
+{
+	string user_input = "Write 1 0x12345678";
+	string exit_input = "Exit";
+	cout << user_input << endl;
+	cout << exit_input << endl;
+
+	MockSSDApp app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	ISSDApp* Issd_app = test_shell.get_ssd_app();
+
+	EXPECT_EQ(Issd_app, &app);
+	EXPECT_CALL(app, Write(_, _)).Times(1);
+	test_shell.Run();
+}
+
+TEST_F(TestShellTestFixture, FullWriteTest)
+{
+	string user_input = "FullWrite 0x12345678";
+	string exit_input = "Exit";
+	cout << user_input << endl;
+	cout << exit_input << endl;
+
+	MockSSDApp app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	ISSDApp* Issd_app = test_shell.get_ssd_app();
+
+	EXPECT_EQ(Issd_app, &app);
+	EXPECT_CALL(app, Write(_, _)).Times(100);
+	test_shell.Run();
+}
+
+TEST_F(TestShellTestFixture, ReadTest)
+{
+	string user_input = "Read 1";
+	string exit_input = "Exit";
+	cout << user_input << endl;
+	cout << exit_input << endl;
+
+	MockSSDApp app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	ISSDApp* Issd_app = test_shell.get_ssd_app();
+
+	EXPECT_EQ(Issd_app, &app);
+	EXPECT_CALL(app, Read(_)).Times(1);
+	test_shell.Run();
+}
+
+TEST_F(TestShellTestFixture, FullReadTest)
+{
+	string user_input = "FullRead";
+	string exit_input = "Exit";
+	cout << user_input << endl;
+	cout << exit_input << endl;
+
+	MockSSDApp app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	ISSDApp* Issd_app = test_shell.get_ssd_app();
+
+	EXPECT_EQ(Issd_app, &app);
+	EXPECT_CALL(app, Read(_)).Times(100);
+	test_shell.Run();
+}
+TEST_F(TestShellTestFixture, HelpTest)
+{
+	string help_input = "Help";
+	string exit_input = "Exit";
+	cout << help_input << endl;
+	cout << exit_input << endl;
+
+	MockSSDApp app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	test_shell.Run();
+}
 TEST_F(TestShellTestFixture, ExitTest)
 {
 	string user_input;
@@ -72,18 +156,5 @@ TEST_F(TestShellTestFixture, ExitTest)
 	TestShell test_shell;
 	test_shell.set_ssd_app(&app);
 
-	test_shell.Run();
-}
-
-TEST_F(TestShellTestFixture, DISABLED_WriteTest)
-{
-	MockSSDApp app;
-	TestShell test_shell;
-	test_shell.set_ssd_app(&app);
-
-	ISSDApp* Issd_app = test_shell.get_ssd_app();
-
-	EXPECT_EQ(Issd_app, &app);
-	EXPECT_CALL(app, Write(_, _)).Times(1);
 	test_shell.Run();
 }
