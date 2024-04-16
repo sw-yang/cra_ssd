@@ -30,6 +30,9 @@ public:
 	void Write(uint32_t address, uint32_t value);
 
 private:
+	void ReadNandFile();
+	std::string IntToHex(uint32_t integer);
+
 	uint32_t nand_[100];
 	std::string nand_file_;
 	std::string result_file_;

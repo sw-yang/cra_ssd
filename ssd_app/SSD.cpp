@@ -83,11 +83,7 @@ void SSD::Read(uint32_t address)
 		throw std::exception("Invalid address");
 	}
 
-	std::ifstream in(nand_file_, std::ios::binary);
-	if (!in.is_open())
-	{
-		throw std::exception("Fail to open nand file");
-	}
+	ReadNandFile();
 
 	std::ofstream out(result_file_, std::ios::trunc);
 	if (!out.is_open())
@@ -95,10 +91,26 @@ void SSD::Read(uint32_t address)
 		throw std::exception("Fail to open result file");
 	}
 
+	out << IntToHex(nand_[address]);
+}
+
+void SSD::Write(uint32_t address, uint32_t value)
+{
+	// Write value to address from nand
+	// Throw exception for invalid case
+}
+
+void SSD::ReadNandFile()
+{
+	std::ifstream in(nand_file_, std::ios::binary);
+	if (!in.is_open())
+	{
+		throw std::exception("Fail to open nand file");
+	}
+
 	// check file size
 	in.seekg(0, std::ios::end);
 	std::streampos fileSize = in.tellg();
-
 	if (fileSize != 400)
 	{
 		// Invalid nand file data
@@ -111,11 +123,13 @@ void SSD::Read(uint32_t address)
 	{
 		in.seekg(0);
 		in.read(reinterpret_cast<char*>(nand_), sizeof(nand_));
-
 	}
+}
 
+std::string SSD::IntToHex(uint32_t integer)
+{
 	std::ostringstream ss;
-	ss << std::hex << nand_[address];
+	ss << std::hex << integer;
 	int zero_fills = 8 - ss.str().length();
 
 	std::string result = "0x";
@@ -123,12 +137,5 @@ void SSD::Read(uint32_t address)
 		result += "0";
 	}
 	result += ss.str();
-
-	out << result;
-}
-
-void SSD::Write(uint32_t address, uint32_t value)
-{
-	// Write value to address from nand
-	// Throw exception for invalid case
+	return result;
 }
