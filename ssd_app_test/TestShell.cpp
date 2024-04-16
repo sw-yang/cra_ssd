@@ -43,8 +43,7 @@ void TestShell::Run(void)
     bool isGoing = true;
     while (isGoing)
     {
-        Input();
-        if (!CheckValidity()) continue;
+        if (!Input()) continue;
 
         switch (cmd)
         {
@@ -71,7 +70,7 @@ void TestShell::Run(void)
     }
 }
 
-void TestShell::Input(void) 
+bool TestShell::Input(void) 
 {
     string user_input;
     string str_cmd, str_addr, str_data;
@@ -85,10 +84,12 @@ void TestShell::Input(void)
     {
         cmd = WRITE;
         ss >> str_addr >> str_data;
+
+        if (ConvertAddrToInt(str_addr) == false)
+            return false;
         
-        addr = stoi(str_addr);
-        str_data.erase(str_data.begin(), str_data.begin() + 2);
-        data = 0x111AB222;
+        if (ConvertDataToInt(str_data) == false)
+            return false;
     }
     else if (str_cmd == "FullWrite")
     {
@@ -116,10 +117,41 @@ void TestShell::Input(void)
     {
         cmd = EXIT;
     }
+
+    return true;
 }
 
-bool TestShell::CheckValidity(void)
+bool TestShell::ConvertAddrToInt(string& str_addr)
 {
+    if (str_addr.length() > 3) return false;
+
+    addr = stoi(str_addr);
+    addr_arr.push_back(addr); //to be deleted
+    return true;
+}
+
+bool TestShell::ConvertDataToInt(string& str_data)
+{
+    if (str_data.length() != 10) return false;
+
+    str_data.erase(str_data.begin(), str_data.begin() + 2);
+    if (IsHexNum(str_data) == false) return false;
+    
+    data = stoul(str_data, nullptr, 16);
+
+    data_arr.push_back(data); //to be deleted
+    return true;
+}
+
+bool TestShell::IsHexNum(string& str)
+{
+    for (char digit : str)
+    {
+        if (!(digit >= '0' && digit <= '9') &&
+            !(digit >= 'A' && digit <= 'F'))
+            return false;
+    }
+
     return true;
 }
 

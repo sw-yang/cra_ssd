@@ -1,5 +1,7 @@
 #pragma once
 #include "ISSDApp.h"
+#include <string>
+#include <vector> //to be deleted
 
 enum TestShellCMD
 {
@@ -17,11 +19,13 @@ public:
     void Run();
     void set_ssd_app(ISSDApp* app);
     ISSDApp* get_ssd_app(void) { return ssd_app; } //to be deleted
-    int get_addr(void) { return addr; }; //to be deleted
-    int get_data(void) { return data; }; //to be deleted
+    std::vector<int> addr_arr;//to be deleted
+    std::vector<int> data_arr;//to be deleted
 private:
-    void Input(void);
-    bool CheckValidity(void);
+    bool Input(void);
+    bool ConvertAddrToInt(std::string& str_addr);
+    bool ConvertDataToInt(std::string& str_addr);
+    bool IsHexNum(std::string& str);
     void Read(int addr);
     void FullRead();
     void Write(int addr, int data);
