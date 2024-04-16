@@ -88,7 +88,7 @@ void TestShell::Input(void)
         
         addr = stoi(str_addr);
         str_data.erase(str_data.begin(), str_data.begin() + 2);
-        data = stoi(str_data);
+        data = 0x111AB222;
     }
     else if (str_cmd == "FullWrite")
     {
@@ -126,9 +126,4 @@ bool TestShell::CheckValidity(void)
 void TestShell::set_ssd_app(ISSDApp* app)
 {
     ssd_app = app;
-}
-
-ISSDApp* TestShell::get_ssd_app(void)
-{
-    return ssd_app;
 }

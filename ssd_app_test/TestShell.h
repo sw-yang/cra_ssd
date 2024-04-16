@@ -16,7 +16,9 @@ class TestShell
 public:
     void Run();
     void set_ssd_app(ISSDApp* app);
-    ISSDApp* get_ssd_app(void);
+    ISSDApp* get_ssd_app(void) { return ssd_app; } //to be deleted
+    int get_addr(void) { return addr; }; //to be deleted
+    int get_data(void) { return data; }; //to be deleted
 private:
     void Input(void);
     bool CheckValidity(void);

@@ -158,3 +158,18 @@ TEST_F(TestShellTestFixture, ExitTest)
 
 	test_shell.Run();
 }
+
+TEST_F(TestShellTestFixture, InputNormalWrite)
+{
+	cout << "Write 0 0x111AB222" << endl;
+	cout << "Exit" << endl;
+
+	MockSSDApp app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	test_shell.Run();
+
+	EXPECT_EQ(test_shell.get_addr(), 0);
+	EXPECT_EQ(test_shell.get_data(), 0x111AB222);
+}
