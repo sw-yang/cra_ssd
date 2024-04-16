@@ -176,3 +176,22 @@ TEST_F(SSDTest, OverWrite)
 
 	EXPECT_EQ(NAND[ADDRESS], new_data);
 }
+
+TEST_F(SSDTest, ReadWriteTest)
+{
+	ssd->Write(10, 0x11);
+	ssd->Read(10);
+	EXPECT_EQ("0x00000011", ReadResultFile());
+
+	ssd->Write(10, 0x777);
+	ssd->Read(10);
+	EXPECT_EQ("0x00000777", ReadResultFile());
+
+	ssd->Read(20);
+	EXPECT_EQ("0x00000000", ReadResultFile());
+
+	ssd->Write(20, 0x777);
+	ssd->Read(20);
+	EXPECT_EQ("0x00000777", ReadResultFile());
+}
+
