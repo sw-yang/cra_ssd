@@ -103,7 +103,8 @@ bool TestShell::Input(void)
         cmd = READ;
         ss >> str_addr;
 
-        addr = stoi(str_addr);
+        if (ConvertAddrToInt(str_addr) == false)
+            return false;
     }
     else if (str_cmd == "FullRead")
     {

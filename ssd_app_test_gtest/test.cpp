@@ -177,3 +177,20 @@ TEST_F(TestShellTestFixture, InputNormalWrite)
 	EXPECT_EQ(test_shell.addr_arr[1], 99);
 	EXPECT_EQ(test_shell.data_arr[1], 0x111AB222);
 }
+
+TEST_F(TestShellTestFixture, InputNormalRead)
+{
+	cout << "Read 4" << endl;
+	cout << "Read 49" << endl;
+	cout << "Exit" << endl;
+
+	MockSSDApp app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	test_shell.Run();
+
+	EXPECT_EQ(test_shell.addr_arr[0], 4);
+
+	EXPECT_EQ(test_shell.addr_arr[1], 49);
+}
