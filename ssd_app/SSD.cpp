@@ -82,14 +82,7 @@ void SSD::Read(uint32_t address)
 	}
 
 	ReadNandFile();
-
-	std::ofstream out(result_file_, std::ios::trunc);
-	if (!out.is_open())
-	{
-		throw std::exception("Fail to open result file");
-	}
-
-	out << IntToHex(nand_[address]);
+	WriteResultToFile(nand_[address]);
 }
 
 void SSD::Write(uint32_t address, uint32_t value)
@@ -100,15 +93,8 @@ void SSD::Write(uint32_t address, uint32_t value)
 	}
 
 	ReadNandFile();
-
-	std::ofstream out(nand_file_, std::ios::trunc);
-	if (!out.is_open())
-	{
-		throw std::exception("Fail to open result file");
-	}
-
 	nand_[address] = value;
-	out.write(reinterpret_cast<const char*>(nand_), sizeof(nand_));
+	WriteNandToFile();
 }
 
 void SSD::ReadNandFile()
@@ -135,6 +121,27 @@ void SSD::ReadNandFile()
 		in.seekg(0);
 		in.read(reinterpret_cast<char*>(nand_), sizeof(nand_));
 	}
+}
+
+void SSD::WriteNandToFile()
+{
+	std::ofstream out(nand_file_, std::ios::trunc);
+	if (!out.is_open())
+	{
+		throw std::exception("Fail to open result file");
+	}
+	out.write(reinterpret_cast<const char*>(nand_), sizeof(nand_));
+}
+
+void SSD::WriteResultToFile(uint32_t result)
+{
+	std::ofstream out(result_file_, std::ios::trunc);
+	if (!out.is_open())
+	{
+		throw std::exception("Fail to open result file");
+	}
+
+	out << IntToHex(result);
 }
 
 std::string SSD::IntToHex(uint32_t integer)
