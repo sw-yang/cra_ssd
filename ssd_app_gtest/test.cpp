@@ -2,12 +2,14 @@
 #include "../ssd_app/SSD.cpp"
 #include "../ssd_app/CMD.cpp"
 
-class CMDTestFixture : public testing::Test {
+class CMDTestFixture : public testing::Test 
+{
 protected:
 	vector<string> args;
 };
 
-TEST_F(CMDTestFixture, ValidObjectTest) {
+TEST_F(CMDTestFixture, ValidObjectVectorConstructorTest) 
+{
 	args.push_back("R");
 	args.push_back("10");
 	args.push_back("0xAAAAAAAA");
@@ -18,7 +20,16 @@ TEST_F(CMDTestFixture, ValidObjectTest) {
 	EXPECT_EQ(cmd, result);
 }
 
-TEST_F(CMDTestFixture, ValidFlagTest) {
+TEST_F(CMDTestFixture, ValidObjectStringConstructorTest)
+{
+	Command cmd("R 10 0xAAAAAAAA");
+	Command result('R', 10, 0xAAAAAAAA);
+
+	EXPECT_EQ(cmd, result);
+}
+
+TEST_F(CMDTestFixture, ValidFlagTest) 
+{
 	args.push_back("R");
 	args.push_back("10");
 	args.push_back("0xAAAAAAAA");
@@ -28,7 +39,8 @@ TEST_F(CMDTestFixture, ValidFlagTest) {
 	EXPECT_EQ(true, cmd.getValid());
 }
 
-TEST_F(CMDTestFixture, InvalidCommandTypeTest) {
+TEST_F(CMDTestFixture, InvalidCommandTypeTest) 
+{
 	args.push_back("A");
 	args.push_back("10");
 	args.push_back("0xAAAAAAAA");
@@ -38,7 +50,8 @@ TEST_F(CMDTestFixture, InvalidCommandTypeTest) {
 	EXPECT_EQ(false, cmd.getValid());
 }
 
-TEST_F(CMDTestFixture, AddressOutOfRangeTest) {
+TEST_F(CMDTestFixture, AddressOutOfRangeTest) 
+{
 	args.push_back("R");
 	args.push_back("100");
 	args.push_back("0xAAAAAAAA");
@@ -48,7 +61,8 @@ TEST_F(CMDTestFixture, AddressOutOfRangeTest) {
 	EXPECT_EQ(false, cmd.getValid());
 }
 
-TEST_F(CMDTestFixture, AddressTypeErrorTest) {
+TEST_F(CMDTestFixture, AddressTypeErrorTest) 
+{
 	args.push_back("R");
 	args.push_back("1a");
 	args.push_back("0xAAAAAAAA");
@@ -58,7 +72,8 @@ TEST_F(CMDTestFixture, AddressTypeErrorTest) {
 	EXPECT_EQ(false, cmd.getValid());
 }
 
-TEST_F(CMDTestFixture, DataLengthErrorTest) {
+TEST_F(CMDTestFixture, DataLengthErrorTest) 
+{
 	args.push_back("R");
 	args.push_back("10");
 	args.push_back("0xAAAAAAA");
@@ -77,33 +92,6 @@ TEST_F(CMDTestFixture, DataTypeErrorTest) {
 
 	EXPECT_EQ(false, cmd.getValid());
 }
-
-/*
-TEST(TestCaseName, InvalidNumOfArgsTest) {
-	SSD ssd;
-	EXPECT_THROW(ssd.Parse("R 10"), std::invalid_argument);
-}
-
-TEST(TestCaseName, InvalidCmdTypeTest) {
-	SSD ssd;
-	EXPECT_THROW(ssd.Parse("A 10 0xAAAAAAAA"), std::invalid_argument);
-}
-
-TEST(TestCaseName, InvalidAddressTest) {
-	SSD ssd;
-	EXPECT_THROW(ssd.Parse("R 1a 0xAAAAAAAA"), std::invalid_argument);
-}
-
-TEST(TestCaseName, InvalidAddressOutOfRangeTest) {
-	SSD ssd;
-	EXPECT_THROW(ssd.Parse("R 100 0xAAAAAAAA"), std::invalid_argument);
-}
-
-TEST(TestCaseName, InvalidHexDataTest) {
-	SSD ssd;
-	EXPECT_THROW(ssd.Parse("R 10 0xAAAAAAAH"), std::invalid_argument);
-}
-*/
 
 class SSDTest : public testing::Test
 {

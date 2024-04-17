@@ -41,11 +41,6 @@ unsigned int Command::hexStringToInt(const string& hexStr) {
 	return result;
 }
 
-Command Command::convertToCommand(const vector<string> command)
-{
-	return Command(command[0][0], (unsigned int)stoi(command[1]), hexStringToInt(command[2]));
-}
-
 bool Command::isInvalidCommand(const vector<string> command)
 {
 	if (command.size() != 3) return true;

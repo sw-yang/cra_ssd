@@ -14,11 +14,22 @@ private:
 	char cmd;
 	uint32_t address;
 	uint32_t value;
-	const vector<string> args;
-	bool isValid;
+	vector<string> args;
+	bool isValid = false;
 public:
 	Command(vector<string> args) : args(args)
 	{
+		isValid = !isInvalidCommand(args);
+		if (isValid)
+		{
+			cmd = args[0][0];
+			address = (unsigned int)stoi(args[1]);
+			value = hexStringToInt(args[2]);
+		}
+	}
+	Command(const string str)
+	{
+		args = split(str);
 		isValid = !isInvalidCommand(args);
 		if (isValid)
 		{
@@ -44,6 +55,5 @@ public:
 	bool isNumber(const string& str);
 	bool isValidHex(const string& str);
 	unsigned int hexStringToInt(const string& hexStr);
-	Command convertToCommand(const vector<string> command);
 	bool isInvalidCommand(const vector<string> command);
 };
