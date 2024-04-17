@@ -3,46 +3,49 @@
 
 void FileManager::ReadBinaryFile(uint32_t* data, size_t size, std::streampos start)
 {
-	std::ifstream in(file_name_, std::ios::binary);
-	if (!in.is_open())
-	{
-		CreateEmptyFile();
-		in.open(file_name_, std::ios::binary);
-	}
+	std::fstream file = OpenFile(true);
 
-	in.seekg(0, std::ios::end);
-	std::streampos fileSize = in.tellg();
-	if (fileSize - start < size)
+	size_t file_size = GetFileSize(file);
+	if (file_size < start || file_size - start < size)
 	{
 		throw std::length_error("Invalid File Size");
 	}
 
-	in.seekg(start);
-	in.read(reinterpret_cast<char*>(data), size);
+	file.seekg(start);
+	file.read(reinterpret_cast<char*>(data), size);
 }
 
 void FileManager::WriteBinaryFile(uint32_t* data, size_t size, std::streampos start)
 {
-	std::fstream out(file_name_, std::ios::in | std::ios::out | std::ios::binary);
-	if (!out.is_open())
-	{
-		CreateEmptyFile();
-		out.open(file_name_, std::ios::in | std::ios::out | std::ios::binary);
-	}
+	std::fstream file = OpenFile(true);
 
-	out.seekp(start);
-	out.write(reinterpret_cast<const char*>(data), size);
+	file.seekp(start);
+	file.write(reinterpret_cast<const char*>(data), size);
 }
 
 void FileManager::WriteTextFile(std::string data)
 {
-	std::ofstream out(file_name_);
-	if (!out.is_open())
+	std::fstream file = OpenFile();
+	file << data;
+}
+
+std::fstream FileManager::OpenFile(bool is_binary)
+{
+	std::fstream file;
+	int openmode = std::ios::in | std::ios::out;
+	if (is_binary)
 	{
-		throw std::exception("Fail to open result file");
+		openmode |= std::ios::binary;
 	}
 
-	out << data;
+	file.open(file_name_, openmode);
+	if (!file.is_open())
+	{
+		CreateEmptyFile();
+		file.open(file_name_, openmode);
+	}
+
+	return std::move(file);
 }
 
 void FileManager::CreateEmptyFile()
@@ -52,4 +55,10 @@ void FileManager::CreateEmptyFile()
 	{
 		throw std::exception("Fail to open result file");
 	}
+}
+
+size_t FileManager::GetFileSize(std::fstream& file)
+{
+	file.seekg(0, std::ios::end);
+	return file.tellg();
 }
