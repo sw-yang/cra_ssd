@@ -24,7 +24,7 @@ public:
 		{
 			cmd = args[0];
 			address = (unsigned int)stoi(args[1]);
-			value = hexStringToInt(args[2]);
+			if(cmd == "W") value = hexStringToInt(args[2]);
 		}
 	}
 
@@ -36,7 +36,7 @@ public:
 		{
 			cmd = args[0][0];
 			address = (unsigned int)stoi(args[1]);
-			value = hexStringToInt(args[2]);
+			if (cmd == "W") value = hexStringToInt(args[2]);
 		}
 	}
 

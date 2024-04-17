@@ -10,21 +10,31 @@ protected:
 	vector<string> args;
 };
 
-TEST_F(CMDTestFixture, ValidObjectVectorConstructorTest) 
+TEST_F(CMDTestFixture, ValidObjectVectorConstructorTestRead) 
 {
 	args.push_back("R");
+	args.push_back("10");
+
+	Command cmd(args);
+	
+	EXPECT_EQ(cmd.getValid(), true);
+}
+
+TEST_F(CMDTestFixture, ValidObjectVectorConstructorTestWrite)
+{
+	args.push_back("W");
 	args.push_back("10");
 	args.push_back("0xAAAAAAAA");
 
 	Command cmd(args);
-	Command result("R 10 0xAAAAAAAA");
-	
+	Command result("W 10 0xAAAAAAAA");
+
 	EXPECT_EQ(cmd, result);
 }
 
 TEST_F(CMDTestFixture, ValidFlagTest) 
 {
-	args.push_back("R");
+	args.push_back("W");
 	args.push_back("10");
 	args.push_back("0xAAAAAAAA");
 
@@ -46,7 +56,7 @@ TEST_F(CMDTestFixture, InvalidCommandTypeTest)
 
 TEST_F(CMDTestFixture, AddressOutOfRangeTest) 
 {
-	args.push_back("R");
+	args.push_back("W");
 	args.push_back("100");
 	args.push_back("0xAAAAAAAA");
 
@@ -57,7 +67,7 @@ TEST_F(CMDTestFixture, AddressOutOfRangeTest)
 
 TEST_F(CMDTestFixture, AddressTypeErrorTest) 
 {
-	args.push_back("R");
+	args.push_back("W");
 	args.push_back("1a");
 	args.push_back("0xAAAAAAAA");
 
@@ -68,7 +78,7 @@ TEST_F(CMDTestFixture, AddressTypeErrorTest)
 
 TEST_F(CMDTestFixture, DataLengthErrorTest) 
 {
-	args.push_back("R");
+	args.push_back("W");
 	args.push_back("10");
 	args.push_back("0xAAAAAAA");
 
@@ -78,7 +88,7 @@ TEST_F(CMDTestFixture, DataLengthErrorTest)
 }
 
 TEST_F(CMDTestFixture, DataTypeErrorTest) {
-	args.push_back("R");
+	args.push_back("W");
 	args.push_back("10");
 	args.push_back("0xAAAAAAAH");
 
