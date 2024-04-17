@@ -38,7 +38,8 @@ TestShell::Help(void)
    cout << "Exit: Exit the program" << endl;
 }
 
-void TestShell::Run(void)
+void 
+TestShell::Run(void)
 {
     bool isGoing = true;
     while (isGoing)
@@ -66,11 +67,11 @@ void TestShell::Run(void)
             default:
                 break;
         }
-        
     }
 }
 
-bool TestShell::Input(void) 
+bool 
+TestShell::Input(void) 
 {
     string user_input;
     string str_cmd, str_addr, str_data;
@@ -122,14 +123,19 @@ bool TestShell::Input(void)
     return true;
 }
 
-bool TestShell::ConvertAddrToInt(string& str_addr)
+bool 
+TestShell::ConvertAddrToInt(string& str_addr)
 {
-    if (str_addr.length() > 3) return false;
+    const int kMinAddr = 0;
+    const int kMaxAddr = 99;
+    const int kAddrLen = 3;
+
+    if (str_addr.length() > kAddrLen) return false;
 
     addr = stoi(str_addr);
     addr_arr.push_back(addr); //to be deleted
 
-    if (addr == -1 || addr == 100)
+    if (addr < kMinAddr || addr > kMaxAddr)
     {
         cout << "[Error] Invalid Address" << endl;
         return false;
@@ -138,7 +144,8 @@ bool TestShell::ConvertAddrToInt(string& str_addr)
     return true;
 }
 
-bool TestShell::ConvertDataToInt(string& str_data)
+bool 
+TestShell::ConvertDataToInt(string& str_data)
 {
     if (str_data.length() != 10) return false;
 
@@ -155,7 +162,8 @@ bool TestShell::ConvertDataToInt(string& str_data)
     return true;
 }
 
-bool TestShell::IsHexNum(string& str)
+bool 
+TestShell::IsHexNum(string& str)
 {
     for (char digit : str)
     {
@@ -167,7 +175,8 @@ bool TestShell::IsHexNum(string& str)
     return true;
 }
 
-void TestShell::set_ssd_app(ISSDApp* app)
+void 
+TestShell::set_ssd_app(ISSDApp* app)
 {
     ssd_app = app;
 }
