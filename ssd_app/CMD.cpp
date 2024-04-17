@@ -1,5 +1,25 @@
 #include "CMD.h"
 
+void Command::initialize() {
+	isValid = isValidCommand();
+
+	if (isValid) 
+	{
+		if (args[CMD_POSITION] == "R") 
+		{
+			cmd = args[CMD_POSITION];
+			address = std::stoi(args[ADDRESS_POSITION]);
+		}
+		else if (args[CMD_POSITION] == "W") 
+		{
+			cmd = args[CMD_POSITION];
+			address = std::stoi(args[ADDRESS_POSITION]);
+			value = hexStringToInt(args[VALUE_POSITION]);
+		}
+	}
+
+}
+
 vector<string> Command::split(const string& str)
 {
 	vector<string> tokens;
@@ -15,9 +35,9 @@ vector<string> Command::split(const string& str)
 	return tokens;
 }
 
-bool Command::isNumber(const string& str)
+bool Command::isValidAddressType()
 {
-	for (char c : str)
+	for (char c : args[ADDRESS_POSITION])
 	{
 		if (!isdigit(c))
 		{
@@ -27,13 +47,14 @@ bool Command::isNumber(const string& str)
 	return true;
 }
 
-bool Command::isValidHex(const string& str)
+bool Command::isValidValue()
 {
 	regex pattern("^0x[0-9a-fA-F]{8}$");
-	return regex_match(str, pattern);
+	return regex_match(args[VALUE_POSITION], pattern);
 }
 
-unsigned int Command::hexStringToInt(const string& hexStr) {
+unsigned int Command::hexStringToInt(const string& hexStr)
+{
 	unsigned int result;
 	stringstream ss;
 	ss << hex << hexStr;
@@ -41,22 +62,27 @@ unsigned int Command::hexStringToInt(const string& hexStr) {
 	return result;
 }
 
-bool Command::isInvalidCommand()
+bool Command::isValidAddress()
 {
-	if (args.size() == 2 && args[0] == "R")
+	return isValidAddressType() && (stoi(args[ADDRESS_POSITION]) >= 0) && (stoi(args[ADDRESS_POSITION]) < 100);
+}
+
+bool Command::isValidCommand()
+{
+	if (args.empty()) return false;
+
+	if (args[CMD_POSITION] == "R")
 	{
-		if (!isNumber(args[1])) return true;
-		if (stoi(args[1]) < 0 || stoi(args[1]) > 99) return true;
+		if (args.size() != NUM_OF_ARGS_READ) return false;
+		return isValidAddress();
 	}
-	else if (args.size() == 3 && args[0] == "W")
+	else if (args[CMD_POSITION] == "W")
 	{
-		if (!isNumber(args[1])) return true;
-		if (stoi(args[1]) < 0 || stoi(args[1]) > 99) return true;
-		if (!isValidHex(args[2])) return true;
+		if (args.size() != NUM_OF_ARGS_WRITE) return false;
+		return isValidAddress() && isValidValue();
 	}
 	else
 	{
-		return true;
+		return false;
 	}
-	return false;
 }

@@ -15,9 +15,10 @@ TEST_F(CMDTestFixture, ValidObjectVectorConstructorTestRead)
 	args.push_back("R");
 	args.push_back("10");
 
-	Command cmd(args);
+	Command result(args);
+	Command expected("R 10");
 	
-	EXPECT_EQ(cmd.getValid(), true);
+	EXPECT_EQ(result, expected);
 }
 
 TEST_F(CMDTestFixture, ValidObjectVectorConstructorTestWrite)
