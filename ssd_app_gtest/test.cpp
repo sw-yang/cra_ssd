@@ -168,7 +168,7 @@ TEST_F(SSDTest, ReadWrittenValueFrom0)
 
 	ssd->Read(0);
 
-	EXPECT_EQ("0x000048a7", ReadResultFile());
+	EXPECT_EQ("0x000048A7", ReadResultFile());
 }
 
 TEST_F(SSDTest, ReadWrittenValueFromOtherAddress)
@@ -178,7 +178,7 @@ TEST_F(SSDTest, ReadWrittenValueFromOtherAddress)
 
 	ssd->Read(ADDRESS);
 
-	EXPECT_EQ("0xff25abcd", ReadResultFile());
+	EXPECT_EQ("0xFF25ABCD", ReadResultFile());
 }
 
 TEST_F(SSDTest, ResetNandDataWhenFileIsInvalid)
