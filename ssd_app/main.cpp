@@ -3,21 +3,18 @@
 
 int main(int argc, char* argv[]) {
 
-    vector<string> args;
- /*   for (int i = 0; i < argc; ++i) 
-    {
+    if (argc <= 1) return 0;
+     vector<string> args;
+    for (int i = 1; i < argc; ++i) 
+    {  
         args.push_back(argv[i]);
-    }*/
-
-    args.push_back("R");
-    args.push_back("10");
-    args.push_back("0x00000000");
+    }
 
     SSD ssd;
-
+    Command cmd(args);
     try
     {
-        ssd.Run(Command(args));
+        ssd.Run(cmd);
     }
     catch (std::exception& e)
     {

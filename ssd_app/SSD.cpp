@@ -91,16 +91,14 @@ void SSD::Run(Command command_)
 {
 	if (!command_.getValid()) throw std::invalid_argument("Invalid Command");
 
-	char cmd = command_.getCommand();
-	switch (cmd)
+	string cmd = command_.getCommand();
+	
+	if (cmd == "R")
 	{
-	case 'R':
 		Read(command_.getAddress());
-		break;
-	case 'W':
+	}
+	else if (cmd == "W")
+	{
 		Write(command_.getAddress(), command_.getValue());
-		break;
-	default:
-		break;
 	}
 }

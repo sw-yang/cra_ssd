@@ -15,16 +15,8 @@ TEST_F(CMDTestFixture, ValidObjectVectorConstructorTest)
 	args.push_back("0xAAAAAAAA");
 
 	Command cmd(args);
-	Command result('R', 10, 0xAAAAAAAA);
+	Command result("R 10 0xAAAAAAAA");
 	
-	EXPECT_EQ(cmd, result);
-}
-
-TEST_F(CMDTestFixture, ValidObjectStringConstructorTest)
-{
-	Command cmd("R 10 0xAAAAAAAA");
-	Command result('R', 10, 0xAAAAAAAA);
-
 	EXPECT_EQ(cmd, result);
 }
 

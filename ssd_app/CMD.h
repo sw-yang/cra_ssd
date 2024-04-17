@@ -11,7 +11,7 @@ using namespace std;
 class Command
 {
 private:
-	char cmd;
+	string cmd;
 	uint32_t address;
 	uint32_t value;
 	vector<string> args;
@@ -22,12 +22,13 @@ public:
 		isValid = !isInvalidCommand();
 		if (isValid)
 		{
-			cmd = args[0][0];
+			cmd = args[0];
 			address = (unsigned int)stoi(args[1]);
 			value = hexStringToInt(args[2]);
 		}
 	}
-	Command(const string str)
+
+	Command(string str)
 	{
 		args = split(str);
 		isValid = !isInvalidCommand();
@@ -38,16 +39,12 @@ public:
 			value = hexStringToInt(args[2]);
 		}
 	}
-	Command(char cmd, uint32_t address, uint32_t value) : 
-		cmd(cmd), address(address), value(value)
-	{
 
-	}
 	bool operator==(const Command& other) const 
 	{
 		return cmd == other.cmd && address == other.address && value == other.value;
 	}
-	char getCommand() 
+	string getCommand() 
 	{
 		return cmd;
 	}
