@@ -20,7 +20,6 @@ public:
 		nand_file_(nand_file),
 		result_file_(result_file) {}
 
-	Command Parse(std::string command);
 	void Read(uint32_t address);
 	void Write(uint32_t address, uint32_t value);
 

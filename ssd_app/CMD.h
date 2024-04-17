@@ -14,20 +14,46 @@ private:
 	char cmd;
 	uint32_t address;
 	uint32_t value;
-	string rawCmd;
+	vector<string> args;
+	bool isValid = false;
 public:
-	Command(char cmd, uint32_t address, uint32_t value) :
+	Command(vector<string> args) : args(args)
+	{
+		isValid = !isInvalidCommand(args);
+		if (isValid)
+		{
+			cmd = args[0][0];
+			address = (unsigned int)stoi(args[1]);
+			value = hexStringToInt(args[2]);
+		}
+	}
+	Command(const string str)
+	{
+		args = split(str);
+		isValid = !isInvalidCommand(args);
+		if (isValid)
+		{
+			cmd = args[0][0];
+			address = (unsigned int)stoi(args[1]);
+			value = hexStringToInt(args[2]);
+		}
+	}
+	Command(char cmd, uint32_t address, uint32_t value) : 
 		cmd(cmd), address(address), value(value)
 	{
 
 	}
-	bool operator==(const Command& other) const {
+	bool operator==(const Command& other) const 
+	{
 		return cmd == other.cmd && address == other.address && value == other.value;
+	}
+	bool getValid() 
+	{
+		return isValid;
 	}
 	vector<string> split(const string& str);
 	bool isNumber(const string& str);
 	bool isValidHex(const string& str);
 	unsigned int hexStringToInt(const string& hexStr);
-	Command convertToCommand(const vector<string> command);
 	bool isInvalidCommand(const vector<string> command);
 };

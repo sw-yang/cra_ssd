@@ -2,36 +2,95 @@
 #include "../ssd_app/SSD.cpp"
 #include "../ssd_app/CMD.cpp"
 
-TEST(TestCaseName, DummyParsingTest) {
-	SSD ssd;
-	Command result = ssd.Parse("R 10 0x0000000F");
-	Command dummy('R', 10, 0xF);
-	EXPECT_EQ(dummy, result);
+class CMDTestFixture : public testing::Test 
+{
+protected:
+	vector<string> args;
+};
+
+TEST_F(CMDTestFixture, ValidObjectVectorConstructorTest) 
+{
+	args.push_back("R");
+	args.push_back("10");
+	args.push_back("0xAAAAAAAA");
+
+	Command cmd(args);
+	Command result('R', 10, 0xAAAAAAAA);
+	
+	EXPECT_EQ(cmd, result);
 }
 
-TEST(TestCaseName, InvalidNumOfArgsTest) {
-	SSD ssd;
-	EXPECT_THROW(ssd.Parse("R 10"), std::invalid_argument);
+TEST_F(CMDTestFixture, ValidObjectStringConstructorTest)
+{
+	Command cmd("R 10 0xAAAAAAAA");
+	Command result('R', 10, 0xAAAAAAAA);
+
+	EXPECT_EQ(cmd, result);
 }
 
-TEST(TestCaseName, InvalidCmdTypeTest) {
-	SSD ssd;
-	EXPECT_THROW(ssd.Parse("A 10 0xAAAAAAAA"), std::invalid_argument);
+TEST_F(CMDTestFixture, ValidFlagTest) 
+{
+	args.push_back("R");
+	args.push_back("10");
+	args.push_back("0xAAAAAAAA");
+
+	Command cmd(args);
+
+	EXPECT_EQ(true, cmd.getValid());
 }
 
-TEST(TestCaseName, InvalidAddressTest) {
-	SSD ssd;
-	EXPECT_THROW(ssd.Parse("R 1a 0xAAAAAAAA"), std::invalid_argument);
+TEST_F(CMDTestFixture, InvalidCommandTypeTest) 
+{
+	args.push_back("A");
+	args.push_back("10");
+	args.push_back("0xAAAAAAAA");
+
+	Command cmd(args);
+
+	EXPECT_EQ(false, cmd.getValid());
 }
 
-TEST(TestCaseName, InvalidAddressOutOfRangeTest) {
-	SSD ssd;
-	EXPECT_THROW(ssd.Parse("R 100 0xAAAAAAAA"), std::invalid_argument);
+TEST_F(CMDTestFixture, AddressOutOfRangeTest) 
+{
+	args.push_back("R");
+	args.push_back("100");
+	args.push_back("0xAAAAAAAA");
+
+	Command cmd(args);
+
+	EXPECT_EQ(false, cmd.getValid());
 }
 
-TEST(TestCaseName, InvalidHexDataTest) {
-	SSD ssd;
-	EXPECT_THROW(ssd.Parse("R 10 0xAAAAAAAH"), std::invalid_argument);
+TEST_F(CMDTestFixture, AddressTypeErrorTest) 
+{
+	args.push_back("R");
+	args.push_back("1a");
+	args.push_back("0xAAAAAAAA");
+
+	Command cmd(args);
+
+	EXPECT_EQ(false, cmd.getValid());
+}
+
+TEST_F(CMDTestFixture, DataLengthErrorTest) 
+{
+	args.push_back("R");
+	args.push_back("10");
+	args.push_back("0xAAAAAAA");
+
+	Command cmd(args);
+
+	EXPECT_EQ(false, cmd.getValid());
+}
+
+TEST_F(CMDTestFixture, DataTypeErrorTest) {
+	args.push_back("R");
+	args.push_back("10");
+	args.push_back("0xAAAAAAAH");
+
+	Command cmd(args);
+
+	EXPECT_EQ(false, cmd.getValid());
 }
 
 class SSDTest : public testing::Test

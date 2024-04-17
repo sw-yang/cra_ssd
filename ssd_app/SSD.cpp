@@ -1,15 +1,5 @@
 #include "SSD.h"
 
-Command SSD::Parse(string command)
-{
-	// Parse command and return Command instance
-	// Throw exception for invalid case
-	Command cmd(' ', 0, 0);
-	vector<string> result = cmd.split(command);
-	if (cmd.isInvalidCommand(result)) throw invalid_argument("Invalid command!");
-	return cmd.convertToCommand(result);
-}
-
 void SSD::Read(uint32_t address)
 {
 	if (address >= 100)
