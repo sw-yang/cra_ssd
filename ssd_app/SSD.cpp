@@ -65,6 +65,13 @@ bool isInvalidCommand(const vector<string> command)
 	return false;
 }
 
+
+SSD::SSD(std::string nand_file, std::string result_file)
+{
+	nand_file_ = new FileManager(nand_file);
+	result_file_ = new FileManager(result_file);
+}
+
 Command SSD::Parse(string command)
 {
 	// Parse command and return Command instance
@@ -94,54 +101,38 @@ void SSD::Write(uint32_t address, uint32_t value)
 
 	ReadNandFile();
 	nand_[address] = value;
-	WriteNandToFile();
+	UpdateNandToFile(address);
 }
 
 void SSD::ReadNandFile()
 {
-	std::ifstream in(nand_file_, std::ios::binary);
-	if (!in.is_open())
+	try
 	{
-		throw std::exception("Fail to open nand file");
+		nand_file_->ReadBinaryFile(nand_, sizeof(nand_));
 	}
-
-	// check file size
-	in.seekg(0, std::ios::end);
-	std::streampos fileSize = in.tellg();
-	if (fileSize != 400)
+	catch (std::length_error)
 	{
-		// Invalid nand file data
 		for (int i = 0; i < 100; ++i)
 		{
 			nand_[i] = 0;
 		}
-	}
-	else
-	{
-		in.seekg(0);
-		in.read(reinterpret_cast<char*>(nand_), sizeof(nand_));
+		nand_file_->WriteBinaryFile(nand_, sizeof(nand_));
 	}
 }
 
 void SSD::WriteNandToFile()
 {
-	std::ofstream out(nand_file_, std::ios::trunc);
-	if (!out.is_open())
-	{
-		throw std::exception("Fail to open result file");
-	}
-	out.write(reinterpret_cast<const char*>(nand_), sizeof(nand_));
+	nand_file_->WriteBinaryFile(nand_, sizeof(nand_));
+}
+
+void SSD::UpdateNandToFile(uint32_t address)
+{
+	nand_file_->WriteBinaryFile(&nand_[address], sizeof(uint32_t), address * sizeof(uint32_t));
 }
 
 void SSD::WriteResultToFile(uint32_t result)
 {
-	std::ofstream out(result_file_, std::ios::trunc);
-	if (!out.is_open())
-	{
-		throw std::exception("Fail to open result file");
-	}
-
-	out << IntToHex(result);
+	result_file_->WriteTextFile(IntToHex(result));
 }
 
 std::string SSD::IntToHex(uint32_t integer)

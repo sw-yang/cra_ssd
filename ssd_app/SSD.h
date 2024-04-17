@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <fstream>
+#include "FileManager.h"
 
 struct Command
 {
@@ -16,14 +16,7 @@ struct Command
 class SSD
 {
 public:
-	SSD() :
-		nand_file_("nand.txt"),
-		result_file_("result.txt") {}
-
-	// This constructor is for unit test
-	SSD(std::string nand_file, std::string result_file) :
-		nand_file_(nand_file),
-		result_file_(result_file) {}
+	SSD(std::string nand_file = "nand.txt", std::string result_file = "result.txt");
 
 	Command Parse(std::string command);
 	void Read(uint32_t address);
@@ -33,10 +26,10 @@ private:
 	void ReadNandFile();
 	void WriteNandToFile();
 	void WriteResultToFile(uint32_t result);
+	void UpdateNandToFile(uint32_t address);
 	std::string IntToHex(uint32_t integer);
 
 	uint32_t nand_[100];
-	std::string nand_file_;
-	std::string result_file_;
+	FileManager* nand_file_;
+	FileManager* result_file_;
 };
-
