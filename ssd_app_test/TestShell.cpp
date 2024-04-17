@@ -124,6 +124,7 @@ TestShell::Input(void)
     else
     {
         cout << invalid_cmd_str << endl;
+        Help();
         return false;
     }
 

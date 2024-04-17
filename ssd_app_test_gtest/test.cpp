@@ -275,8 +275,6 @@ TEST_F(TestShellTestFixture, InputInvalidRead)
 TEST_F(TestShellTestFixture, InputInvalidCMD)
 {
 	cout << "Writa -1 0x11112222" << endl;
-	cout << "%#2 100 0x111AB222" << endl;
-	cout << "12310 0x111TB222" << endl;
 	cout << "Exit" << endl;
 
 	string test_result_path = "./test_result.txt";
@@ -297,9 +295,19 @@ TEST_F(TestShellTestFixture, InputInvalidCMD)
 	getline(cin, result);
 	EXPECT_EQ(result, expected_invalid_cmd);
 	getline(cin, result);
-	EXPECT_EQ(result, expected_invalid_cmd);
+	EXPECT_EQ(result, string{ "Available commands:" });
 	getline(cin, result);
-	EXPECT_EQ(result, expected_invalid_cmd);
-
+	EXPECT_EQ(result, string{ "Write <addr> <data>: Write data to address" });
+	getline(cin, result);
+	EXPECT_EQ(result, string{ "Read <addr>: Read data from address" });
+	getline(cin, result);
+	EXPECT_EQ(result, string{ "FullWrite <data>: Write data to full address" });
+	getline(cin, result);
+	EXPECT_EQ(result, string{ "FullRead : Read data from full address" });
+	getline(cin, result);
+	EXPECT_EQ(result, string{ "Help: Show available commands" });
+	getline(cin, result);
+	EXPECT_EQ(result, string{ "Exit: Exit the program" });
+	
 	result_out_file.close();
 }
