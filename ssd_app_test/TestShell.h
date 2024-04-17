@@ -35,14 +35,14 @@ private:
 
     void Read(const int addr);
     void FullRead();
-    void Write(const int addr, const int data);
-    void FullWrite(const int data);
+    void Write(const int addr, const unsigned int data);
+    void FullWrite(const unsigned int data);
     void Help(void);
 
     ISSDApp* ssd_app;
     TestShellCMD cmd;
     int addr;
-    int data;
+    unsigned int data;
 
     const int kAddrLen = 3;
     const int kMinAddr = 0;

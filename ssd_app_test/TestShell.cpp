@@ -18,13 +18,13 @@ TestShell::FullRead(void)
 }
 
 void
-TestShell::Write(const int addr, const int data)
+TestShell::Write(const int addr, const unsigned int data)
 {
     ssd_app->Write(addr, data);
 }
 
 void
-TestShell::FullWrite(const int data)
+TestShell::FullWrite(const unsigned int data)
 {
     for (int addr = kMinAddr; addr <= kMaxAddr; addr++)
         ssd_app->Write(addr, data);
