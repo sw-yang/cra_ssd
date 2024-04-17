@@ -133,24 +133,16 @@ TestShell::Input(void)
 bool 
 TestShell::ConvertAddrToInt(string& str_addr)
 {
-    const int kMinAddr = 0;
-    const int kMaxAddr = 99;
-    const int kAddrLen = 3;
-
-    if (str_addr.length() > kAddrLen) return false;
-    for (char digit : str_addr)
+    if (IsInvalidAddrFormat(str_addr))
     {
-        if (!(digit >= '0' && digit <= '9'))
-        {
-            cout << "[Error] Invalid Address" << endl;
-            return false;
-        }
+        cout << "[Error] Invalid Address" << endl;
+        return false;
     }
 
     addr = stoi(str_addr);
     addr_arr.push_back(addr); //to be deleted
 
-    if (addr < kMinAddr || addr > kMaxAddr)
+    if (IsInvalidAddrRange())
     {
         cout << "[Error] Invalid Address" << endl;
         return false;
@@ -159,37 +151,84 @@ TestShell::ConvertAddrToInt(string& str_addr)
     return true;
 }
 
+bool
+TestShell::IsInvalidAddrFormat(string& str_addr)
+{
+    const int kAddrLen = 3;
+
+    if (str_addr.length() > kAddrLen) return true;
+    if (IsDecNum(str_addr) == false) return true;
+
+    return false;
+}
+
+bool
+TestShell::IsInvalidAddrRange()
+{
+    const int kMinAddr = 0;
+    const int kMaxAddr = 99;
+
+    if (addr < kMinAddr || addr > kMaxAddr)
+    {
+        return true;
+    }
+
+    return false;
+}
+
 bool 
 TestShell::ConvertDataToInt(string& str_data)
 {
-    if (str_data.length() != 10) return false;
-
-    str_data.erase(str_data.begin(), str_data.begin() + 2);
-    if (IsHexNum(str_data) == false)
+    if (IsInvalidDataFormat(str_data))
     {
         cout << "[Error] Invalid Data" << endl;
         return false;
     }
-    
+
+    //str_data.erase(str_data.begin(), str_data.begin() + 2);
     data = stoul(str_data, nullptr, 16);
 
     data_arr.push_back(data); //to be deleted
     return true;
 }
 
+bool
+TestShell::IsInvalidDataFormat(string& str_data)
+{
+    const int kDataLen = 10;
+
+    if (str_data.length() != kDataLen) return true;
+    if (IsHexNum(str_data) == false)
+        return true;
+
+    return false;
+}
+
 bool 
 TestShell::IsHexNum(string& str)
 {
-    for (char digit : str)
+    if(str.find("0x") != 0) return false;
+
+    for (int idx = 2; idx < str.length(); idx++)
     {
-        if (!(digit >= '0' && digit <= '9') &&
-            !(digit >= 'A' && digit <= 'F'))
+        if (!(str[idx] >= '0' && str[idx] <= '9') &&
+            !(str[idx] >= 'A' && str[idx] <= 'F'))
             return false;
     }
 
     return true;
 }
+bool 
+TestShell::IsDecNum(std::string& str)
+{
+    for (char digit : str)
+    {
+        if (!(digit >= '0' && digit <= '9'))
+            return false;
+    }
 
+    return true;
+}
 void 
 TestShell::set_ssd_app(ISSDApp* app)
 {

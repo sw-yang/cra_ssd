@@ -24,8 +24,15 @@ public:
 private:
     bool Input(void);
     bool ConvertAddrToInt(std::string& str_addr);
+    bool IsInvalidAddrFormat(std::string& str_addr);
+    bool IsInvalidAddrRange(void);
+
     bool ConvertDataToInt(std::string& str_addr);
+    bool IsInvalidDataFormat(std::string& str_addr);
+
     bool IsHexNum(std::string& str);
+    bool IsDecNum(std::string& str);
+
     void Read(int addr);
     void FullRead();
     void Write(int addr, int data);
