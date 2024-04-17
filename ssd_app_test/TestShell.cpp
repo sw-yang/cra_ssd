@@ -64,6 +64,7 @@ TestShell::Run(void)
                 FullWrite(data);
                 break;
             case HELP:
+                Help();
                 break;
             case EXIT:
                 isGoing = false;
