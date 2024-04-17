@@ -14,8 +14,8 @@ using namespace std;
 class MockSSDApp : public ISSDApp
 {
 public:
-	MOCK_METHOD(void, Write, (int addr, int data), (override));
-	MOCK_METHOD(void, Read, (int addr), (override));
+	MOCK_METHOD(void, Write, (uint32_t addr, uint32_t data), (override));
+	MOCK_METHOD(void, Read, (uint32_t addr), (override));
 };
 
 TEST(TestCaseName, TestName) 
@@ -404,5 +404,59 @@ TEST_F(TestShellTestFixture, DISABLED_SSDFullReadTest)
 	ISSDApp* Issd_app = test_shell.get_ssd_app();
 
 	EXPECT_EQ(Issd_app, &app);
+	test_shell.Run();
+}
+
+TEST_F(TestShellTestFixture, TestApp1TestWithMock)
+{
+	string user_input = "testapp1";
+	string exit_input = "Exit";
+	cout << user_input << endl;
+	cout << exit_input << endl;
+
+	MockSSDApp app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+	uint32_t pattern1 = 0xABCDFFFF;
+
+	for (int addr = 0; addr < 100; ++addr)
+	{
+		EXPECT_CALL(app, Write(addr, pattern1));
+	}
+	for (int addr = 0; addr < 100; ++addr)
+	{
+		EXPECT_CALL(app, Read(addr));
+	}
+
+	test_shell.Run();
+}
+
+TEST_F(TestShellTestFixture, TestApp2TestWithMock)
+{
+	string user_input = "testapp2";
+	string exit_input = "Exit";
+	cout << user_input << endl;
+	cout << exit_input << endl;
+
+	MockSSDApp app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	uint32_t pattern1 = 0xAAAABBBB;
+	uint32_t pattern2 = 0x12345678;
+	
+	for (uint32_t addr = 0; addr < 6; ++addr)
+	{
+		EXPECT_CALL(app, Write(addr, pattern1)).Times(50);
+	}
+	for (uint32_t addr = 0; addr < 6; ++addr)
+	{
+		EXPECT_CALL(app, Write(addr, pattern2));
+	}
+	for (uint32_t addr = 0; addr < 6; ++addr)
+	{
+		EXPECT_CALL(app, Read(addr));
+	}
+
 	test_shell.Run();
 }
