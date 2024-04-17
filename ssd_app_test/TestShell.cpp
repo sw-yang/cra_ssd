@@ -128,6 +128,13 @@ bool TestShell::ConvertAddrToInt(string& str_addr)
 
     addr = stoi(str_addr);
     addr_arr.push_back(addr); //to be deleted
+
+    if (addr == -1 || addr == 100)
+    {
+        cout << "[Error] Invalid Address" << endl;
+        return false;
+    }
+
     return true;
 }
 
@@ -136,7 +143,11 @@ bool TestShell::ConvertDataToInt(string& str_data)
     if (str_data.length() != 10) return false;
 
     str_data.erase(str_data.begin(), str_data.begin() + 2);
-    if (IsHexNum(str_data) == false) return false;
+    if (IsHexNum(str_data) == false)
+    {
+        cout << "[Error] Invalid Data" << endl;
+        return false;
+    }
     
     data = stoul(str_data, nullptr, 16);
 

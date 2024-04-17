@@ -194,3 +194,37 @@ TEST_F(TestShellTestFixture, InputNormalRead)
 
 	EXPECT_EQ(test_shell.addr_arr[1], 49);
 }
+
+TEST_F(TestShellTestFixture, InputInvalidWrite)
+{
+	cout << "Write -1 0x11112222" << endl;
+	cout << "Write 100 0x111AB222" << endl;
+	cout << "Write 10 0x111TB222" << endl;
+	cout << "Exit" << endl;
+
+	string test_result_path = "./test_result.txt";
+	ofstream result_out_file;
+	result_out_file.open(test_result_path, ofstream::trunc | ofstream::out);
+	cout.rdbuf(result_out_file.rdbuf());
+
+	MockSSDApp app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	string expected_invalid_addr = "[Error] Invalid Address";
+	string expected_invalid_data = "[Error] Invalid Data";
+	string result;
+	test_shell.Run();
+
+	freopen(test_result_path.c_str(), "rt", stdin);
+
+	getline(cin, result);
+	EXPECT_EQ(result, expected_invalid_addr);
+	getline(cin, result);
+	EXPECT_EQ(result, expected_invalid_addr);
+	getline(cin, result);
+	EXPECT_EQ(result, expected_invalid_data);
+
+	result_out_file.close();
+}
+
