@@ -406,3 +406,26 @@ TEST_F(TestShellTestFixture, DISABLED_SSDFullReadTest)
 	EXPECT_EQ(Issd_app, &app);
 	test_shell.Run();
 }
+
+TEST_F(TestShellTestFixture, TestApp1TestWithMock)
+{
+	string user_input = "testapp1";
+	string exit_input = "Exit";
+	cout << user_input << endl;
+	cout << exit_input << endl;
+
+	MockSSDApp app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	for (int addr = 0; addr < 100; ++addr)
+	{
+		EXPECT_CALL(app, Write(addr, 0xABCDFFFF));
+	}
+	for (int addr = 0; addr < 100; ++addr)
+	{
+		EXPECT_CALL(app, Read(addr));
+	}
+
+	test_shell.Run();
+}

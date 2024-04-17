@@ -31,6 +31,15 @@ TestShell::FullWrite(const uint32_t data)
 }
 
 void
+TestShell::TestApp1()
+{
+    FullWrite(0xABCDFFFF);
+    FullRead();
+
+    //to be added comparing data part
+}
+
+void
 TestShell::Help(void)
 {
    cout << "Available commands:" << endl;
@@ -57,6 +66,7 @@ TestShell::Run(void)
                 break;
             case FULLREAD:
                 FullRead();
+                break;
             case WRITE:
                 Write(addr, data);
                 break;
@@ -65,6 +75,9 @@ TestShell::Run(void)
                 break;
             case HELP:
                 Help();
+                break;
+            case TESTAPP1:
+                TestApp1();
                 break;
             case EXIT:
                 isGoing = false;
@@ -117,6 +130,10 @@ TestShell::Input(void)
     else if (str_cmd == "Help")
     {
         cmd = HELP;
+    }
+    else if (str_cmd == "testapp1")
+    {
+        cmd = TESTAPP1;
     }
     else if (str_cmd == "Exit")
     {
