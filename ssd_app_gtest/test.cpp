@@ -7,7 +7,7 @@ protected:
 	vector<string> args;
 };
 
-TEST_F(CMDTestFixture, ValidCommandConstructorTest) {
+TEST_F(CMDTestFixture, ValidObjectTest) {
 	args.push_back("R");
 	args.push_back("10");
 	args.push_back("0xAAAAAAAA");
@@ -18,7 +18,7 @@ TEST_F(CMDTestFixture, ValidCommandConstructorTest) {
 	EXPECT_EQ(cmd, result);
 }
 
-TEST_F(CMDTestFixture, ValidCommandFlagTest) {
+TEST_F(CMDTestFixture, ValidFlagTest) {
 	args.push_back("R");
 	args.push_back("10");
 	args.push_back("0xAAAAAAAA");
@@ -28,10 +28,50 @@ TEST_F(CMDTestFixture, ValidCommandFlagTest) {
 	EXPECT_EQ(true, cmd.getValid());
 }
 
-TEST_F(CMDTestFixture, InValidCommandFlagTest) {
+TEST_F(CMDTestFixture, InvalidCommandTypeTest) {
 	args.push_back("A");
 	args.push_back("10");
 	args.push_back("0xAAAAAAAA");
+
+	Command cmd(args);
+
+	EXPECT_EQ(false, cmd.getValid());
+}
+
+TEST_F(CMDTestFixture, AddressOutOfRangeTest) {
+	args.push_back("R");
+	args.push_back("100");
+	args.push_back("0xAAAAAAAA");
+
+	Command cmd(args);
+
+	EXPECT_EQ(false, cmd.getValid());
+}
+
+TEST_F(CMDTestFixture, AddressTypeErrorTest) {
+	args.push_back("R");
+	args.push_back("1a");
+	args.push_back("0xAAAAAAAA");
+
+	Command cmd(args);
+
+	EXPECT_EQ(false, cmd.getValid());
+}
+
+TEST_F(CMDTestFixture, DataLengthErrorTest) {
+	args.push_back("R");
+	args.push_back("10");
+	args.push_back("0xAAAAAAA");
+
+	Command cmd(args);
+
+	EXPECT_EQ(false, cmd.getValid());
+}
+
+TEST_F(CMDTestFixture, DataTypeErrorTest) {
+	args.push_back("R");
+	args.push_back("10");
+	args.push_back("0xAAAAAAAH");
 
 	Command cmd(args);
 
