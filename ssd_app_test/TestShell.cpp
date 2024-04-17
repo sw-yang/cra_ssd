@@ -5,7 +5,7 @@
 using namespace std;
 
 void
-TestShell::Read(const int addr)
+TestShell::Read(const uint32_t addr)
 {
     ssd_app->Read(addr);
 }
@@ -18,13 +18,13 @@ TestShell::FullRead(void)
 }
 
 void
-TestShell::Write(const int addr, const int data)
+TestShell::Write(const uint32_t addr, const uint32_t data)
 {
     ssd_app->Write(addr, data);
 }
 
 void
-TestShell::FullWrite(const int data)
+TestShell::FullWrite(const uint32_t data)
 {
     for (int addr = kMinAddr; addr <= kMaxAddr; addr++)
         ssd_app->Write(addr, data);
