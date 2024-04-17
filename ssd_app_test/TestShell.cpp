@@ -5,27 +5,31 @@
 using namespace std;
 
 void
-TestShell::Read(int addr)
+TestShell::Read(const int addr)
 {
     ssd_app->Read(addr);
 }
+
 void
-TestShell::FullRead()
+TestShell::FullRead(void)
 {
-    for (int addr = 0; addr < 100; addr++)
+    for (int addr = kMinAddr; addr <= kMaxAddr; addr++)
         ssd_app->Read(addr);
 }
+
 void
-TestShell::Write(int addr, int data)
+TestShell::Write(const int addr, const int data)
 {
     ssd_app->Write(addr, data);
 }
+
 void
-TestShell::FullWrite(int data)
+TestShell::FullWrite(const int data)
 {
-    for (int addr = 0; addr < 100; addr++)
+    for (int addr = kMinAddr; addr <= kMaxAddr; addr++)
         ssd_app->Write(addr, data);
 }
+
 void
 TestShell::Help(void)
 {
@@ -60,11 +64,13 @@ TestShell::Run(void)
                 FullWrite(data);
                 break;
             case HELP:
+                Help();
                 break;
             case EXIT:
                 isGoing = false;
                 break;
             default:
+                //must not get here
                 break;
         }
     }
@@ -73,11 +79,11 @@ TestShell::Run(void)
 bool 
 TestShell::Input(void) 
 {
+    const string invalid_cmd_str = "[Error] Invalid CMD";
     string user_input;
     string str_cmd, str_addr, str_data;
-    int buf_index = 0;
-    getline(cin, user_input);
 
+    getline(cin, user_input);
     stringstream ss(user_input);
     ss >> str_cmd;
 
@@ -86,11 +92,9 @@ TestShell::Input(void)
         cmd = WRITE;
         ss >> str_addr >> str_data;
 
-        if (ConvertAddrToInt(str_addr) == false)
-            return false;
+        if (ConvertAddrToInt(str_addr) == false) return false;
         
-        if (ConvertDataToInt(str_data) == false)
-            return false;
+        if (ConvertDataToInt(str_data) == false) return false;
     }
     else if (str_cmd == "FullWrite")
     {
@@ -104,8 +108,7 @@ TestShell::Input(void)
         cmd = READ;
         ss >> str_addr;
 
-        if (ConvertAddrToInt(str_addr) == false)
-            return false;
+        if (ConvertAddrToInt(str_addr) == false) return false;
     }
     else if (str_cmd == "FullRead")
     {
@@ -119,23 +122,29 @@ TestShell::Input(void)
     {
         cmd = EXIT;
     }
+    else
+    {
+        cout << invalid_cmd_str << endl;
+        Help();
+        return false;
+    }
 
     return true;
 }
 
 bool 
-TestShell::ConvertAddrToInt(string& str_addr)
+TestShell::ConvertAddrToInt(const string& str_addr)
 {
-    const int kMinAddr = 0;
-    const int kMaxAddr = 99;
-    const int kAddrLen = 3;
-
-    if (str_addr.length() > kAddrLen) return false;
+    if (IsInvalidAddrFormat(str_addr))
+    {
+        cout << "[Error] Invalid Address" << endl;
+        return false;
+    }
 
     addr = stoi(str_addr);
     addr_arr.push_back(addr); //to be deleted
 
-    if (addr < kMinAddr || addr > kMaxAddr)
+    if (IsInvalidAddrRange())
     {
         cout << "[Error] Invalid Address" << endl;
         return false;
@@ -144,33 +153,67 @@ TestShell::ConvertAddrToInt(string& str_addr)
     return true;
 }
 
-bool 
-TestShell::ConvertDataToInt(string& str_data)
+bool
+TestShell::IsInvalidAddrFormat(const string& str_addr)
 {
-    if (str_data.length() != 10) return false;
+    if (str_addr.length() > kAddrLen) return true;
+    if (IsDecNum(str_addr) == false) return true;
 
-    str_data.erase(str_data.begin(), str_data.begin() + 2);
-    if (IsHexNum(str_data) == false)
+    return false;
+}
+
+bool
+TestShell::IsInvalidAddrRange(void)
+{
+    if (addr < kMinAddr || addr > kMaxAddr) return true;
+
+    return false;
+}
+
+bool 
+TestShell::ConvertDataToInt(const string& str_data)
+{
+    if (IsInvalidDataFormat(str_data))
     {
         cout << "[Error] Invalid Data" << endl;
         return false;
     }
-    
+
     data = stoul(str_data, nullptr, 16);
 
     data_arr.push_back(data); //to be deleted
     return true;
 }
 
-bool 
-TestShell::IsHexNum(string& str)
+bool
+TestShell::IsInvalidDataFormat(const string& str_data)
 {
-    for (char digit : str)
+    if (str_data.length() != kDataLen) return true;
+    if (IsHexNum(str_data) == false) return true;
+
+    return false;
+}
+
+bool 
+TestShell::IsHexNum(const string& str)
+{
+    if(str.find("0x") != 0) return false;
+
+    for (int idx = 2; idx < str.length(); idx++)
     {
-        if (!(digit >= '0' && digit <= '9') &&
-            !(digit >= 'A' && digit <= 'F'))
+        if (!(str[idx] >= '0' && str[idx] <= '9') &&
+            !(str[idx] >= 'A' && str[idx] <= 'F'))
             return false;
     }
+
+    return true;
+}
+
+bool 
+TestShell::IsDecNum(const std::string& str)
+{
+    for (char digit : str)
+        if (!(digit >= '0' && digit <= '9')) return false;
 
     return true;
 }

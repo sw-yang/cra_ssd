@@ -23,16 +23,29 @@ public:
     std::vector<int> data_arr;//to be deleted
 private:
     bool Input(void);
-    bool ConvertAddrToInt(std::string& str_addr);
-    bool ConvertDataToInt(std::string& str_addr);
-    bool IsHexNum(std::string& str);
-    void Read(int addr);
+    bool ConvertAddrToInt(const std::string& str_addr);
+    bool IsInvalidAddrFormat(const std::string& str_addr);
+    bool IsInvalidAddrRange(void);
+
+    bool ConvertDataToInt(const std::string& str_addr);
+    bool IsInvalidDataFormat(const std::string& str_addr);
+
+    bool IsHexNum(const std::string& str);
+    bool IsDecNum(const std::string& str);
+
+    void Read(const int addr);
     void FullRead();
-    void Write(int addr, int data);
-    void FullWrite(int data);
+    void Write(const int addr, const int data);
+    void FullWrite(const int data);
     void Help(void);
+
     ISSDApp* ssd_app;
     TestShellCMD cmd;
     int addr;
     int data;
+
+    const int kAddrLen = 3;
+    const int kMinAddr = 0;
+    const int kMaxAddr = 99;
+    const int kDataLen = 10;
 };
