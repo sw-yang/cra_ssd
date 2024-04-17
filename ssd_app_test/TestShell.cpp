@@ -138,6 +138,14 @@ TestShell::ConvertAddrToInt(string& str_addr)
     const int kAddrLen = 3;
 
     if (str_addr.length() > kAddrLen) return false;
+    for (char digit : str_addr)
+    {
+        if (!(digit >= '0' && digit <= '9'))
+        {
+            cout << "[Error] Invalid Address" << endl;
+            return false;
+        }
+    }
 
     addr = stoi(str_addr);
     addr_arr.push_back(addr); //to be deleted

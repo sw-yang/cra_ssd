@@ -200,6 +200,8 @@ TEST_F(TestShellTestFixture, InputInvalidWrite)
 	cout << "Write -1 0x11112222" << endl;
 	cout << "Write 100 0x111AB222" << endl;
 	cout << "Write 10 0x111TB222" << endl;
+	cout << "Write a 0x1111B222" << endl;
+	cout << "Write $s 0x111!B222" << endl;
 	cout << "Exit" << endl;
 
 	string test_result_path = "./test_result.txt";
@@ -224,6 +226,10 @@ TEST_F(TestShellTestFixture, InputInvalidWrite)
 	EXPECT_EQ(result, expected_invalid_addr);
 	getline(cin, result);
 	EXPECT_EQ(result, expected_invalid_data);
+	getline(cin, result);
+	EXPECT_EQ(result, expected_invalid_addr);
+	getline(cin, result);
+	EXPECT_EQ(result, expected_invalid_addr);
 
 	result_out_file.close();
 }
