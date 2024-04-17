@@ -4,7 +4,7 @@
 #include "../ssd_app/CMD.cpp"
 #include "../ssd_app/FileManager.cpp"
 
-class CMDTestFixture : public testing::Test 
+class CMDTestFixture : public testing::Test
 {
 protected:
 	vector<string> args;
@@ -251,6 +251,7 @@ TEST_F(SSDTest, OverWrite)
 
 TEST_F(SSDTest, ReadWriteTest)
 {
+
 	ssd->Write(10, 0x11);
 	ssd->Read(10);
 	EXPECT_EQ("0x00000011", ReadResultFile());
@@ -265,6 +266,49 @@ TEST_F(SSDTest, ReadWriteTest)
 	ssd->Write(20, 0x777);
 	ssd->Read(20);
 	EXPECT_EQ("0x00000777", ReadResultFile());
+}
+
+TEST_F(SSDTest, ReadWriteTestWithCommand)
+{
+	ClearTestFiles();
+
+	Command cmd("W 10 0x00000011");
+	ssd->Run(cmd);
+
+	cmd.setCommand("R 10");
+	ssd->Run(cmd);
+	EXPECT_EQ("0x00000011", ReadResultFile());
+
+	cmd.setCommand("R 20");
+	ssd->Run(cmd);
+	EXPECT_EQ("0x00000000", ReadResultFile());
+
+	cmd.setCommand("W 20 0x00000777");
+	ssd->Run(cmd);
+
+	cmd.setCommand("R 20");
+	ssd->Run(cmd);
+	EXPECT_EQ("0x00000777", ReadResultFile());
+}
+
+TEST_F(SSDTest, ReadWriteTestWithInvalidCommand)
+{
+	ClearTestFiles();
+
+	Command cmd("F 10 0x00000011");
+	EXPECT_THROW(ssd->Run(cmd), std::invalid_argument);
+
+	cmd.setCommand("W 1F 0x00000011");
+	EXPECT_THROW(ssd->Run(cmd), std::invalid_argument);
+
+	cmd.setCommand("W -1 0x00000011");
+	EXPECT_THROW(ssd->Run(cmd), std::invalid_argument);
+
+	cmd.setCommand("W 10 0x0000001Z");
+	EXPECT_THROW(ssd->Run(cmd), std::invalid_argument);
+
+	cmd.setCommand("W 10 0x000001F");
+	EXPECT_THROW(ssd->Run(cmd), std::invalid_argument);
 }
 
 class FileManagerTest : public testing::Test

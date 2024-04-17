@@ -33,6 +33,10 @@ public:
 		return cmd == other.cmd && address == other.address && value == other.value;
 	}
 	void initialize();
+	void setCommand(const string str) {
+		args = split(str);
+		initialize();
+	}
 	string getCommand() 
 	{
 		return cmd;
