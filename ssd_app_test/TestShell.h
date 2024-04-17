@@ -33,19 +33,19 @@ private:
     bool IsHexNum(const std::string& str);
     bool IsDecNum(const std::string& str);
 
-    void Read(const int addr);
+    void Read(const uint32_t addr);
     void FullRead();
-    void Write(const int addr, const unsigned int data);
-    void FullWrite(const unsigned int data);
+    void Write(const uint32_t addr, const uint32_t data);
+    void FullWrite(const uint32_t data);
     void Help(void);
 
     ISSDApp* ssd_app;
     TestShellCMD cmd;
-    int addr;
-    unsigned int data;
+    uint32_t addr;
+    uint32_t data;
 
-    const int kAddrLen = 3;
-    const int kMinAddr = 0;
-    const int kMaxAddr = 99;
-    const int kDataLen = 10;
+    const uint32_t kAddrLen = 3;
+    const uint32_t kMinAddr = 0;
+    const uint32_t kMaxAddr = 99;
+    const uint32_t kDataLen = 10;
 };
