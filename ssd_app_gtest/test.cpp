@@ -4,9 +4,15 @@
 
 TEST(TestCaseName, DummyParsingTest) {
 	SSD ssd;
-	Command result = ssd.Parse("R 10 0x0000000F");
-	Command dummy('R', 10, 0xF);
-	EXPECT_EQ(dummy, result);
+	vector<string> args;
+	args.push_back("R");
+	args.push_back("10");
+	args.push_back("0xAAAAAAAA");
+
+	Command cmd(args);
+	Command result('R', 10, 0xAAAAAAAA);
+	
+	EXPECT_EQ(cmd, result);
 }
 
 TEST(TestCaseName, InvalidNumOfArgsTest) {

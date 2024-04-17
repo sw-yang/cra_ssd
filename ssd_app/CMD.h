@@ -14,9 +14,20 @@ private:
 	char cmd;
 	uint32_t address;
 	uint32_t value;
-	string rawCmd;
+	const vector<string> args;
+	bool isValid;
 public:
-	Command(char cmd, uint32_t address, uint32_t value) :
+	Command(vector<string> args) : args(args)
+	{
+		isValid = !isInvalidCommand(args);
+		if (isValid)
+		{
+			cmd = args[0][0];
+			address = (unsigned int)stoi(args[1]);
+			value = hexStringToInt(args[2]);
+		}
+	}
+	Command(char cmd, uint32_t address, uint32_t value) : 
 		cmd(cmd), address(address), value(value)
 	{
 
