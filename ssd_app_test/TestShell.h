@@ -11,6 +11,7 @@ enum TestShellCMD
     FULLWRITE,
     HELP,
     TESTAPP1,
+    TESTAPP2,
     EXIT,
 };
 
@@ -40,6 +41,7 @@ private:
     void FullWrite(const uint32_t data);
     void Help(void);
     void TestApp1(void);
+    void TestApp2(void);
 
     ISSDApp* ssd_app;
     TestShellCMD cmd;

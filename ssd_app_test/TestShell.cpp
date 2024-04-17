@@ -40,6 +40,28 @@ TestShell::TestApp1()
 }
 
 void
+TestShell::TestApp2()
+{
+    for (uint32_t loop = 0; loop < 50; ++loop)
+    {
+        for (uint32_t addr = 0; addr < 6; ++addr)
+        {
+            Write(addr, 0xAAAABBBB);
+        }
+    }
+    for (uint32_t addr = 0; addr < 6; ++addr)
+    {
+        Write(addr, 0x12345678);
+    }
+    for (uint32_t addr = 0; addr < 6; ++addr)
+    {
+        Read(addr);
+    }
+
+    //to be added comparing data part
+}
+
+void
 TestShell::Help(void)
 {
    cout << "Available commands:" << endl;
@@ -78,6 +100,9 @@ TestShell::Run(void)
                 break;
             case TESTAPP1:
                 TestApp1();
+                break;
+            case TESTAPP2:
+                TestApp2();
                 break;
             case EXIT:
                 isGoing = false;
@@ -134,6 +159,10 @@ TestShell::Input(void)
     else if (str_cmd == "testapp1")
     {
         cmd = TESTAPP1;
+    }
+    else if (str_cmd == "testapp2")
+    {
+        cmd = TESTAPP2;
     }
     else if (str_cmd == "Exit")
     {
