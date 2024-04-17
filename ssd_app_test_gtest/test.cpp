@@ -3,6 +3,7 @@
 #include "gmock/gmock.h"
 
 #include "../ssd_app_test/TestShell.cpp"
+#include "../ssd_app_test/SSD_Adaptor.cpp"
 
 #include <iostream>
 #include <fstream>
@@ -228,3 +229,71 @@ TEST_F(TestShellTestFixture, InputInvalidWrite)
 	result_out_file.close();
 }
 
+
+TEST_F(TestShellTestFixture, DISABLED_SSDWriteTest)
+{
+	string user_input = "Write 1 0x12345678";
+	string exit_input = "Exit";
+	cout << user_input << endl;
+	cout << exit_input << endl;
+
+	SSD_Adaptor app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	ISSDApp* Issd_app = test_shell.get_ssd_app();
+
+	EXPECT_EQ(Issd_app, &app);
+	test_shell.Run();
+}
+
+TEST_F(TestShellTestFixture, DISABLED_SSDFullWriteTest)
+{
+	string user_input = "FullWrite 0x12345678";
+	string exit_input = "Exit";
+	cout << user_input << endl;
+	cout << exit_input << endl;
+
+	SSD_Adaptor app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	ISSDApp* Issd_app = test_shell.get_ssd_app();
+
+	EXPECT_EQ(Issd_app, &app);
+	test_shell.Run();
+}
+
+TEST_F(TestShellTestFixture, DISABLED_SSDReadTest)
+{
+	string user_input = "Read 1";
+	string exit_input = "Exit";
+	cout << user_input << endl;
+	cout << exit_input << endl;
+
+	SSD_Adaptor app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	ISSDApp* Issd_app = test_shell.get_ssd_app();
+
+	EXPECT_EQ(Issd_app, &app);
+	test_shell.Run();
+}
+
+TEST_F(TestShellTestFixture, DISABLED_SSDFullReadTest)
+{
+	string user_input = "FullRead";
+	string exit_input = "Exit";
+	cout << user_input << endl;
+	cout << exit_input << endl;
+
+	SSD_Adaptor app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	ISSDApp* Issd_app = test_shell.get_ssd_app();
+
+	EXPECT_EQ(Issd_app, &app);
+	test_shell.Run();
+}
