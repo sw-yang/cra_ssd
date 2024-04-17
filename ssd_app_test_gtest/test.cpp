@@ -426,6 +426,39 @@ TEST_F(TestShellTestFixture, TestApp1TestWithSSD)
 	EXPECT_EQ(result, expected_data);
 }
 
+TEST_F(TestShellTestFixture, TestApp2TestWithSSD)
+{
+	string user_input = "testapp2";
+	string exit_input = "Exit";
+	cout << user_input << endl;
+	cout << exit_input << endl;
+
+	string test_result_path = "./test_result.txt";
+	ofstream result_out_file;
+	result_out_file.open(test_result_path, ofstream::trunc | ofstream::out);
+	cout.rdbuf(result_out_file.rdbuf());
+
+	SSD_Adaptor app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	test_shell.Run();
+
+	freopen(test_result_path.c_str(), "rt", stdin);
+
+	string expected_data = "0x12345678";
+	string result;
+	for (int addr = 0; addr < 6; ++addr)
+	{
+		getline(cin, result);
+		EXPECT_EQ(result, expected_data);
+	}
+
+	expected_data = "testapp2 pass";
+	getline(cin, result);
+	EXPECT_EQ(result, expected_data);
+}
+
 TEST_F(TestShellTestFixture, SSDWriteTest)
 {
 	cout << "Write 1 0x11112222" << endl;

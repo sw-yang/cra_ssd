@@ -76,6 +76,7 @@ TestShell::TestApp2()
     ReadRange(0, 5);
 
     //to be added comparing data part
+    cout << "testapp2 pass" << endl;
 }
 
 void TestShell::WriteRange(const uint32_t start_addr, const uint32_t end_addr, const uint32_t data)
