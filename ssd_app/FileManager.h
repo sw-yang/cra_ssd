@@ -14,5 +14,7 @@ public:
 
 private:
 	void CreateEmptyFile();
+	std::fstream OpenFile(bool is_binary = false);
+	size_t GetFileSize(std::fstream& file);
 	std::string file_name_;
 };
