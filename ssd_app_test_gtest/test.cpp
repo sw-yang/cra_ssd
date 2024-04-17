@@ -201,6 +201,8 @@ TEST_F(TestShellTestFixture, InputInvalidWrite)
 	cout << "Write -1 0x11112222" << endl;
 	cout << "Write 100 0x111AB222" << endl;
 	cout << "Write 10 0x111TB222" << endl;
+	cout << "Write a 0x1111B222" << endl;
+	cout << "Write $s 0x111!B222" << endl;
 	cout << "Exit" << endl;
 
 	string test_result_path = "./test_result.txt";
@@ -225,10 +227,91 @@ TEST_F(TestShellTestFixture, InputInvalidWrite)
 	EXPECT_EQ(result, expected_invalid_addr);
 	getline(cin, result);
 	EXPECT_EQ(result, expected_invalid_data);
+	getline(cin, result);
+	EXPECT_EQ(result, expected_invalid_addr);
+	getline(cin, result);
+	EXPECT_EQ(result, expected_invalid_addr);
 
 	result_out_file.close();
 }
 
+TEST_F(TestShellTestFixture, InputInvalidRead)
+{
+	cout << "Read -1" << endl;
+	cout << "Read 100" << endl;
+	cout << "Read aaa" << endl;
+	cout << "Read $das " << endl;
+	cout << "Read $s " << endl;
+	cout << "Exit" << endl;
+
+	string test_result_path = "./test_result.txt";
+	ofstream result_out_file;
+	result_out_file.open(test_result_path, ofstream::trunc | ofstream::out);
+	cout.rdbuf(result_out_file.rdbuf());
+
+	MockSSDApp app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	string expected_invalid_addr = "[Error] Invalid Address";
+	string result;
+	test_shell.Run();
+
+	freopen(test_result_path.c_str(), "rt", stdin);
+
+	getline(cin, result);
+	EXPECT_EQ(result, expected_invalid_addr);
+	getline(cin, result);
+	EXPECT_EQ(result, expected_invalid_addr);
+	getline(cin, result);
+	EXPECT_EQ(result, expected_invalid_addr);
+	getline(cin, result);
+	EXPECT_EQ(result, expected_invalid_addr);
+	getline(cin, result);
+	EXPECT_EQ(result, expected_invalid_addr);
+
+	result_out_file.close();
+}
+
+TEST_F(TestShellTestFixture, InputInvalidCMD)
+{
+	cout << "Writa -1 0x11112222" << endl;
+	cout << "Exit" << endl;
+
+	string test_result_path = "./test_result.txt";
+	ofstream result_out_file;
+	result_out_file.open(test_result_path, ofstream::trunc | ofstream::out);
+	cout.rdbuf(result_out_file.rdbuf());
+
+	MockSSDApp app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	string expected_invalid_cmd = "[Error] Invalid CMD";
+	string result;
+	test_shell.Run();
+
+	freopen(test_result_path.c_str(), "rt", stdin);
+
+	getline(cin, result);
+	EXPECT_EQ(result, expected_invalid_cmd);
+	getline(cin, result);
+	EXPECT_EQ(result, string{ "Available commands:" });
+	getline(cin, result);
+	EXPECT_EQ(result, string{ "Write <addr> <data>: Write data to address" });
+	getline(cin, result);
+	EXPECT_EQ(result, string{ "Read <addr>: Read data from address" });
+	getline(cin, result);
+	EXPECT_EQ(result, string{ "FullWrite <data>: Write data to full address" });
+	getline(cin, result);
+	EXPECT_EQ(result, string{ "FullRead : Read data from full address" });
+	getline(cin, result);
+	EXPECT_EQ(result, string{ "Help: Show available commands" });
+	getline(cin, result);
+	EXPECT_EQ(result, string{ "Exit: Exit the program" });
+	
+	result_out_file.close();
+}
 
 TEST_F(TestShellTestFixture, DISABLED_SSDWriteTest)
 {
