@@ -158,3 +158,73 @@ TEST_F(TestShellTestFixture, ExitTest)
 
 	test_shell.Run();
 }
+
+TEST_F(TestShellTestFixture, InputNormalWrite)
+{
+	cout << "Write 0 0x11112222" << endl;
+	cout << "Write 99 0x111AB222" << endl;
+	cout << "Exit" << endl;
+
+	MockSSDApp app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	test_shell.Run();
+
+	EXPECT_EQ(test_shell.addr_arr[0], 0);
+	EXPECT_EQ(test_shell.data_arr[0], 0x11112222);
+
+	EXPECT_EQ(test_shell.addr_arr[1], 99);
+	EXPECT_EQ(test_shell.data_arr[1], 0x111AB222);
+}
+
+TEST_F(TestShellTestFixture, InputNormalRead)
+{
+	cout << "Read 4" << endl;
+	cout << "Read 49" << endl;
+	cout << "Exit" << endl;
+
+	MockSSDApp app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	test_shell.Run();
+
+	EXPECT_EQ(test_shell.addr_arr[0], 4);
+
+	EXPECT_EQ(test_shell.addr_arr[1], 49);
+}
+
+TEST_F(TestShellTestFixture, InputInvalidWrite)
+{
+	cout << "Write -1 0x11112222" << endl;
+	cout << "Write 100 0x111AB222" << endl;
+	cout << "Write 10 0x111TB222" << endl;
+	cout << "Exit" << endl;
+
+	string test_result_path = "./test_result.txt";
+	ofstream result_out_file;
+	result_out_file.open(test_result_path, ofstream::trunc | ofstream::out);
+	cout.rdbuf(result_out_file.rdbuf());
+
+	MockSSDApp app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	string expected_invalid_addr = "[Error] Invalid Address";
+	string expected_invalid_data = "[Error] Invalid Data";
+	string result;
+	test_shell.Run();
+
+	freopen(test_result_path.c_str(), "rt", stdin);
+
+	getline(cin, result);
+	EXPECT_EQ(result, expected_invalid_addr);
+	getline(cin, result);
+	EXPECT_EQ(result, expected_invalid_addr);
+	getline(cin, result);
+	EXPECT_EQ(result, expected_invalid_data);
+
+	result_out_file.close();
+}
+

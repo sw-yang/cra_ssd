@@ -38,13 +38,13 @@ TestShell::Help(void)
    cout << "Exit: Exit the program" << endl;
 }
 
-void TestShell::Run(void)
+void 
+TestShell::Run(void)
 {
     bool isGoing = true;
     while (isGoing)
     {
-        Input();
-        if (!CheckValidity()) continue;
+        if (!Input()) continue;
 
         switch (cmd)
         {
@@ -67,11 +67,11 @@ void TestShell::Run(void)
             default:
                 break;
         }
-        
     }
 }
 
-void TestShell::Input(void) 
+bool 
+TestShell::Input(void) 
 {
     string user_input;
     string str_cmd, str_addr, str_data;
@@ -85,10 +85,12 @@ void TestShell::Input(void)
     {
         cmd = WRITE;
         ss >> str_addr >> str_data;
+
+        if (ConvertAddrToInt(str_addr) == false)
+            return false;
         
-        addr = stoi(str_addr);
-        str_data.erase(str_data.begin(), str_data.begin() + 2);
-        data = stoi(str_data);
+        if (ConvertDataToInt(str_data) == false)
+            return false;
     }
     else if (str_cmd == "FullWrite")
     {
@@ -102,7 +104,8 @@ void TestShell::Input(void)
         cmd = READ;
         ss >> str_addr;
 
-        addr = stoi(str_addr);
+        if (ConvertAddrToInt(str_addr) == false)
+            return false;
     }
     else if (str_cmd == "FullRead")
     {
@@ -116,19 +119,64 @@ void TestShell::Input(void)
     {
         cmd = EXIT;
     }
-}
 
-bool TestShell::CheckValidity(void)
-{
     return true;
 }
 
-void TestShell::set_ssd_app(ISSDApp* app)
+bool 
+TestShell::ConvertAddrToInt(string& str_addr)
 {
-    ssd_app = app;
+    const int kMinAddr = 0;
+    const int kMaxAddr = 99;
+    const int kAddrLen = 3;
+
+    if (str_addr.length() > kAddrLen) return false;
+
+    addr = stoi(str_addr);
+    addr_arr.push_back(addr); //to be deleted
+
+    if (addr < kMinAddr || addr > kMaxAddr)
+    {
+        cout << "[Error] Invalid Address" << endl;
+        return false;
+    }
+
+    return true;
 }
 
-ISSDApp* TestShell::get_ssd_app(void)
+bool 
+TestShell::ConvertDataToInt(string& str_data)
 {
-    return ssd_app;
+    if (str_data.length() != 10) return false;
+
+    str_data.erase(str_data.begin(), str_data.begin() + 2);
+    if (IsHexNum(str_data) == false)
+    {
+        cout << "[Error] Invalid Data" << endl;
+        return false;
+    }
+    
+    data = stoul(str_data, nullptr, 16);
+
+    data_arr.push_back(data); //to be deleted
+    return true;
+}
+
+bool 
+TestShell::IsHexNum(string& str)
+{
+    for (char digit : str)
+    {
+        if (!(digit >= '0' && digit <= '9') &&
+            !(digit >= 'A' && digit <= 'F'))
+            return false;
+    }
+
+    return true;
+}
+
+void 
+TestShell::set_ssd_app(ISSDApp* app)
+{
+    ssd_app = app;
 }
