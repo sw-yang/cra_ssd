@@ -5,52 +5,73 @@
 using namespace std;
 
 void
-TestShell::Read(int addr) {
+TestShell::Read(int addr)
+{
     ssd_app->Read(addr);
 }
 void
-TestShell::Write(int addr, int data) {
+TestShell::FullRead()
+{
+    for (int addr = 0; addr < 100; addr++)
+        ssd_app->Read(addr);
+}
+void
+TestShell::Write(int addr, int data)
+{
     ssd_app->Write(addr, data);
 }
-
 void
-TestShell::Help(void) {
-    std::cout << "Available commands:" << std::endl;
-    std::cout << "Write <addr> <data>: Write data to address" << std::endl;
-    std::cout << "Read <addr>: Read data from address" << std::endl;
-    std::cout << "FullWrite <data>: Write data to full address" << std::endl;
-    std::cout << "FullRead : Read data from full address" << std::endl;
-    std::cout << "Help: Show available commands" << std::endl;
-    std::cout << "Exit: Exit the program" << std::endl;
+TestShell::FullWrite(int data)
+{
+    for (int addr = 0; addr < 100; addr++)
+        ssd_app->Write(addr, data);
+}
+void
+TestShell::Help(void)
+{
+   cout << "Available commands:" << endl;
+   cout << "Write <addr> <data>: Write data to address" << endl;
+   cout << "Read <addr>: Read data from address" << endl;
+   cout << "FullWrite <data>: Write data to full address" << endl;
+   cout << "FullRead : Read data from full address" << endl;
+   cout << "Help: Show available commands" << endl;
+   cout << "Exit: Exit the program" << endl;
 }
 
-void TestShell::Run(void)
+void 
+TestShell::Run(void)
 {
     bool isGoing = true;
     while (isGoing)
     {
-        Input();
-        if (!CheckValidity()) continue;
+        if (!Input()) continue;
 
         switch (cmd)
         {
-        case READ :
-            break;
-        case WRITE:
-            break;
-        case HELP:
-            break;
-        case EXIT:
-            isGoing = false;
-            break;
-        default:
-            break;
+            case READ :
+                Read(addr);
+                break;
+            case FULLREAD:
+                FullRead();
+            case WRITE:
+                Write(addr, data);
+                break;
+            case FULLWRITE:
+                FullWrite(data);
+                break;
+            case HELP:
+                break;
+            case EXIT:
+                isGoing = false;
+                break;
+            default:
+                break;
         }
-        
     }
 }
 
-void TestShell::Input(void) 
+bool 
+TestShell::Input(void) 
 {
     string user_input;
     string str_cmd, str_addr, str_data;
@@ -64,9 +85,18 @@ void TestShell::Input(void)
     {
         cmd = WRITE;
         ss >> str_addr >> str_data;
+
+        if (ConvertAddrToInt(str_addr) == false)
+            return false;
         
-        addr = stoi(str_addr);
-        str_data.erase(str_data.begin(), str_data.begin() + 2);
+        if (ConvertDataToInt(str_data) == false)
+            return false;
+    }
+    else if (str_cmd == "FullWrite")
+    {
+        cmd = FULLWRITE;
+        ss >> str_data;
+
         data = stoi(str_data);
     }
     else if (str_cmd == "Read")
@@ -74,7 +104,12 @@ void TestShell::Input(void)
         cmd = READ;
         ss >> str_addr;
 
-        addr = stoi(str_addr);
+        if (ConvertAddrToInt(str_addr) == false)
+            return false;
+    }
+    else if (str_cmd == "FullRead")
+    {
+        cmd = FULLREAD;
     }
     else if (str_cmd == "Help")
     {
@@ -84,19 +119,64 @@ void TestShell::Input(void)
     {
         cmd = EXIT;
     }
-}
 
-bool TestShell::CheckValidity(void)
-{
     return true;
 }
 
-void TestShell::set_ssd_app(ISSDApp* app)
+bool 
+TestShell::ConvertAddrToInt(string& str_addr)
 {
-    ssd_app = app;
+    const int kMinAddr = 0;
+    const int kMaxAddr = 99;
+    const int kAddrLen = 3;
+
+    if (str_addr.length() > kAddrLen) return false;
+
+    addr = stoi(str_addr);
+    addr_arr.push_back(addr); //to be deleted
+
+    if (addr < kMinAddr || addr > kMaxAddr)
+    {
+        cout << "[Error] Invalid Address" << endl;
+        return false;
+    }
+
+    return true;
 }
 
-ISSDApp* TestShell::get_ssd_app(void)
+bool 
+TestShell::ConvertDataToInt(string& str_data)
 {
-    return ssd_app;
+    if (str_data.length() != 10) return false;
+
+    str_data.erase(str_data.begin(), str_data.begin() + 2);
+    if (IsHexNum(str_data) == false)
+    {
+        cout << "[Error] Invalid Data" << endl;
+        return false;
+    }
+    
+    data = stoul(str_data, nullptr, 16);
+
+    data_arr.push_back(data); //to be deleted
+    return true;
+}
+
+bool 
+TestShell::IsHexNum(string& str)
+{
+    for (char digit : str)
+    {
+        if (!(digit >= '0' && digit <= '9') &&
+            !(digit >= 'A' && digit <= 'F'))
+            return false;
+    }
+
+    return true;
+}
+
+void 
+TestShell::set_ssd_app(ISSDApp* app)
+{
+    ssd_app = app;
 }

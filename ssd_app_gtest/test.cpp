@@ -72,12 +72,21 @@ public:
 		return ret;
 	}
 
+	void ReadNandFile(uint32_t* data, size_t size)
+	{
+		std::ifstream in(test_nand, std::ios::binary);
+		in.read(reinterpret_cast<char*>(data), size);
+	}
+
 	SSD* ssd;
 	const std::string test_nand = "test_nand.txt";
 	const std::string test_result = "test_result.txt";
+
+	uint32_t NAND[100] = { 0, };
+	uint32_t ADDRESS = 57;
 };
 
-TEST_F(SSDTest, ThrowExceptionWhenInvalidAddress)
+TEST_F(SSDTest, ThrowExceptionWhenInvalidAddressWhileRead)
 {
 	try
 	{
@@ -101,9 +110,8 @@ TEST_F(SSDTest, ReadDefaultValue)
 
 TEST_F(SSDTest, ReadWrittenValueFrom0)
 {
-	uint32_t data[100] = { 0, };
-	data[0] = 0x48a7;
-	WriteTestFiles(data, sizeof(data));
+	NAND[0] = 0x48a7;
+	WriteTestFiles(NAND, sizeof(NAND));
 
 	ssd->Read(0);
 
@@ -112,12 +120,78 @@ TEST_F(SSDTest, ReadWrittenValueFrom0)
 
 TEST_F(SSDTest, ReadWrittenValueFromOtherAddress)
 {
-	uint32_t address = 57;
-	uint32_t data[100] = { 0, };
-	data[address] = 0xff25abcd;
-	WriteTestFiles(data, sizeof(data));
+	NAND[ADDRESS] = 0xff25abcd;
+	WriteTestFiles(NAND, sizeof(NAND));
 
-	ssd->Read(address);
+	ssd->Read(ADDRESS);
 
 	EXPECT_EQ("0xff25abcd", ReadResultFile());
 }
+
+TEST_F(SSDTest, ResetNandDataWhenFileIsInvalid)
+{
+	uint32_t INVALID_NAND[50] = { 0, };	// invalid size
+	INVALID_NAND[0] = 0x48a7;
+	WriteTestFiles(INVALID_NAND, sizeof(INVALID_NAND));
+
+	ssd->Read(0);
+
+	EXPECT_EQ("0x00000000", ReadResultFile());
+}
+
+TEST_F(SSDTest, ThrowExceptionWhenInvalidAddressWhileWrite)
+{
+	try
+	{
+		ssd->Write(100, 0);
+		FAIL();
+	}
+	catch (std::exception& e)
+	{
+		EXPECT_EQ(std::string{ "Invalid address" }, std::string{ e.what() });
+	}
+}
+
+TEST_F(SSDTest, WriteFirstTime)
+{
+	ClearTestFiles();
+
+	uint32_t data = 0xabcd;
+	ssd->Write(ADDRESS, data);
+
+	ReadNandFile(NAND, sizeof(NAND));
+
+	EXPECT_EQ(NAND[ADDRESS], data);
+}
+
+TEST_F(SSDTest, OverWrite)
+{
+	NAND[ADDRESS] = 0xff25abcd;
+	WriteTestFiles(NAND, sizeof(NAND));
+
+	uint32_t new_data = 0x777;
+	ssd->Write(ADDRESS, new_data);
+
+	ReadNandFile(NAND, sizeof(NAND));
+
+	EXPECT_EQ(NAND[ADDRESS], new_data);
+}
+
+TEST_F(SSDTest, ReadWriteTest)
+{
+	ssd->Write(10, 0x11);
+	ssd->Read(10);
+	EXPECT_EQ("0x00000011", ReadResultFile());
+
+	ssd->Write(10, 0x777);
+	ssd->Read(10);
+	EXPECT_EQ("0x00000777", ReadResultFile());
+
+	ssd->Read(20);
+	EXPECT_EQ("0x00000000", ReadResultFile());
+
+	ssd->Write(20, 0x777);
+	ssd->Read(20);
+	EXPECT_EQ("0x00000777", ReadResultFile());
+}
+

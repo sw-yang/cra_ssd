@@ -26,6 +26,8 @@ public:
 
 private:
 	void ReadNandFile();
+	void WriteNandToFile();
+	void WriteResultToFile(uint32_t result);
 	std::string IntToHex(uint32_t integer);
 
 	uint32_t nand_[100];
