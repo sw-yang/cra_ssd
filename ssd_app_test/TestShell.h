@@ -1,7 +1,7 @@
 #pragma once
 #include "ISSDApp.h"
 #include <string>
-#include <vector> //to be deleted
+#include <vector>
 
 enum TestShellCMD
 {
@@ -36,7 +36,7 @@ private:
     bool IsDecNum(const std::string& str);
 
     void Read(const uint32_t addr);
-    void FullRead();
+    std::vector<std::uint32_t> FullRead(void);
     void Write(const uint32_t addr, const uint32_t data);
     void FullWrite(const uint32_t data);
     void Help(void);

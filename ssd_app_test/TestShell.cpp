@@ -10,13 +10,14 @@ TestShell::Read(const uint32_t addr)
     ssd_app->Read(addr);
 }
 
-void
+vector<uint32_t>
 TestShell::FullRead(void)
 {
+    vector<uint32_t> read_result;
     for (int addr = kMinAddr; addr <= kMaxAddr; addr++)
-    {
-        ssd_app->Read(addr);
-    }
+        read_result.push_back(ssd_app->Read(addr));
+    
+    return read_result;
 }
 
 void
@@ -35,13 +36,28 @@ TestShell::FullWrite(const uint32_t data)
 void
 TestShell::TestApp1()
 {
-    uint32_t write_pattern = 0xABCDFFFF;
+    bool is_test_pass = true;
 
+    uint32_t write_pattern = 0xABCDFFFF;
     FullWrite(write_pattern);
-    FullRead();
+
+    vector<uint32_t> read_result;
+    read_result = FullRead();
 
     //to be added comparing data part
-    cout << "testapp1 pass" << endl;
+    for (uint32_t addr = kMinAddr; addr < kMaxAddr; ++addr)
+    {
+        if (read_result[addr] != write_pattern)
+        {
+            cout << "addr : " << uppercase << hex << addr << " not equal!!" << endl;
+            is_test_pass = false;
+        }
+    }
+
+    if (is_test_pass)
+        cout << "testapp1 pass" << endl;
+    else
+        cout << "testapp1 fail" << endl;
 }
 
 void
