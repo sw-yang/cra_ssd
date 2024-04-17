@@ -5,27 +5,31 @@
 using namespace std;
 
 void
-TestShell::Read(int addr)
+TestShell::Read(const int addr)
 {
     ssd_app->Read(addr);
 }
+
 void
-TestShell::FullRead()
+TestShell::FullRead(void)
 {
-    for (int addr = 0; addr < 100; addr++)
+    for (int addr = kMinAddr; addr <= kMaxAddr; addr++)
         ssd_app->Read(addr);
 }
+
 void
-TestShell::Write(int addr, int data)
+TestShell::Write(const int addr, const int data)
 {
     ssd_app->Write(addr, data);
 }
+
 void
-TestShell::FullWrite(int data)
+TestShell::FullWrite(const int data)
 {
-    for (int addr = 0; addr < 100; addr++)
+    for (int addr = kMinAddr; addr <= kMaxAddr; addr++)
         ssd_app->Write(addr, data);
 }
+
 void
 TestShell::Help(void)
 {
@@ -77,9 +81,8 @@ TestShell::Input(void)
     const string invalid_cmd_str = "[Error] Invalid CMD";
     string user_input;
     string str_cmd, str_addr, str_data;
-    int buf_index = 0;
-    getline(cin, user_input);
 
+    getline(cin, user_input);
     stringstream ss(user_input);
     ss >> str_cmd;
 
@@ -88,11 +91,9 @@ TestShell::Input(void)
         cmd = WRITE;
         ss >> str_addr >> str_data;
 
-        if (ConvertAddrToInt(str_addr) == false)
-            return false;
+        if (ConvertAddrToInt(str_addr) == false) return false;
         
-        if (ConvertDataToInt(str_data) == false)
-            return false;
+        if (ConvertDataToInt(str_data) == false) return false;
     }
     else if (str_cmd == "FullWrite")
     {
@@ -106,8 +107,7 @@ TestShell::Input(void)
         cmd = READ;
         ss >> str_addr;
 
-        if (ConvertAddrToInt(str_addr) == false)
-            return false;
+        if (ConvertAddrToInt(str_addr) == false) return false;
     }
     else if (str_cmd == "FullRead")
     {
@@ -132,7 +132,7 @@ TestShell::Input(void)
 }
 
 bool 
-TestShell::ConvertAddrToInt(string& str_addr)
+TestShell::ConvertAddrToInt(const string& str_addr)
 {
     if (IsInvalidAddrFormat(str_addr))
     {
@@ -153,10 +153,8 @@ TestShell::ConvertAddrToInt(string& str_addr)
 }
 
 bool
-TestShell::IsInvalidAddrFormat(string& str_addr)
+TestShell::IsInvalidAddrFormat(const string& str_addr)
 {
-    const int kAddrLen = 3;
-
     if (str_addr.length() > kAddrLen) return true;
     if (IsDecNum(str_addr) == false) return true;
 
@@ -164,21 +162,15 @@ TestShell::IsInvalidAddrFormat(string& str_addr)
 }
 
 bool
-TestShell::IsInvalidAddrRange()
+TestShell::IsInvalidAddrRange(void)
 {
-    const int kMinAddr = 0;
-    const int kMaxAddr = 99;
-
-    if (addr < kMinAddr || addr > kMaxAddr)
-    {
-        return true;
-    }
+    if (addr < kMinAddr || addr > kMaxAddr) return true;
 
     return false;
 }
 
 bool 
-TestShell::ConvertDataToInt(string& str_data)
+TestShell::ConvertDataToInt(const string& str_data)
 {
     if (IsInvalidDataFormat(str_data))
     {
@@ -186,7 +178,6 @@ TestShell::ConvertDataToInt(string& str_data)
         return false;
     }
 
-    //str_data.erase(str_data.begin(), str_data.begin() + 2);
     data = stoul(str_data, nullptr, 16);
 
     data_arr.push_back(data); //to be deleted
@@ -194,19 +185,16 @@ TestShell::ConvertDataToInt(string& str_data)
 }
 
 bool
-TestShell::IsInvalidDataFormat(string& str_data)
+TestShell::IsInvalidDataFormat(const string& str_data)
 {
-    const int kDataLen = 10;
-
     if (str_data.length() != kDataLen) return true;
-    if (IsHexNum(str_data) == false)
-        return true;
+    if (IsHexNum(str_data) == false) return true;
 
     return false;
 }
 
 bool 
-TestShell::IsHexNum(string& str)
+TestShell::IsHexNum(const string& str)
 {
     if(str.find("0x") != 0) return false;
 
@@ -219,17 +207,16 @@ TestShell::IsHexNum(string& str)
 
     return true;
 }
+
 bool 
-TestShell::IsDecNum(std::string& str)
+TestShell::IsDecNum(const std::string& str)
 {
     for (char digit : str)
-    {
-        if (!(digit >= '0' && digit <= '9'))
-            return false;
-    }
+        if (!(digit >= '0' && digit <= '9')) return false;
 
     return true;
 }
+
 void 
 TestShell::set_ssd_app(ISSDApp* app)
 {
