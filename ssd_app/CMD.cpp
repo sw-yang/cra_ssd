@@ -41,12 +41,12 @@ unsigned int Command::hexStringToInt(const string& hexStr) {
 	return result;
 }
 
-bool Command::isInvalidCommand(const vector<string> command)
+bool Command::isInvalidCommand()
 {
-	if (command.size() != 3) return true;
-	if (!(command[0] == "R" || command[0] == "W")) return true;
-	if (!isNumber(command[1])) return true;
-	if (stoi(command[1]) < 0 || stoi(command[1]) > 99) return true;
-	if (!isValidHex(command[2])) return true;
+	if (args.size() != 3) return true;
+	if (!(args[0] == "R" || args[0] == "W")) return true;
+	if (!isNumber(args[1])) return true;
+	if (stoi(args[1]) < 0 || stoi(args[1]) > 99) return true;
+	if (!isValidHex(args[2])) return true;
 	return false;
 }

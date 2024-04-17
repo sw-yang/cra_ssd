@@ -14,7 +14,7 @@ void SSD::Read(uint32_t address)
 	}
 
 	ReadNandFile();
-  
+
 	WriteResultToFile(nand_[address]);
 
 }
@@ -75,4 +75,20 @@ std::string SSD::IntToHex(uint32_t integer)
 	}
 	result += ss.str();
 	return result;
+}
+
+void SSD::Run(Command command_)
+{
+	if (!command_.getValid()) throw std::invalid_argument("Invalid Command");
+
+	string cmd = command_.getCommand();
+	
+	if (cmd == "R")
+	{
+		Read(command_.getAddress());
+	}
+	else if (cmd == "W")
+	{
+		Write(command_.getAddress(), command_.getValue());
+	}
 }

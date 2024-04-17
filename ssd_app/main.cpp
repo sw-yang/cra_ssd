@@ -2,19 +2,24 @@
 #include "../ssd_app/SSD.h"
 
 int main(int argc, char* argv[]) {
-    cout << "num of arguments" << argc << endl;
 
-    vector<string> cmd;
+	if (argc <= 1) return 0;
+	vector<string> args;
+	for (int i = 1; i < argc; ++i)
+	{
+		args.push_back(argv[i]);
+	}
 
-    cout << "arguments " << endl;
-    for (int i = 0; i < argc; ++i) {
-        cmd.push_back(argv[i]);
-        cout << "argument " << i << ": " << argv[i] << endl;
-    }
+	SSD ssd;
+	Command cmd(args);
+	try
+	{
+		ssd.Run(cmd);
+	}
+	catch (std::exception& e)
+	{
+		std::cout << e.what() << std::endl;
+	}
 
-    for (auto str : cmd) {
-        cout << str << endl;
-    }
-
-    return 0;
+	return 0;
 }
