@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "../ssd_app/SSD.cpp"
 #include "../ssd_app/CMD.cpp"
+#include "../ssd_app/FileManager.cpp"
 
 class CMDTestFixture : public testing::Test 
 {
@@ -254,3 +255,109 @@ TEST_F(SSDTest, ReadWriteTest)
 	EXPECT_EQ("0x00000777", ReadResultFile());
 }
 
+
+class FileManagerTest : public testing::Test
+{
+protected:
+	void SetUp() override
+	{
+		std::ofstream out;
+		out.open(test_file, std::ios::trunc);
+		out.close();
+
+		fm = new FileManager(test_file);
+	}
+
+public:
+	void ReadBinaryFile()
+	{
+		std::ifstream in(test_file, std::ios::binary);
+		in.read(reinterpret_cast<char*>(data), sizeof(data));
+	}
+
+	void WriteBinaryFiles()
+	{
+		std::ofstream out;
+		out.open(test_file, std::ios::binary);
+		out.write(reinterpret_cast<char*>(data), sizeof(data));
+		out.close();
+	}
+
+	std::string ReadTextFile()
+	{
+		std::string ret;
+		std::ifstream in(test_file);
+		in >> ret;
+		return ret;
+	}
+
+	FileManager* fm;
+	const std::string test_file = "test.txt";
+	uint32_t data[5] = { 1, 2, 3, 4, 5 };
+};
+
+TEST_F(FileManagerTest, ThrowLengthErrorFromReadBinaryFile)
+{
+	WriteBinaryFiles();
+	try
+	{
+		fm->ReadBinaryFile(data, sizeof(data) + 100);
+		FAIL();
+	}
+	catch (std::length_error& e)
+	{
+		EXPECT_EQ(std::string{ "Invalid File Size" }, std::string{ e.what() });
+	}
+}
+
+TEST_F(FileManagerTest, ReadBinaryFileFromFirst)
+{
+	WriteBinaryFiles();
+
+	uint32_t ret[5];
+	fm->ReadBinaryFile(ret, sizeof(ret));
+
+	EXPECT_TRUE(std::equal(
+		std::begin(data), std::end(data), std::begin(ret)));
+}
+
+TEST_F(FileManagerTest, ReadBinaryFileFromMiddle)
+{
+	WriteBinaryFiles();
+
+	uint32_t idx = 2;
+	uint32_t ret;
+	fm->ReadBinaryFile(&ret, sizeof(ret), idx * sizeof(ret));
+
+	EXPECT_EQ(data[idx], ret);
+}
+
+TEST_F(FileManagerTest, WriteBinaryFileFromFirst)
+{
+	uint32_t new_data[5] = { 9, 8, 7, 6, 5 };
+	fm->WriteBinaryFile(new_data, sizeof(new_data));
+
+	ReadBinaryFile();
+
+	EXPECT_TRUE(std::equal(
+		std::begin(new_data), std::end(new_data), std::begin(data)));
+}
+
+TEST_F(FileManagerTest, WriteBinaryFileFromMiddle)
+{
+	uint32_t idx = 2;
+	uint32_t ret = 7;
+	fm->WriteBinaryFile(&ret, sizeof(ret), idx * sizeof(ret));
+
+	ReadBinaryFile();
+
+	EXPECT_EQ(ret, data[idx]);
+}
+
+TEST_F(FileManagerTest, WriteTextFile)
+{
+	std::string text = "test";
+	fm->WriteTextFile(text);
+
+	EXPECT_EQ(ReadTextFile(), text);
+}
