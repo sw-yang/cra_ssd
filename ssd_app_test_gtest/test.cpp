@@ -234,6 +234,44 @@ TEST_F(TestShellTestFixture, InputInvalidWrite)
 	result_out_file.close();
 }
 
+TEST_F(TestShellTestFixture, InputInvalidRead)
+{
+	cout << "Read -1" << endl;
+	cout << "Read 100" << endl;
+	cout << "Read aaa" << endl;
+	cout << "Read $das " << endl;
+	cout << "Read $s " << endl;
+	cout << "Exit" << endl;
+
+	string test_result_path = "./test_result.txt";
+	ofstream result_out_file;
+	result_out_file.open(test_result_path, ofstream::trunc | ofstream::out);
+	cout.rdbuf(result_out_file.rdbuf());
+
+	MockSSDApp app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	string expected_invalid_addr = "[Error] Invalid Address";
+	string result;
+	test_shell.Run();
+
+	freopen(test_result_path.c_str(), "rt", stdin);
+
+	getline(cin, result);
+	EXPECT_EQ(result, expected_invalid_addr);
+	getline(cin, result);
+	EXPECT_EQ(result, expected_invalid_addr);
+	getline(cin, result);
+	EXPECT_EQ(result, expected_invalid_addr);
+	getline(cin, result);
+	EXPECT_EQ(result, expected_invalid_addr);
+	getline(cin, result);
+	EXPECT_EQ(result, expected_invalid_addr);
+
+	result_out_file.close();
+}
+
 TEST_F(TestShellTestFixture, InputInvalidCMD)
 {
 	cout << "Writa -1 0x11112222" << endl;
