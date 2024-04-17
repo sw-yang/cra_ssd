@@ -65,7 +65,7 @@ TestShell::Run(void)
                 isGoing = false;
                 break;
             default:
-                cout << "[Error] Invalid CMD" << endl;
+                //must not get here
                 break;
         }
     }
@@ -74,6 +74,7 @@ TestShell::Run(void)
 bool 
 TestShell::Input(void) 
 {
+    const string invalid_cmd_str = "[Error] Invalid CMD";
     string user_input;
     string str_cmd, str_addr, str_data;
     int buf_index = 0;
@@ -119,6 +120,11 @@ TestShell::Input(void)
     else if (str_cmd == "Exit")
     {
         cmd = EXIT;
+    }
+    else
+    {
+        cout << invalid_cmd_str << endl;
+        return false;
     }
 
     return true;
