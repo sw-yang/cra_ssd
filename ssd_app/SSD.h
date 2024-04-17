@@ -2,16 +2,11 @@
 
 #include <string>
 #include <fstream>
+#include <sstream>
+#include <stdexcept>
+#include "CMD.h"
 
-struct Command
-{
-	char cmd;
-	uint32_t address;
-	uint32_t value;
-	bool operator==(const Command& other) const {
-		return cmd == other.cmd && address == other.address && value == other.value;
-	}
-};
+using namespace std;
 
 class SSD
 {

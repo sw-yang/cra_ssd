@@ -1,11 +1,11 @@
 #include "pch.h"
 #include "../ssd_app/SSD.cpp"
+#include "../ssd_app/CMD.cpp"
 
 TEST(TestCaseName, DummyParsingTest) {
 	SSD ssd;
-
 	Command result = ssd.Parse("R 10 0x0000000F");
-	Command dummy = { 'R', 10, 0xF };
+	Command dummy('R', 10, 0xF);
 	EXPECT_EQ(dummy, result);
 }
 
