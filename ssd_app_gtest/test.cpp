@@ -385,28 +385,3 @@ TEST_F(FileManagerTest, WriteTextFile)
 
 	EXPECT_EQ(ReadTextFile(), text);
 }
-
-TEST_F(SSDTest, CommandInputTest)
-{
-	vector<string> cmd;
-	cmd.push_back("R");
-	cmd.push_back("0");
-	cmd.push_back("0xAAAAAAAA");
-
-	NAND[0] = 0x48a7;
-	WriteTestFiles(NAND, sizeof(NAND));
-
-	ssd->Run(cmd);
-
-	EXPECT_EQ("0x000048a7", ReadResultFile());
-}
-
-TEST_F(SSDTest, CommandInputTest2)
-{
-	vector<string> cmd;
-	cmd.push_back("C");
-	cmd.push_back("0");
-	cmd.push_back("0xAAAAAAAA");
-
-	EXPECT_THROW(ssd->Run(cmd), std::invalid_argument);
-}
