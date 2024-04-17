@@ -254,3 +254,7 @@ TEST_F(SSDTest, ReadWriteTest)
 	EXPECT_EQ("0x00000777", ReadResultFile());
 }
 
+TEST_F(SSDTest, CommandInputTest)
+{
+	
+}

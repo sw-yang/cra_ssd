@@ -19,7 +19,7 @@ private:
 public:
 	Command(vector<string> args) : args(args)
 	{
-		isValid = !isInvalidCommand(args);
+		isValid = !isInvalidCommand();
 		if (isValid)
 		{
 			cmd = args[0][0];
@@ -30,7 +30,7 @@ public:
 	Command(const string str)
 	{
 		args = split(str);
-		isValid = !isInvalidCommand(args);
+		isValid = !isInvalidCommand();
 		if (isValid)
 		{
 			cmd = args[0][0];
@@ -47,6 +47,18 @@ public:
 	{
 		return cmd == other.cmd && address == other.address && value == other.value;
 	}
+	char getCommand() 
+	{
+		return cmd;
+	}
+	uint32_t getAddress() 
+	{
+		return address;
+	}
+	uint32_t getValue() 
+	{
+		return value;
+	}
 	bool getValid() 
 	{
 		return isValid;
@@ -55,5 +67,5 @@ public:
 	bool isNumber(const string& str);
 	bool isValidHex(const string& str);
 	unsigned int hexStringToInt(const string& hexStr);
-	bool isInvalidCommand(const vector<string> command);
+	bool isInvalidCommand();
 };

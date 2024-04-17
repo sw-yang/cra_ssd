@@ -86,3 +86,19 @@ std::string SSD::IntToHex(uint32_t integer)
 	result += ss.str();
 	return result;
 }
+
+void SSD::Run(Command command_)
+{
+	char cmd = command_.getCommand();
+	switch (cmd)
+	{
+	case 'R':
+		Read(command_.getAddress());
+		break;
+	case 'W':
+		Write(command_.getAddress(), command_.getValue());
+		break;
+	default:
+		break;
+	}
+}

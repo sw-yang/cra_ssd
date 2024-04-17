@@ -22,6 +22,7 @@ public:
 
 	void Read(uint32_t address);
 	void Write(uint32_t address, uint32_t value);
+	void Run(Command command_);
 
 private:
 	void ReadNandFile();

@@ -2,6 +2,8 @@
 #include "../ssd_app/SSD.h"
 
 int main(int argc, char* argv[]) {
+    
+    
     cout << "num of arguments" << argc << endl;
 
     vector<string> cmd;
