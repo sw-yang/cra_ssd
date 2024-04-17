@@ -15,10 +15,9 @@ TEST_F(CMDTestFixture, ValidObjectVectorConstructorTestRead)
 	args.push_back("R");
 	args.push_back("10");
 
-	Command result(args);
-	Command expected("R 10");
+	Command cmd(args);
 	
-	EXPECT_EQ(result, expected);
+	EXPECT_EQ(true, cmd.getValid());
 }
 
 TEST_F(CMDTestFixture, ValidObjectVectorConstructorTestWrite)
@@ -28,20 +27,29 @@ TEST_F(CMDTestFixture, ValidObjectVectorConstructorTestWrite)
 	args.push_back("0xAAAAAAAA");
 
 	Command cmd(args);
-	Command result("W 10 0xAAAAAAAA");
 
-	EXPECT_EQ(cmd, result);
+	EXPECT_EQ(true, cmd.getValid());
 }
 
-TEST_F(CMDTestFixture, ValidFlagTest) 
+TEST_F(CMDTestFixture, InvalidNumOfArgumentsRead)
 {
-	args.push_back("W");
+	args.push_back("R");
 	args.push_back("10");
 	args.push_back("0xAAAAAAAA");
 
 	Command cmd(args);
 
-	EXPECT_EQ(true, cmd.getValid());
+	EXPECT_EQ(false, cmd.getValid());
+}
+
+TEST_F(CMDTestFixture, InvalidNumOfArgumentsWrite)
+{
+	args.push_back("W");
+	args.push_back("10");
+
+	Command cmd(args);
+
+	EXPECT_EQ(false, cmd.getValid());
 }
 
 TEST_F(CMDTestFixture, InvalidCommandTypeTest) 

@@ -3,21 +3,12 @@
 void Command::initialize() {
 	isValid = isValidCommand();
 
-	if (isValid) 
+	if (isValid)
 	{
-		if (args[CMD_POSITION] == "R") 
-		{
-			cmd = args[CMD_POSITION];
-			address = std::stoi(args[ADDRESS_POSITION]);
-		}
-		else if (args[CMD_POSITION] == "W") 
-		{
-			cmd = args[CMD_POSITION];
-			address = std::stoi(args[ADDRESS_POSITION]);
-			value = hexStringToInt(args[VALUE_POSITION]);
-		}
+		cmd = args[CMD_POSITION];
+		address = stoi(args[ADDRESS_POSITION]);
+		if (args[CMD_POSITION] == "W") value = hexStringToInt(args[VALUE_POSITION]);
 	}
-
 }
 
 vector<string> Command::split(const string& str)
