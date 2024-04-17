@@ -1,3 +1,4 @@
+#include <cstdio>
 #include "pch.h"
 #include "../ssd_app/SSD.cpp"
 #include "../ssd_app/CMD.cpp"
@@ -291,6 +292,11 @@ public:
 		return ret;
 	}
 
+	void RemoveFile()
+	{
+		std::remove(test_file.c_str());
+	}
+
 	FileManager* fm;
 	const std::string test_file = "test.txt";
 	uint32_t data[5] = { 1, 2, 3, 4, 5 };
@@ -302,6 +308,20 @@ TEST_F(FileManagerTest, ThrowLengthErrorFromReadBinaryFile)
 	try
 	{
 		fm->ReadBinaryFile(data, sizeof(data) + 100);
+		FAIL();
+	}
+	catch (std::length_error& e)
+	{
+		EXPECT_EQ(std::string{ "Invalid File Size" }, std::string{ e.what() });
+	}
+}
+
+TEST_F(FileManagerTest, CreateNewFileInReadWhenNotExist)
+{
+	RemoveFile();
+	try
+	{
+		fm->ReadBinaryFile(data, sizeof(data));
 		FAIL();
 	}
 	catch (std::length_error& e)
@@ -331,6 +351,19 @@ TEST_F(FileManagerTest, ReadBinaryFileFromMiddle)
 
 	EXPECT_EQ(data[idx], ret);
 }
+
+TEST_F(FileManagerTest, CreateNewFileInWriteWhenNotExist)
+{
+	RemoveFile();
+	uint32_t new_data[5] = { 9, 8, 7, 6, 5 };
+	fm->WriteBinaryFile(new_data, sizeof(new_data));
+
+	ReadBinaryFile();
+
+	EXPECT_TRUE(std::equal(
+		std::begin(new_data), std::end(new_data), std::begin(data)));
+}
+
 
 TEST_F(FileManagerTest, WriteBinaryFileFromFirst)
 {

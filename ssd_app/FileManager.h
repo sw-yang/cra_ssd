@@ -13,5 +13,6 @@ public:
 	void WriteTextFile(std::string data);
 
 private:
+	void CreateEmptyFile();
 	std::string file_name_;
 };

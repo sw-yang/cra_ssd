@@ -6,7 +6,8 @@ void FileManager::ReadBinaryFile(uint32_t* data, size_t size, std::streampos sta
 	std::ifstream in(file_name_, std::ios::binary);
 	if (!in.is_open())
 	{
-		throw std::exception("Fail to open result file");
+		CreateEmptyFile();
+		in.open(file_name_, std::ios::binary);
 	}
 
 	in.seekg(0, std::ios::end);
@@ -25,7 +26,8 @@ void FileManager::WriteBinaryFile(uint32_t* data, size_t size, std::streampos st
 	std::fstream out(file_name_, std::ios::in | std::ios::out | std::ios::binary);
 	if (!out.is_open())
 	{
-		throw std::exception("Fail to open result file");
+		CreateEmptyFile();
+		out.open(file_name_, std::ios::in | std::ios::out | std::ios::binary);
 	}
 
 	out.seekp(start);
@@ -41,4 +43,13 @@ void FileManager::WriteTextFile(std::string data)
 	}
 
 	out << data;
+}
+
+void FileManager::CreateEmptyFile()
+{
+	std::ofstream out(file_name_);
+	if (!out.is_open())
+	{
+		throw std::exception("Fail to open result file");
+	}
 }
