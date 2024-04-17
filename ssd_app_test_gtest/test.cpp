@@ -133,6 +133,7 @@ TEST_F(TestShellTestFixture, FullReadTest)
 	EXPECT_CALL(app, Read(_)).Times(100);
 	test_shell.Run();
 }
+
 TEST_F(TestShellTestFixture, HelpTest)
 {
 	string help_input = "Help";
@@ -140,12 +141,37 @@ TEST_F(TestShellTestFixture, HelpTest)
 	cout << help_input << endl;
 	cout << exit_input << endl;
 
+	string test_result_path = "./test_result.txt";
+	ofstream result_out_file;
+	result_out_file.open(test_result_path, ofstream::trunc | ofstream::out);
+	cout.rdbuf(result_out_file.rdbuf());
+
 	MockSSDApp app;
 	TestShell test_shell;
 	test_shell.set_ssd_app(&app);
 
 	test_shell.Run();
+
+	freopen(test_result_path.c_str(), "rt", stdin);
+	string result;
+	getline(cin, result);
+	EXPECT_EQ(result, string{ "Available commands:" });
+	getline(cin, result);
+	EXPECT_EQ(result, string{ "Write <addr> <data>: Write data to address" });
+	getline(cin, result);
+	EXPECT_EQ(result, string{ "Read <addr>: Read data from address" });
+	getline(cin, result);
+	EXPECT_EQ(result, string{ "FullWrite <data>: Write data to full address" });
+	getline(cin, result);
+	EXPECT_EQ(result, string{ "FullRead : Read data from full address" });
+	getline(cin, result);
+	EXPECT_EQ(result, string{ "Help: Show available commands" });
+	getline(cin, result);
+	EXPECT_EQ(result, string{ "Exit: Exit the program" });
+
+	result_out_file.close();
 }
+
 TEST_F(TestShellTestFixture, ExitTest)
 {
 	string user_input;
