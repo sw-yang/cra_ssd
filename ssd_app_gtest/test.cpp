@@ -256,5 +256,15 @@ TEST_F(SSDTest, ReadWriteTest)
 
 TEST_F(SSDTest, CommandInputTest)
 {
-	
+	vector<string> cmd;
+	cmd.push_back("R");
+	cmd.push_back("0");
+	cmd.push_back("0xAAAAAAAA");
+
+	NAND[0] = 0x48a7;
+	WriteTestFiles(NAND, sizeof(NAND));
+
+	ssd->Run(cmd);
+
+	EXPECT_EQ("0x000048a7", ReadResultFile());
 }
