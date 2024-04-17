@@ -140,6 +140,9 @@
     <ClInclude Include="TestShell.h" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="..\ssd_app_test_gtest\log.txt" />
+    <Text Include="..\ssd_app_test_gtest\nand.txt" />
+    <Text Include="..\ssd_app_test_gtest\result.txt" />
     <Text Include="..\ssd_app_test_gtest\test_script.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

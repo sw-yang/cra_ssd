@@ -14,7 +14,9 @@ void
 TestShell::FullRead(void)
 {
     for (int addr = kMinAddr; addr <= kMaxAddr; addr++)
+    {
         ssd_app->Read(addr);
+    }
 }
 
 void
@@ -39,6 +41,7 @@ TestShell::TestApp1()
     FullRead();
 
     //to be added comparing data part
+    cout << "testapp1 pass" << endl;
 }
 
 void

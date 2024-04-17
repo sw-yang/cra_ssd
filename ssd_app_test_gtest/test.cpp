@@ -487,3 +487,36 @@ TEST_F(TestShellTestFixture, TestApp2TestWithMock)
 
 	test_shell.Run();
 }
+
+TEST_F(TestShellTestFixture, TestApp1TestWithSSD)
+{
+	string user_input = "testapp1";
+	string exit_input = "Exit";
+	cout << user_input << endl;
+	cout << exit_input << endl;
+
+	string test_result_path = "./test_result.txt";
+	ofstream result_out_file;
+	result_out_file.open(test_result_path, ofstream::trunc | ofstream::out);
+	cout.rdbuf(result_out_file.rdbuf());
+
+	SSD_Adaptor app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	test_shell.Run();
+
+	freopen(test_result_path.c_str(), "rt", stdin);
+
+	string expected_data = "0xABCDFFFF";
+	string result;
+	for (int loop = 0; loop < 100; ++loop)
+	{
+		getline(cin, result);
+		EXPECT_EQ(result, expected_data);
+	}
+
+	expected_data = "testapp1 pass";
+	getline(cin, result);
+	EXPECT_EQ(result, expected_data);
+}
