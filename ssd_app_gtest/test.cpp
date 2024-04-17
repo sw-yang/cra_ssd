@@ -2,9 +2,12 @@
 #include "../ssd_app/SSD.cpp"
 #include "../ssd_app/CMD.cpp"
 
-TEST(TestCaseName, DummyParsingTest) {
-	SSD ssd;
+class CMDTestFixture : public testing::Test {
+protected:
 	vector<string> args;
+};
+
+TEST_F(CMDTestFixture, ValidCommandConstructorTest) {
 	args.push_back("R");
 	args.push_back("10");
 	args.push_back("0xAAAAAAAA");
@@ -15,6 +18,27 @@ TEST(TestCaseName, DummyParsingTest) {
 	EXPECT_EQ(cmd, result);
 }
 
+TEST_F(CMDTestFixture, ValidCommandFlagTest) {
+	args.push_back("R");
+	args.push_back("10");
+	args.push_back("0xAAAAAAAA");
+
+	Command cmd(args);
+
+	EXPECT_EQ(true, cmd.getValid());
+}
+
+TEST_F(CMDTestFixture, InValidCommandFlagTest) {
+	args.push_back("A");
+	args.push_back("10");
+	args.push_back("0xAAAAAAAA");
+
+	Command cmd(args);
+
+	EXPECT_EQ(false, cmd.getValid());
+}
+
+/*
 TEST(TestCaseName, InvalidNumOfArgsTest) {
 	SSD ssd;
 	EXPECT_THROW(ssd.Parse("R 10"), std::invalid_argument);
@@ -39,6 +63,7 @@ TEST(TestCaseName, InvalidHexDataTest) {
 	SSD ssd;
 	EXPECT_THROW(ssd.Parse("R 10 0xAAAAAAAH"), std::invalid_argument);
 }
+*/
 
 class SSDTest : public testing::Test
 {

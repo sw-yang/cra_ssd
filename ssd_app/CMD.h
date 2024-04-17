@@ -32,8 +32,13 @@ public:
 	{
 
 	}
-	bool operator==(const Command& other) const {
+	bool operator==(const Command& other) const 
+	{
 		return cmd == other.cmd && address == other.address && value == other.value;
+	}
+	bool getValid() 
+	{
+		return isValid;
 	}
 	vector<string> split(const string& str);
 	bool isNumber(const string& str);
