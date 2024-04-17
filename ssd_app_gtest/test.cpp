@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "../ssd_app/SSD.cpp"
+#include "../ssd_app/CMD.cpp"
 
 TEST(TestCaseName, DummyParsingTest) {
 	SSD ssd;
