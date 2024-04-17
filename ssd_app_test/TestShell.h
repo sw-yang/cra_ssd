@@ -10,6 +10,8 @@ enum TestShellCMD
     WRITE,
     FULLWRITE,
     HELP,
+    TESTAPP1,
+    TESTAPP2,
     EXIT,
 };
 
@@ -38,6 +40,10 @@ private:
     void Write(const uint32_t addr, const uint32_t data);
     void FullWrite(const uint32_t data);
     void Help(void);
+    void TestApp1(void);
+    void TestApp2(void);
+    void WriteRange(uint32_t start_addr, uint32_t end_addr, uint32_t data);
+    void ReadRange(uint32_t start_addr, uint32_t end_addr);
 
     ISSDApp* ssd_app;
     TestShellCMD cmd;

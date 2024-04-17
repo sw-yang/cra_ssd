@@ -31,6 +31,51 @@ TestShell::FullWrite(const uint32_t data)
 }
 
 void
+TestShell::TestApp1()
+{
+    uint32_t write_pattern = 0xABCDFFFF;
+
+    FullWrite(write_pattern);
+    FullRead();
+
+    //to be added comparing data part
+}
+
+void
+TestShell::TestApp2()
+{
+    uint32_t first_write_pattern = 0xAAAABBBB;
+    uint32_t second_write_pattern = 0x12345678;
+    uint32_t loop = 50;
+
+    while (loop--) 
+    {
+        WriteRange(0, 5, first_write_pattern);
+    }
+
+    WriteRange(0, 5, second_write_pattern);
+    ReadRange(0, 5);
+
+    //to be added comparing data part
+}
+
+void TestShell::WriteRange(const uint32_t start_addr, const uint32_t end_addr, const uint32_t data)
+{
+    for (uint32_t addr = start_addr; addr <= end_addr; ++addr)
+    {
+        Write(addr, data);
+    }
+}
+
+void TestShell::ReadRange(const uint32_t start_addr, const uint32_t end_addr)
+{
+    for (uint32_t addr = start_addr; addr <= end_addr; ++addr)
+    {
+        Read(addr);
+    }
+}
+
+void
 TestShell::Help(void)
 {
    cout << "Available commands:" << endl;
@@ -57,6 +102,7 @@ TestShell::Run(void)
                 break;
             case FULLREAD:
                 FullRead();
+                break;
             case WRITE:
                 Write(addr, data);
                 break;
@@ -65,6 +111,12 @@ TestShell::Run(void)
                 break;
             case HELP:
                 Help();
+                break;
+            case TESTAPP1:
+                TestApp1();
+                break;
+            case TESTAPP2:
+                TestApp2();
                 break;
             case EXIT:
                 isGoing = false;
@@ -117,6 +169,14 @@ TestShell::Input(void)
     else if (str_cmd == "Help")
     {
         cmd = HELP;
+    }
+    else if (str_cmd == "testapp1")
+    {
+        cmd = TESTAPP1;
+    }
+    else if (str_cmd == "testapp2")
+    {
+        cmd = TESTAPP2;
     }
     else if (str_cmd == "Exit")
     {
