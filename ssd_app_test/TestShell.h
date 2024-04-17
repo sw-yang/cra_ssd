@@ -42,6 +42,8 @@ private:
     void Help(void);
     void TestApp1(void);
     void TestApp2(void);
+    void WriteRange(uint32_t start_addr, uint32_t end_addr, uint32_t data);
+    void ReadRange(uint32_t start_addr, uint32_t end_addr);
 
     ISSDApp* ssd_app;
     TestShellCMD cmd;

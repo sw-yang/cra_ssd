@@ -33,7 +33,9 @@ TestShell::FullWrite(const uint32_t data)
 void
 TestShell::TestApp1()
 {
-    FullWrite(0xABCDFFFF);
+    uint32_t write_pattern = 0xABCDFFFF;
+
+    FullWrite(write_pattern);
     FullRead();
 
     //to be added comparing data part
@@ -42,23 +44,35 @@ TestShell::TestApp1()
 void
 TestShell::TestApp2()
 {
-    for (uint32_t loop = 0; loop < 50; ++loop)
+    uint32_t first_write_pattern = 0xAAAABBBB;
+    uint32_t second_write_pattern = 0x12345678;
+    uint32_t loop = 50;
+
+    while (loop--) 
     {
-        for (uint32_t addr = 0; addr < 6; ++addr)
-        {
-            Write(addr, 0xAAAABBBB);
-        }
+        WriteRange(0, 5, first_write_pattern);
     }
-    for (uint32_t addr = 0; addr < 6; ++addr)
+
+    WriteRange(0, 5, second_write_pattern);
+    ReadRange(0, 5);
+
+    //to be added comparing data part
+}
+
+void TestShell::WriteRange(const uint32_t start_addr, const uint32_t end_addr, const uint32_t data)
+{
+    for (uint32_t addr = start_addr; addr <= end_addr; ++addr)
     {
-        Write(addr, 0x12345678);
+        Write(addr, data);
     }
-    for (uint32_t addr = 0; addr < 6; ++addr)
+}
+
+void TestShell::ReadRange(const uint32_t start_addr, const uint32_t end_addr)
+{
+    for (uint32_t addr = start_addr; addr <= end_addr; ++addr)
     {
         Read(addr);
     }
-
-    //to be added comparing data part
 }
 
 void
