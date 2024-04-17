@@ -153,7 +153,7 @@ TestShell::Input(void)
         cmd = FULLWRITE;
         ss >> str_data;
 
-        data = stoi(str_data);
+        if (ConvertDataToInt(str_data) == false) return false;
     }
     else if (str_cmd == "Read")
     {

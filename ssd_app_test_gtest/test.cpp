@@ -339,72 +339,99 @@ TEST_F(TestShellTestFixture, InputInvalidCMD)
 	result_out_file.close();
 }
 
-TEST_F(TestShellTestFixture, DISABLED_SSDWriteTest)
+TEST_F(TestShellTestFixture, SSDWriteTest)
 {
-	string user_input = "Write 1 0x12345678";
-	string exit_input = "Exit";
-	cout << user_input << endl;
-	cout << exit_input << endl;
+	cout << "Write 1 0x11112222" << endl;
+	cout << "Exit" << endl;
+
+	string test_result_path = "nand.txt";
 
 	SSD_Adaptor app;
 	TestShell test_shell;
 	test_shell.set_ssd_app(&app);
 
-	ISSDApp* Issd_app = test_shell.get_ssd_app();
-
-	EXPECT_EQ(Issd_app, &app);
+	uint32_t expected_data = 0x11112222;
+	int expected_addr = 1;
+	uint32_t result;
 	test_shell.Run();
+
+	std::ifstream in(test_result_path, std::ios::binary);
+
+	in.seekg(expected_addr * sizeof(uint32_t));
+	in.read(reinterpret_cast<char*>(&result), sizeof(uint32_t));
+
+	EXPECT_EQ(result, expected_data);
 }
 
-TEST_F(TestShellTestFixture, DISABLED_SSDFullWriteTest)
+TEST_F(TestShellTestFixture, SSDReadTest)
 {
-	string user_input = "FullWrite 0x12345678";
-	string exit_input = "Exit";
-	cout << user_input << endl;
-	cout << exit_input << endl;
+	cout << "Read 1" << endl;
+	cout << "Exit" << endl;
+
+	string test_result_path = "Result.txt";
 
 	SSD_Adaptor app;
 	TestShell test_shell;
 	test_shell.set_ssd_app(&app);
 
-	ISSDApp* Issd_app = test_shell.get_ssd_app();
-
-	EXPECT_EQ(Issd_app, &app);
+	string expected_data = "0x11112222";
+	int expected_addr = 0;
+	string result;
 	test_shell.Run();
+
+	std::ifstream in(test_result_path, std::ios::binary);
+
+	in.seekg(0);
+	std::getline(in, result);
+
+	EXPECT_EQ(result, expected_data);
 }
 
-TEST_F(TestShellTestFixture, DISABLED_SSDReadTest)
+TEST_F(TestShellTestFixture, SSDFullWriteTest)
 {
-	string user_input = "Read 1";
-	string exit_input = "Exit";
-	cout << user_input << endl;
-	cout << exit_input << endl;
+	cout << "FullWrite 0x12345678" << endl;
+	cout << "Exit" << endl;
+
+	string test_result_path = "nand.txt";
 
 	SSD_Adaptor app;
 	TestShell test_shell;
 	test_shell.set_ssd_app(&app);
 
-	ISSDApp* Issd_app = test_shell.get_ssd_app();
-
-	EXPECT_EQ(Issd_app, &app);
+	uint32_t expected_data = 0x12345678;
+	uint32_t result;
 	test_shell.Run();
+
+	std::ifstream in(test_result_path, std::ios::binary);
+
+	for (int expected_addr = 0; expected_addr < 100; expected_addr++)
+	{
+		in.seekg(expected_addr * sizeof(uint32_t));
+		in.read(reinterpret_cast<char*>(&result), sizeof(uint32_t));
+
+		EXPECT_EQ(result, expected_data);
+	}
 }
 
-TEST_F(TestShellTestFixture, DISABLED_SSDFullReadTest)
+TEST_F(TestShellTestFixture, SSDFullReadTest)
 {
-	string user_input = "FullRead";
-	string exit_input = "Exit";
-	cout << user_input << endl;
-	cout << exit_input << endl;
+	cout << "FullRead" << endl;
+	cout << "Exit" << endl;
+
+	string test_result_path = "Result.txt";
 
 	SSD_Adaptor app;
 	TestShell test_shell;
 	test_shell.set_ssd_app(&app);
 
-	ISSDApp* Issd_app = test_shell.get_ssd_app();
+	string expected_data = "0x12345678";
+	string result;
 
-	EXPECT_EQ(Issd_app, &app);
 	test_shell.Run();
+	freopen(test_result_path.c_str(), "rt", stdin);
+
+	getline(cin, result);
+	EXPECT_EQ(result, expected_data);
 }
 
 TEST_F(TestShellTestFixture, TestApp1TestWithMock)
