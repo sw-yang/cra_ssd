@@ -8,7 +8,7 @@ void SSD::Read(uint32_t address)
 	}
 
 	ReadNandFile();
-  
+
 	WriteResultToFile(nand_[address]);
 
 }
@@ -89,6 +89,8 @@ std::string SSD::IntToHex(uint32_t integer)
 
 void SSD::Run(Command command_)
 {
+	if (!command_.getValid()) throw std::invalid_argument("Invalid Command");
+
 	char cmd = command_.getCommand();
 	switch (cmd)
 	{

@@ -268,3 +268,13 @@ TEST_F(SSDTest, CommandInputTest)
 
 	EXPECT_EQ("0x000048a7", ReadResultFile());
 }
+
+TEST_F(SSDTest, CommandInputTest2)
+{
+	vector<string> cmd;
+	cmd.push_back("C");
+	cmd.push_back("0");
+	cmd.push_back("0xAAAAAAAA");
+
+	EXPECT_THROW(ssd->Run(cmd),std::invalid_argument);
+}
