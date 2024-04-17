@@ -131,10 +131,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CMD.cpp" />
+    <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SSD.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FileManager.h" />
     <ClInclude Include="SSD.h" />
     <ClInclude Include="CMD.h" />
   </ItemGroup>
