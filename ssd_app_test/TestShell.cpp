@@ -65,6 +65,7 @@ TestShell::Run(void)
                 isGoing = false;
                 break;
             default:
+                cout << "[Error] Invalid CMD" << endl;
                 break;
         }
     }
