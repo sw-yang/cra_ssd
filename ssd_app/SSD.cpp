@@ -63,10 +63,9 @@ void SSD::WriteResultToFile(uint32_t result)
 }
 
 std::string SSD::IntToHex(uint32_t integer)
-
 {
 	ostringstream ss;
-	ss << hex << integer;
+	ss << hex << uppercase << integer;
 	int zero_fills = 8 - ss.str().length();
 
 	string result = "0x";
