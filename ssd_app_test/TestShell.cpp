@@ -5,23 +5,37 @@
 using namespace std;
 
 void
-TestShell::Read(int addr) {
+TestShell::Read(int addr)
+{
     ssd_app->Read(addr);
 }
 void
-TestShell::Write(int addr, int data) {
+TestShell::FullRead()
+{
+    for (int addr = 0; addr < 100; addr++)
+        ssd_app->Read(addr);
+}
+void
+TestShell::Write(int addr, int data)
+{
     ssd_app->Write(addr, data);
 }
-
 void
-TestShell::Help(void) {
-    std::cout << "Available commands:" << std::endl;
-    std::cout << "Write <addr> <data>: Write data to address" << std::endl;
-    std::cout << "Read <addr>: Read data from address" << std::endl;
-    std::cout << "FullWrite <data>: Write data to full address" << std::endl;
-    std::cout << "FullRead : Read data from full address" << std::endl;
-    std::cout << "Help: Show available commands" << std::endl;
-    std::cout << "Exit: Exit the program" << std::endl;
+TestShell::FullWrite(int data)
+{
+    for (int addr = 0; addr < 100; addr++)
+        ssd_app->Write(addr, data);
+}
+void
+TestShell::Help(void)
+{
+   cout << "Available commands:" << endl;
+   cout << "Write <addr> <data>: Write data to address" << endl;
+   cout << "Read <addr>: Read data from address" << endl;
+   cout << "FullWrite <data>: Write data to full address" << endl;
+   cout << "FullRead : Read data from full address" << endl;
+   cout << "Help: Show available commands" << endl;
+   cout << "Exit: Exit the program" << endl;
 }
 
 void TestShell::Run(void)
@@ -34,17 +48,24 @@ void TestShell::Run(void)
 
         switch (cmd)
         {
-        case READ :
-            break;
-        case WRITE:
-            break;
-        case HELP:
-            break;
-        case EXIT:
-            isGoing = false;
-            break;
-        default:
-            break;
+            case READ :
+                Read(addr);
+                break;
+            case FULLREAD:
+                FullRead();
+            case WRITE:
+                Write(addr, data);
+                break;
+            case FULLWRITE:
+                FullWrite(data);
+                break;
+            case HELP:
+                break;
+            case EXIT:
+                isGoing = false;
+                break;
+            default:
+                break;
         }
         
     }
@@ -69,12 +90,23 @@ void TestShell::Input(void)
         str_data.erase(str_data.begin(), str_data.begin() + 2);
         data = stoi(str_data);
     }
+    else if (str_cmd == "FullWrite")
+    {
+        cmd = FULLWRITE;
+        ss >> str_data;
+
+        data = stoi(str_data);
+    }
     else if (str_cmd == "Read")
     {
         cmd = READ;
         ss >> str_addr;
 
         addr = stoi(str_addr);
+    }
+    else if (str_cmd == "FullRead")
+    {
+        cmd = FULLREAD;
     }
     else if (str_cmd == "Help")
     {
