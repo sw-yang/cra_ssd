@@ -80,7 +80,7 @@ std::string SSD::IntToHex(uint32_t integer)
 
 void SSD::Run(Command command_)
 {
-#if 0
+#if 1
 	if (!command_.getValid()) throw std::invalid_argument("Invalid Command");
 
 	string cmd = command_.getCommand();
