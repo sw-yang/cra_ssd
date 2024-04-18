@@ -35,7 +35,7 @@ private:
     bool IsHexNum(const std::string& str);
     bool IsDecNum(const std::string& str);
 
-    void Read(const uint32_t addr);
+    uint32_t Read(const uint32_t addr);
     std::vector<std::uint32_t> FullRead(void);
     void Write(const uint32_t addr, const uint32_t data);
     void FullWrite(const uint32_t data);
@@ -43,7 +43,8 @@ private:
     void TestApp1(void);
     void TestApp2(void);
     void WriteRange(uint32_t start_addr, uint32_t end_addr, uint32_t data);
-    void ReadRange(uint32_t start_addr, uint32_t end_addr);
+    std::vector<uint32_t> ReadRange(uint32_t start_addr, uint32_t end_addr);
+    bool IsDataEqual(std::vector<uint32_t> actual, uint32_t expected);
 
     ISSDApp* ssd_app;
     TestShellCMD cmd;
