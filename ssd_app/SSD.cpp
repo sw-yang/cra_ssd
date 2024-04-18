@@ -97,6 +97,8 @@ void SSD::Run(Command command_)
 
 	// 명령어 R, W 파싱
 	char mode = 'R';
+	vector<string> tmp_args = { "1", "0x0000000a" };
+	FileManager* tmp_nand = new FileManager("nand.txt");
 
 	switch (mode) {
 	case 'R':
@@ -105,10 +107,11 @@ void SSD::Run(Command command_)
 		break;
 	case 'W':
 	case 'w':
-		cmd_ = new Writer();
+		cmd_ = new Writer(tmp_args, tmp_nand);
 		break;
 	default:
 		// error
+		throw std::exception("Invalid address");
 	}
 
 	cmd_->Run();

@@ -4,6 +4,6 @@
 class Reader : public iCommand
 {
 public:
-	void Run() override;
+	void Run() override {}
 };
 
