@@ -5,6 +5,7 @@
 #include "../ssd_app/FileManager.cpp"
 #include "../ssd_app/Reader.cpp"
 #include "../ssd_app/Writer.cpp"
+#include "../ssd_app/Eraser.cpp"
 
 class CMDTestFixture : public testing::Test
 {
@@ -624,4 +625,105 @@ TEST_F(NewSSDTest, ReadWriteTest)
 	ssd->Run("W", { "20", "0x00000777" });
 	ssd->Run("R", { "20" });
 	EXPECT_EQ("0x00000777", ReadResultFile());
+}
+
+TEST_F(NewSSDTest, ThrowExceptionWhenInvalidStartAddressWhileErase)
+{
+	try
+	{
+		std::vector<std::string> args = { "100", "1" };
+		ssd->Run("E", args);
+		FAIL();
+	}
+	catch (std::exception& e)
+	{
+		EXPECT_EQ(std::string{ "Invalid args" }, std::string{ e.what() });
+	}
+}
+
+TEST_F(NewSSDTest, ThrowExceptionWhenRangeIsZeroWhileErase)
+{
+	try
+	{
+		std::vector<std::string> args = { "0", "0" };
+		ssd->Run("E", args);
+		FAIL();
+	}
+	catch (std::exception& e)
+	{
+		EXPECT_EQ(std::string{ "Invalid args" }, std::string{ e.what() });
+	}
+}
+
+TEST_F(NewSSDTest, ThrowExceptionWhenRangeOverTenWhileErase)
+{
+	try
+	{
+		std::vector<std::string> args = { "0", "20" };
+		ssd->Run("E", args);
+		FAIL();
+	}
+	catch (std::exception& e)
+	{
+		EXPECT_EQ(std::string{ "Invalid args" }, std::string{ e.what() });
+	}
+}
+
+TEST_F(NewSSDTest, ThrowExceptionWhenInvalidAddressWhileErase)
+{
+	try
+	{
+		std::vector<std::string> args = { "95", "8" };
+		ssd->Run("E", args);
+		FAIL();
+	}
+	catch (std::exception& e)
+	{
+		EXPECT_EQ(std::string{ "Invalid args" }, std::string{ e.what() });
+	}
+}
+
+TEST_F(NewSSDTest, EraseData)
+{
+	int addr = 0;
+	int range = 7;
+	
+	for (int i = 0; i < 100; ++i)
+	{
+		NAND[i] = 9999;
+	}	
+	WriteTestFiles(NAND, sizeof(NAND));
+
+
+	std::vector<std::string> args;
+	args.push_back(std::to_string(addr));
+	args.push_back(std::to_string(range));
+	ssd->Run("E", args);
+
+	ReadNandFile(NAND, sizeof(NAND));
+	for (int i = addr; i < range; ++i)
+	{
+		EXPECT_EQ(NAND[i], 0);
+	}
+}
+
+TEST_F(NewSSDTest, EraseAfterWrite)
+{
+	std::vector<std::string> args;
+	args.push_back(std::to_string(ADDRESS));
+	args.push_back("0xFF25ABCD");
+	ssd->Run("W", args);
+
+	ReadNandFile(NAND, sizeof(NAND));
+
+	EXPECT_EQ(NAND[ADDRESS], 0xFF25ABCD);
+
+	args.clear();
+	args.push_back(std::to_string(ADDRESS));
+	args.push_back("1");
+	ssd->Run("E", args);
+
+	ReadNandFile(NAND, sizeof(NAND));
+
+	EXPECT_EQ(NAND[ADDRESS], 0);
 }

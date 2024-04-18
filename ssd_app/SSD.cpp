@@ -1,6 +1,7 @@
 #include "SSD.h"
 #include "Reader.h"
 #include "Writer.h"
+#include "Eraser.h"
 
 SSD::SSD(std::string nand_file, std::string result_file)
 {
@@ -103,6 +104,10 @@ void SSD::Run(string mode, vector<string> args)
 	else if (mode == "W")
 	{
 		cmd_ = new Writer(args, nand_file_);
+	}
+	else if (mode == "E")
+	{
+		cmd_ = new Eraser(args, nand_file_);
 	}
 	else
 	{
