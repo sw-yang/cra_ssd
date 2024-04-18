@@ -2,6 +2,10 @@
 #include "ISSDApp.h"
 class SSD_Adaptor : public ISSDApp {
 public:
-    void Read(const uint32_t addr) override;
+    uint32_t Read(const uint32_t addr) override;
     void Write(const uint32_t addr, const uint32_t data) override;
+private:
+    std::string GetReadCMD(const uint32_t addr);
+    std::string GetWriteCMD(const uint32_t addr, const uint32_t data);    
+    std::string GetReadResult(void);
 };

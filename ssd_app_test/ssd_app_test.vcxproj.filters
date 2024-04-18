@@ -49,5 +49,14 @@
     <Text Include="..\ssd_app_test_gtest\test_script.txt">
       <Filter>리소스 파일</Filter>
     </Text>
+    <Text Include="..\ssd_app_test_gtest\log.txt">
+      <Filter>리소스 파일</Filter>
+    </Text>
+    <Text Include="..\ssd_app_test_gtest\nand.txt">
+      <Filter>리소스 파일</Filter>
+    </Text>
+    <Text Include="..\ssd_app_test_gtest\result.txt">
+      <Filter>리소스 파일</Filter>
+    </Text>
   </ItemGroup>
 </Project>

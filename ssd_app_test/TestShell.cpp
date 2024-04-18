@@ -4,17 +4,20 @@
 #include <sstream>
 using namespace std;
 
-void
+uint32_t
 TestShell::Read(const uint32_t addr)
 {
-    ssd_app->Read(addr);
+    return ssd_app->Read(addr);
 }
 
-void
+vector<uint32_t>
 TestShell::FullRead(void)
 {
+    vector<uint32_t> read_result;
     for (int addr = kMinAddr; addr <= kMaxAddr; addr++)
-        ssd_app->Read(addr);
+        read_result.push_back(ssd_app->Read(addr));
+    
+    return read_result;
 }
 
 void
@@ -33,12 +36,17 @@ TestShell::FullWrite(const uint32_t data)
 void
 TestShell::TestApp1()
 {
+    bool is_test_pass = true;
+
     uint32_t write_pattern = 0xABCDFFFF;
-
     FullWrite(write_pattern);
-    FullRead();
 
-    //to be added comparing data part
+    vector<uint32_t> read_result = FullRead();
+
+    if (IsDataEqual(read_result, write_pattern))
+        cout << "testapp1 pass" << endl;
+    else
+        cout << "testapp1 fail" << endl;
 }
 
 void
@@ -47,32 +55,59 @@ TestShell::TestApp2()
     uint32_t first_write_pattern = 0xAAAABBBB;
     uint32_t second_write_pattern = 0x12345678;
     uint32_t loop = 50;
+    const uint32_t start_addr = 0, end_addr = 6;
 
     while (loop--) 
     {
-        WriteRange(0, 5, first_write_pattern);
+        WriteRange(start_addr, end_addr, first_write_pattern);
     }
 
-    WriteRange(0, 5, second_write_pattern);
-    ReadRange(0, 5);
+    WriteRange(start_addr, end_addr, second_write_pattern);
+    
+    vector<uint32_t> read_result = ReadRange(start_addr, end_addr);
 
-    //to be added comparing data part
+    if (IsDataEqual(read_result, second_write_pattern))
+        cout << "testapp2 pass" << endl;
+    else
+        cout << "testapp2 fail" << endl;
 }
 
-void TestShell::WriteRange(const uint32_t start_addr, const uint32_t end_addr, const uint32_t data)
+void 
+TestShell::WriteRange(const uint32_t start_addr, const uint32_t end_addr, const uint32_t data)
 {
-    for (uint32_t addr = start_addr; addr <= end_addr; ++addr)
+    for (uint32_t addr = start_addr; addr < end_addr; ++addr)
     {
         Write(addr, data);
     }
 }
 
-void TestShell::ReadRange(const uint32_t start_addr, const uint32_t end_addr)
+vector<uint32_t>
+TestShell::ReadRange(const uint32_t start_addr, const uint32_t end_addr)
 {
-    for (uint32_t addr = start_addr; addr <= end_addr; ++addr)
+    vector<uint32_t> read_result;
+    for (uint32_t addr = start_addr; addr < end_addr; ++addr)
     {
-        Read(addr);
+        read_result.push_back(Read(addr));
     }
+
+    return read_result;
+}
+
+bool
+TestShell::IsDataEqual(vector<uint32_t> actual, uint32_t expected)
+{
+    bool is_test_pass = true;
+
+    for (uint32_t idx = 0; idx < actual.size(); ++idx)
+    {
+        if (actual[idx] != expected)
+        {
+            cout << "idx : " << uppercase << hex << addr << " not equal!!" << endl;
+            is_test_pass = false;
+        }
+    }
+
+    return is_test_pass;
 }
 
 void

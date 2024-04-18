@@ -15,7 +15,7 @@ class MockSSDApp : public ISSDApp
 {
 public:
 	MOCK_METHOD(void, Write, (uint32_t addr, uint32_t data), (override));
-	MOCK_METHOD(void, Read, (uint32_t addr), (override));
+	MOCK_METHOD(uint32_t, Read, (uint32_t addr), (override));
 };
 
 TEST(TestCaseName, TestName) 
@@ -339,6 +339,126 @@ TEST_F(TestShellTestFixture, InputInvalidCMD)
 	result_out_file.close();
 }
 
+TEST_F(TestShellTestFixture, TestApp1TestWithMock)
+{
+	string user_input = "testapp1";
+	string exit_input = "Exit";
+	cout << user_input << endl;
+	cout << exit_input << endl;
+
+	MockSSDApp app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+	uint32_t pattern1 = 0xABCDFFFF;
+
+	for (int addr = 0; addr < 100; ++addr)
+	{
+		EXPECT_CALL(app, Write(addr, pattern1));
+	}
+	for (int addr = 0; addr < 100; ++addr)
+	{
+		EXPECT_CALL(app, Read(addr));
+	}
+
+	test_shell.Run();
+}
+
+TEST_F(TestShellTestFixture, TestApp2TestWithMock)
+{
+	string user_input = "testapp2";
+	string exit_input = "Exit";
+	cout << user_input << endl;
+	cout << exit_input << endl;
+
+	MockSSDApp app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	uint32_t pattern1 = 0xAAAABBBB;
+	uint32_t pattern2 = 0x12345678;
+
+	for (uint32_t addr = 0; addr < 6; ++addr)
+	{
+		EXPECT_CALL(app, Write(addr, pattern1)).Times(50);
+	}
+	for (uint32_t addr = 0; addr < 6; ++addr)
+	{
+		EXPECT_CALL(app, Write(addr, pattern2));
+	}
+	for (uint32_t addr = 0; addr < 6; ++addr)
+	{
+		EXPECT_CALL(app, Read(addr));
+	}
+
+	test_shell.Run();
+}
+
+TEST_F(TestShellTestFixture, TestApp1TestWithSSD)
+{
+	string user_input = "testapp1";
+	string exit_input = "Exit";
+	cout << user_input << endl;
+	cout << exit_input << endl;
+
+	string test_result_path = "./test_result.txt";
+	ofstream result_out_file;
+	result_out_file.open(test_result_path, ofstream::trunc | ofstream::out);
+	cout.rdbuf(result_out_file.rdbuf());
+
+	SSD_Adaptor app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	test_shell.Run();
+
+	freopen(test_result_path.c_str(), "rt", stdin);
+
+	string expected_data = "0xABCDFFFF";
+	string result;
+	for (int loop = 0; loop < 100; ++loop)
+	{
+		getline(cin, result);
+		EXPECT_EQ(result, expected_data);
+	}
+
+	expected_data = "testapp1 pass";
+	getline(cin, result);
+	EXPECT_EQ(result, expected_data);
+}
+
+TEST_F(TestShellTestFixture, TestApp2TestWithSSD)
+{
+	string user_input = "testapp2";
+	string exit_input = "Exit";
+	cout << user_input << endl;
+	cout << exit_input << endl;
+
+	string test_result_path = "./test_result.txt";
+	ofstream result_out_file;
+	result_out_file.open(test_result_path, ofstream::trunc | ofstream::out);
+	cout.rdbuf(result_out_file.rdbuf());
+
+	SSD_Adaptor app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	test_shell.Run();
+
+	freopen(test_result_path.c_str(), "rt", stdin);
+
+	string expected_data = "0x12345678";
+	string result;
+	for (int addr = 0; addr < 6; ++addr)
+	{
+		getline(cin, result);
+		EXPECT_EQ(result, expected_data);
+	}
+
+	expected_data = "testapp2 pass";
+	getline(cin, result);
+	EXPECT_EQ(result, expected_data);
+}
+
 TEST_F(TestShellTestFixture, SSDWriteTest)
 {
 	cout << "Write 1 0x11112222" << endl;
@@ -432,58 +552,4 @@ TEST_F(TestShellTestFixture, SSDFullReadTest)
 
 	getline(cin, result);
 	EXPECT_EQ(result, expected_data);
-}
-
-TEST_F(TestShellTestFixture, TestApp1TestWithMock)
-{
-	string user_input = "testapp1";
-	string exit_input = "Exit";
-	cout << user_input << endl;
-	cout << exit_input << endl;
-
-	MockSSDApp app;
-	TestShell test_shell;
-	test_shell.set_ssd_app(&app);
-	uint32_t pattern1 = 0xABCDFFFF;
-
-	for (int addr = 0; addr < 100; ++addr)
-	{
-		EXPECT_CALL(app, Write(addr, pattern1));
-	}
-	for (int addr = 0; addr < 100; ++addr)
-	{
-		EXPECT_CALL(app, Read(addr));
-	}
-
-	test_shell.Run();
-}
-
-TEST_F(TestShellTestFixture, TestApp2TestWithMock)
-{
-	string user_input = "testapp2";
-	string exit_input = "Exit";
-	cout << user_input << endl;
-	cout << exit_input << endl;
-
-	MockSSDApp app;
-	TestShell test_shell;
-	test_shell.set_ssd_app(&app);
-
-	uint32_t pattern1 = 0xAAAABBBB;
-	uint32_t pattern2 = 0x12345678;
-	
-	for (uint32_t addr = 0; addr < 6; ++addr)
-	{
-		EXPECT_CALL(app, Write(addr, pattern1)).Times(50);
-	}
-	for (uint32_t addr = 0; addr < 6; ++addr)
-	{
-		EXPECT_CALL(app, Write(addr, pattern2));
-	}
-	for (uint32_t addr = 0; addr < 6; ++addr)
-	{
-		EXPECT_CALL(app, Read(addr));
-	}
-
-	test_shell.Run();
 }
