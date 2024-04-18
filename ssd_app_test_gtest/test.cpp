@@ -81,11 +81,11 @@ TEST_F(TestShellTestFixture, RunnerTest)
 	auto file = freopen(test_result_path.c_str(), "rt", stdin);
 	string result;
 	getline(cin, result);
-	EXPECT_EQ(result, "Write  ---  Run...Pass");
+	EXPECT_EQ(result, "Write 1 0x1234AAAA  ---  Run...Pass");
 	getline(cin, result);
-	EXPECT_EQ(result, "Read  ---  Run...Pass");
+	EXPECT_EQ(result, "Read 1  ---  Run...Pass");
 	getline(cin, result);
-	EXPECT_EQ(result, "FullWrite  ---  Run...Pass");
+	EXPECT_EQ(result, "FullWrite 0x43215678  ---  Run...Pass");
 	getline(cin, result);
 	EXPECT_EQ(result, "FullRead  ---  Run...Pass");
 	fclose(file);

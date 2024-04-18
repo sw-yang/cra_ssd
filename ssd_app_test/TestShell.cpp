@@ -171,7 +171,7 @@ TestShell::Run(void)
         isCMDPass = true;
         if (!Input()) continue;
         
-        if (cmd != EXIT && cmd != HELP)
+        if (cmd != EXIT)
             PrintOutALineWithoutEndl(ONLY_RUNNER, user_input + "  ---  Run...");
 
         switch (cmd)
@@ -205,7 +205,7 @@ TestShell::Run(void)
                 break;
         }
 
-        if (cmd != EXIT && cmd != HELP)
+        if (cmd != EXIT)
         {
             if (isCMDPass)
                 PrintOutALine(ONLY_RUNNER, "Pass");
