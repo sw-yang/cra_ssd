@@ -190,7 +190,6 @@ TestShell::Run(void)
                 break;
             case HELP:
                 Help();
-                isCMDPass = false;
                 break;
             case TESTAPP1:
                 isCMDPass = TestApp1();
@@ -200,19 +199,21 @@ TestShell::Run(void)
                 break;
             case EXIT:
                 isGoing = false;
-                isCMDPass = false;
                 break;
             default:
                 //must not get here
                 break;
         }
 
-        if (isCMDPass)
-            PrintOutALine(ONLY_RUNNER, "Pass");
-        else
+        if (cmd != EXIT && cmd != HELP)
         {
-            PrintOutALine(ONLY_RUNNER, "FAIL!");
-            return;
+            if (isCMDPass)
+                PrintOutALine(ONLY_RUNNER, "Pass");
+            else
+            {
+                PrintOutALine(ONLY_RUNNER, "FAIL!");
+                return;
+            }
         }
     }
 }
@@ -220,7 +221,8 @@ TestShell::Run(void)
 void 
 TestShell::ScriptRun(const char* script_path)
 {
-    if (freopen(script_path, "rt", stdin) == nullptr)
+    FILE* in_file = freopen(script_path, "rt", stdin);
+    if (in_file == nullptr)
     {
         PrintOutALine(INFO, string{ script_path } + " not exist");
         return;
@@ -228,6 +230,8 @@ TestShell::ScriptRun(const char* script_path)
 
     cur_print_level = ONLY_RUNNER;
     Run();
+
+    fclose(in_file);
 }
 
 bool 

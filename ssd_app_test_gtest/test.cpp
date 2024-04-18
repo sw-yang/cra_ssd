@@ -57,10 +57,14 @@ TEST_F(TestShellTestFixture, RunnerTest)
 
 	string write_cmd = "Write 1 0x1234AAAA\n";
 	string read_cmd = "Read 1\n";
+	string full_write_cmd = "FullWrite 0x43215678\n";
+	string full_read_cmd = "FullRead\n";
 	string exit_cmd = "Exit\n";
 
 	script_fout.write(write_cmd.c_str(), write_cmd.length());
 	script_fout.write(read_cmd.c_str(), read_cmd.length());
+	script_fout.write(full_write_cmd.c_str(), full_write_cmd.length());
+	script_fout.write(full_read_cmd.c_str(), full_read_cmd.length());
 	script_fout.write(exit_cmd.c_str(), exit_cmd.length());
 	script_fout.close();
 
@@ -80,6 +84,10 @@ TEST_F(TestShellTestFixture, RunnerTest)
 	EXPECT_EQ(result, "Write  ---  Run...Pass");
 	getline(cin, result);
 	EXPECT_EQ(result, "Read  ---  Run...Pass");
+	getline(cin, result);
+	EXPECT_EQ(result, "FullWrite  ---  Run...Pass");
+	getline(cin, result);
+	EXPECT_EQ(result, "FullRead  ---  Run...Pass");
 	fclose(file);
 }
 
