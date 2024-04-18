@@ -133,14 +133,19 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Converter.cpp" />
+    <ClCompile Include="InvalidChecker.cpp" />
     <ClCompile Include="ISSDApp.h" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SSD_Adaptor.cpp" />
     <ClCompile Include="TestShell.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Converter.h" />
+    <ClInclude Include="InvalidChecker.h" />
     <ClInclude Include="SSD_Adaptor.h" />
     <ClInclude Include="TestShell.h" />
+    <ClInclude Include="Test_Const.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\ssd_app_test_gtest\log.txt" />
