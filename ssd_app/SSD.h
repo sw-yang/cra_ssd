@@ -7,6 +7,12 @@
 #include "CMD.h"
 #include "FileManager.h"
 
+
+
+#include "iCommand.h"
+
+
+
 using namespace std;
 
 class SSD
@@ -28,4 +34,6 @@ private:
 	uint32_t nand_[100];
 	FileManager* nand_file_;
 	FileManager* result_file_;
+
+	iCommand* cmd_;
 };

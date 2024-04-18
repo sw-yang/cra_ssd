@@ -1,4 +1,6 @@
 #include "SSD.h"
+#include "Reader.h"
+#include "Writer.h"
 
 SSD::SSD(std::string nand_file, std::string result_file)
 {
@@ -78,6 +80,7 @@ std::string SSD::IntToHex(uint32_t integer)
 
 void SSD::Run(Command command_)
 {
+#if 0
 	if (!command_.getValid()) throw std::invalid_argument("Invalid Command");
 
 	string cmd = command_.getCommand();
@@ -90,4 +93,25 @@ void SSD::Run(Command command_)
 	{
 		Write(command_.getAddress(), command_.getValue());
 	}
+#else
+
+	// 명령어 R, W 파싱
+	char mode = 'R';
+
+	switch (mode) {
+	case 'R':
+	case 'r':
+		cmd_ = new Reader();
+		break;
+	case 'W':
+	case 'w':
+		cmd_ = new Writer();
+		break;
+	default:
+		// error
+	}
+
+	cmd_->Run();
+
+#endif
 }
