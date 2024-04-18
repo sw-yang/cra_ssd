@@ -98,7 +98,7 @@ void SSD::Run(string mode, vector<string> args)
 {
 	if (mode == "R")
 	{
-		cmd_ = new Reader();
+		cmd_ = new Reader(args, nand_file_, result_file_);
 	}
 	else if (mode == "W")
 	{
