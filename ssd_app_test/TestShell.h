@@ -1,5 +1,6 @@
 #pragma once
 #include "ISSDApp.h"
+#include "Logger.h"
 #include <string>
 #include <vector>
 #include "Test_Const.h"
@@ -17,12 +18,6 @@ enum TestShellCMD
     TESTAPP1,
     TESTAPP2,
     EXIT,
-};
-
-enum PrintLevel
-{
-    INFO,
-    ONLY_RUNNER,
 };
 
 class TestShell
@@ -55,6 +50,7 @@ private:
     std::string UintToHexString(const uint32_t data);
 
     ISSDApp* ssd_app;
+    Logger logger;
     TestShellCMD cmd;
     uint32_t addr;
     uint32_t data;

@@ -6,6 +6,8 @@
 #include "../ssd_app_test/SSD_Adaptor.cpp"
 #include "../ssd_app_test/Converter.cpp"
 #include "../ssd_app_test/InvalidChecker.cpp"
+#include "../ssd_app_test/Logger.cpp"
+
 #include <iostream>
 #include <fstream>
 #include <string>

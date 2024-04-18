@@ -154,15 +154,13 @@ TestShell::Help(void)
 void
 TestShell::PrintOutALine(const PrintLevel level, const string str)
 {
-    if (cur_print_level == level)
-        cout << str << endl;
+    logger.PrintOutALine(level, str);
 }
 
 void
 TestShell::PrintOutALineWithoutEndl(const PrintLevel level, const string str)
 {
-    if (cur_print_level == level)
-        cout << str;
+    logger.PrintOutALineWithoutEndl(level, str);
 }
 
 string 
@@ -247,7 +245,7 @@ TestShell::ScriptRun(const char* script_path)
         return;
     }
 
-    cur_print_level = ONLY_RUNNER;
+    logger.SetPrintLevel(ONLY_RUNNER);
     Run();
 
     fclose(in_file);
