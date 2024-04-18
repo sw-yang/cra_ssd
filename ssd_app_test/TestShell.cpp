@@ -8,7 +8,8 @@ uint32_t
 TestShell::Read(const uint32_t addr)
 {
     uint32_t data = ssd_app->Read(addr);
-    cout << "0x" << uppercase << hex << data << endl;
+
+    PrintOutALine(UintToHexString(data));
 
     return data;
 }
@@ -46,10 +47,10 @@ TestShell::TestApp1()
 
     vector<uint32_t> read_result = FullRead();
 
-    if (IsDataEqual(read_result, write_pattern))
-        cout << "testapp1 pass" << endl;
+    if (IsArrayDataEqual(read_result, write_pattern))
+        PrintOutALine("testapp1 pass");
     else
-        cout << "testapp1 fail" << endl;
+        PrintOutALine("testapp1 fail");
 }
 
 void
@@ -69,10 +70,10 @@ TestShell::TestApp2()
     
     vector<uint32_t> read_result = ReadRange(start_addr, end_addr);
 
-    if (IsDataEqual(read_result, second_write_pattern))
-        cout << "testapp2 pass" << endl;
+    if (IsArrayDataEqual(read_result, second_write_pattern))
+        PrintOutALine("testapp2 pass");
     else
-        cout << "testapp2 fail" << endl;
+        PrintOutALine("testapp2 fail");
 }
 
 void 
@@ -97,15 +98,16 @@ TestShell::ReadRange(const uint32_t start_addr, const uint32_t end_addr)
 }
 
 bool
-TestShell::IsDataEqual(vector<uint32_t> actual, uint32_t expected)
+TestShell::IsArrayDataEqual(vector<uint32_t> actual_arr, uint32_t expected)
 {
     bool is_test_pass = true;
 
-    for (uint32_t idx = 0; idx < actual.size(); ++idx)
+    for (uint32_t idx = 0; idx < actual_arr.size(); ++idx)
     {
-        if (actual[idx] != expected)
+        if (actual_arr[idx] != expected)
         {
-            cout << "idx : " << uppercase << hex << addr << " not equal!!" << endl;
+            PrintOutALine("idx[" + to_string(addr) + "] not equal!!");
+            PrintOutALine("actual : " + UintToHexString(actual_arr[idx]) + "expected : " + UintToHexString(expected));
             is_test_pass = false;
         }
     }
@@ -116,13 +118,29 @@ TestShell::IsDataEqual(vector<uint32_t> actual, uint32_t expected)
 void
 TestShell::Help(void)
 {
-   cout << "Available commands:" << endl;
-   cout << "Write <addr> <data>: Write data to address" << endl;
-   cout << "Read <addr>: Read data from address" << endl;
-   cout << "FullWrite <data>: Write data to full address" << endl;
-   cout << "FullRead : Read data from full address" << endl;
-   cout << "Help: Show available commands" << endl;
-   cout << "Exit: Exit the program" << endl;
+    PrintOutALine("Available commands:");
+    PrintOutALine("Write <addr> <data>: Write data to address");
+    PrintOutALine("Read <addr>: Read data from address");
+    PrintOutALine("FullWrite <data>: Write data to full address");
+    PrintOutALine("FullRead : Read data from full address");
+    PrintOutALine("Help: Show available commands");
+    PrintOutALine("Exit: Exit the program");
+}
+
+void
+TestShell::PrintOutALine(const string str)
+{
+    if (PrintEnable)
+        cout << str << endl;
+}
+
+string 
+TestShell::UintToHexString(const uint32_t data)
+{
+    ostringstream data_ss;
+    data_ss << "0x" << hex << uppercase << data;
+
+    return data_ss.str();
 }
 
 void 
@@ -222,7 +240,7 @@ TestShell::Input(void)
     }
     else
     {
-        cout << invalid_cmd_str << endl;
+        PrintOutALine(invalid_cmd_str);
         Help();
         return false;
     }
@@ -235,7 +253,7 @@ TestShell::ConvertAddrToInt(const string& str_addr)
 {
     if (IsInvalidAddrFormat(str_addr))
     {
-        cout << "[Error] Invalid Address" << endl;
+        PrintOutALine("[Error] Invalid Address");
         return false;
     }
 
@@ -244,7 +262,7 @@ TestShell::ConvertAddrToInt(const string& str_addr)
 
     if (IsInvalidAddrRange())
     {
-        cout << "[Error] Invalid Address" << endl;
+        PrintOutALine("[Error] Invalid Address");
         return false;
     }
 
@@ -273,7 +291,7 @@ TestShell::ConvertDataToInt(const string& str_data)
 {
     if (IsInvalidDataFormat(str_data))
     {
-        cout << "[Error] Invalid Data" << endl;
+        PrintOutALine("[Error] Invalid Data");
         return false;
     }
 

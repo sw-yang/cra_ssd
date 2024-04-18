@@ -44,7 +44,9 @@ private:
     void TestApp2(void);
     void WriteRange(uint32_t start_addr, uint32_t end_addr, uint32_t data);
     std::vector<uint32_t> ReadRange(uint32_t start_addr, uint32_t end_addr);
-    bool IsDataEqual(std::vector<uint32_t> actual, uint32_t expected);
+    bool IsArrayDataEqual(std::vector<uint32_t> actual, uint32_t expected);
+    void PrintOutALine(const std::string str);
+    std::string UintToHexString(const uint32_t data);
 
     ISSDApp* ssd_app;
     TestShellCMD cmd;
@@ -55,4 +57,6 @@ private:
     const uint32_t kMinAddr = 0;
     const uint32_t kMaxAddr = 99;
     const uint32_t kDataLen = 10;
+
+    bool PrintEnable = true;
 };
