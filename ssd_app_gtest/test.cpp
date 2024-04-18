@@ -504,7 +504,7 @@ public:
 	uint32_t ADDRESS = 57;
 };
 
-TEST_F(NewSSDTest, DISABLED_ThrowExceptionWhenInvalidAddressWhileRead)
+TEST_F(NewSSDTest, ThrowExceptionWhenInvalidAddressWhileRead)
 {
 	try
 	{
@@ -514,11 +514,11 @@ TEST_F(NewSSDTest, DISABLED_ThrowExceptionWhenInvalidAddressWhileRead)
 	}
 	catch (std::exception& e)
 	{
-		EXPECT_EQ(std::string{ "Invalid address" }, std::string{ e.what() });
+		EXPECT_EQ(std::string{ "Invalid args" }, std::string{ e.what() });
 	}
 }
 
-TEST_F(NewSSDTest, DISABLED_ReadDefaultValue)
+TEST_F(NewSSDTest, ReadDefaultValue)
 {
 	ClearTestFiles();
 
@@ -528,7 +528,7 @@ TEST_F(NewSSDTest, DISABLED_ReadDefaultValue)
 	EXPECT_EQ("0x00000000", ReadResultFile());
 }
 
-TEST_F(NewSSDTest, DISABLED_ReadWrittenValueFrom0)
+TEST_F(NewSSDTest, ReadWrittenValueFrom0)
 {
 	NAND[0] = 0x48a7;
 	WriteTestFiles(NAND, sizeof(NAND));
@@ -539,7 +539,7 @@ TEST_F(NewSSDTest, DISABLED_ReadWrittenValueFrom0)
 	EXPECT_EQ("0x000048A7", ReadResultFile());
 }
 
-TEST_F(NewSSDTest, DISABLED_ReadWrittenValueFromOtherAddress)
+TEST_F(NewSSDTest, ReadWrittenValueFromOtherAddress)
 {
 	NAND[ADDRESS] = 0xff25abcd;
 	WriteTestFiles(NAND, sizeof(NAND));
@@ -551,7 +551,7 @@ TEST_F(NewSSDTest, DISABLED_ReadWrittenValueFromOtherAddress)
 	EXPECT_EQ("0xFF25ABCD", ReadResultFile());
 }
 
-TEST_F(NewSSDTest, DISABLED_ResetNandDataWhenFileIsInvalid)
+TEST_F(NewSSDTest, ResetNandDataWhenFileIsInvalid)
 {
 	uint32_t INVALID_NAND[50] = { 0, };	// invalid size
 	INVALID_NAND[0] = 0x48a7;
@@ -608,7 +608,7 @@ TEST_F(NewSSDTest, OverWrite)
 	EXPECT_EQ(NAND[ADDRESS], 0x777);
 }
 
-TEST_F(NewSSDTest, DISABLED_ReadWriteTest)
+TEST_F(NewSSDTest, ReadWriteTest)
 {
 	ssd->Run("W", { "10", "0x00000011" });
 	ssd->Run("R", { "10" });
