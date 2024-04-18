@@ -13,7 +13,7 @@ TestShell::Read(const uint32_t addr)
 {
     uint32_t data = ssd_app->Read(addr);
 
-    logger.PrintOutALine(INFO, UintToHexString(data));
+    logger.PrintOutALine(DEBUG, UintToHexString(data));
 
     return data;
 }

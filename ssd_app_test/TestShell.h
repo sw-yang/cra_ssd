@@ -53,7 +53,6 @@ private:
     uint32_t addr;
     uint32_t data;
 
-    PrintLevel cur_print_level = INFO;
     std::string user_input;
     Converter converter;
 };

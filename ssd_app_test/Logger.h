@@ -3,8 +3,9 @@
 
 enum PrintLevel
 {
-    INFO,
     ONLY_RUNNER,
+    DEBUG,
+    INFO,
 };
 
 class Logger {
