@@ -13,15 +13,18 @@ void SSD::Run(string mode, vector<string> args)
 {
 	if (mode == "R")
 	{
-		cmd_ = new Reader(args, nand_file_, result_file_);
+		iCmd* cmd = new ReadCmd(args);
+		cmd_ = new Reader(cmd, nand_file_, result_file_);
 	}
 	else if (mode == "W")
 	{
-		cmd_ = new Writer(args, nand_file_);
+		iCmd* cmd = new WriteCmd(args);
+		cmd_ = new Writer(cmd, nand_file_);
 	}
 	else if (mode == "E")
 	{
-		cmd_ = new Eraser(args, nand_file_);
+		iCmd* cmd = new EraseCmd(args);
+		cmd_ = new Eraser(cmd, nand_file_);
 	}
 	else
 	{

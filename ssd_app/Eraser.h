@@ -7,20 +7,32 @@
 #include "iCommand.h"
 #include "FileManager.h"
 
-class Eraser : public iCommand
+class EraseCmd : public iCmd
 {
 public:
-	Eraser(std::vector<std::string>& args, FileManager* nand);
-	void Run() override;
+	EraseCmd(std::vector<std::string>& args);
+	std::string ToString();
+	uint32_t GetAddr();
+	uint32_t GetRange();
 
 private:
 	std::vector<std::string> args_;
+
+	bool isValidCommand();
+};
+
+
+class Eraser : public iCommand
+{
+public:
+	Eraser(iCmd* cmd, FileManager* nand);
+	void Run() override;
+
+private:
+	iCmd* cmd_;
 	uint32_t addr_;
 	uint32_t range_;
 	FileManager* nand_;
 	
-	bool isNumber(const std::string& str);
-	bool isValidCommand();
-	void Parse();
 	void Erase();
 };

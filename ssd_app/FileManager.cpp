@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <iostream>
 #include "FileManager.h"
 
 void FileManager::ReadBinaryFile(uint32_t* data, size_t size, std::streampos start)

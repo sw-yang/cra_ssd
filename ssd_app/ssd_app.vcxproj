@@ -130,6 +130,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CmdBuffer.cpp" />
     <ClCompile Include="Eraser.cpp" />
     <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="main.cpp" />
@@ -138,6 +139,7 @@
     <ClCompile Include="Writer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CmdBuffer.h" />
     <ClInclude Include="Eraser.h" />
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="iCommand.h" />

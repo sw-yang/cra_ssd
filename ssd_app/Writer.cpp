@@ -1,7 +1,6 @@
 #include "Writer.h"
 
-Writer::Writer(std::vector<std::string>& args, FileManager* nand) :
-	addr_(0), value_(0), nand_(nand)
+WriteCmd::WriteCmd(std::vector<std::string>& args)
 {
 	for (std::string& arg : args)
 	{
@@ -9,25 +8,33 @@ Writer::Writer(std::vector<std::string>& args, FileManager* nand) :
 	}
 }
 
-void Writer::Run()
+std::string WriteCmd::ToString()
 {
-	Parse();
-	Write();
+	std::string ret = "W " + std::to_string(GetAddr()) + " " + args_[1];
+	return ret;
 }
 
-bool Writer::isNumber(const std::string& str)
+uint32_t WriteCmd::GetAddr()
 {
-	for (char c : str)
+	if (!isValidCommand())
 	{
-		if (!isdigit(c))
-		{
-			return false;
-		}
+		throw std::exception("Invalid args");
 	}
-	return true;
+	return (unsigned int)std::stoi(args_[0]);
 }
 
-unsigned int Writer::hexStringToInt(const std::string& hexStr) {
+uint32_t WriteCmd::GetValue()
+{
+	if (!isValidCommand())
+	{
+		throw std::exception("Invalid args");
+	}
+	return hexStringToInt(args_[1]);
+
+}
+
+unsigned int WriteCmd::hexStringToInt(const std::string& hexStr)
+{
 	unsigned int result;
 	std::stringstream ss;
 	ss << std::hex << hexStr;
@@ -35,13 +42,13 @@ unsigned int Writer::hexStringToInt(const std::string& hexStr) {
 	return result;
 }
 
-bool Writer::isValidHex(const std::string& str)
+bool WriteCmd::isValidHex(const std::string& str)
 {
 	std::regex pattern("^0x[0-9a-fA-F]{8}$");
 	return std::regex_match(str, pattern);
 }
 
-bool Writer::isValidCommand()
+bool WriteCmd::isValidCommand()
 {
 	if (args_.size() != 2) return false;
 	if (!isNumber(args_[0])) return false;
@@ -51,14 +58,14 @@ bool Writer::isValidCommand()
 	return true;
 }
 
-void Writer::Parse()
+Writer::Writer(iCmd* cmd, FileManager* nand) :
+	cmd_(cmd), addr_(0), value_(0), nand_(nand) {}
+
+void Writer::Run()
 {
-	if (!isValidCommand())
-	{
-		throw std::exception("Invalid args");
-	}
-	addr_ = (unsigned int)std::stoi(args_[0]);
-	value_ = hexStringToInt(args_[1]);
+	addr_ = reinterpret_cast<WriteCmd*>(cmd_)->GetAddr();
+	value_ = reinterpret_cast<WriteCmd*>(cmd_)->GetValue();
+	Write();
 }
 
 void Writer::Write()
