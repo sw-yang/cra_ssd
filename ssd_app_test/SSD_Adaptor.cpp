@@ -10,11 +10,7 @@ uint32_t
 SSD_Adaptor::Read(const uint32_t  addr)
 {
     system(GetReadCMD(addr).c_str());
-
-    string data = GetReadResult();
-    cout << data << endl;
-    
-    return stoul(data, nullptr, 16);
+    return stoul(GetReadResult(), nullptr, 16);
 }
 
 string 

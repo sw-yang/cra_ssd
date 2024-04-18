@@ -1,0 +1,5 @@
+Write 1 0x1234AAAA
+Read 1
+FullWrite 0x43215678
+FullRead
+Exit

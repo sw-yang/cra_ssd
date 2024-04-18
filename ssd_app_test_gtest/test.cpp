@@ -38,16 +38,59 @@ public:
 		out_file.open(user_input_script, ofstream::trunc | ofstream::out);
 		cout.rdbuf(out_file.rdbuf());
 		//reopen 
-		freopen(user_input_script.c_str(), "rt", stdin);
+		in_file = freopen(user_input_script.c_str(), "rt", stdin);
 	}
 	void TearDown(void) 
 	{
 		out_file.close();
+		fclose(in_file);
 	}
+	string user_input_script = "./test_script.txt";
 private:
 	ofstream out_file;
-	string user_input_script = "./test_script.txt";
+	FILE* in_file;
 };
+
+TEST_F(TestShellTestFixture, RunnerTest)
+{
+	string sample_script_path = "SampleScript.lst";
+	ofstream script_fout(sample_script_path, ios_base::out | ios_base::trunc);
+
+	string write_cmd = "Write 1 0x1234AAAA\n";
+	string read_cmd = "Read 1\n";
+	string full_write_cmd = "FullWrite 0x43215678\n";
+	string full_read_cmd = "FullRead\n";
+	string exit_cmd = "Exit\n";
+
+	script_fout.write(write_cmd.c_str(), write_cmd.length());
+	script_fout.write(read_cmd.c_str(), read_cmd.length());
+	script_fout.write(full_write_cmd.c_str(), full_write_cmd.length());
+	script_fout.write(full_read_cmd.c_str(), full_read_cmd.length());
+	script_fout.write(exit_cmd.c_str(), exit_cmd.length());
+	script_fout.close();
+
+	string test_result_path = "./test_result.txt";
+	ofstream result_out_file;
+	result_out_file.open(test_result_path, ofstream::trunc | ofstream::out);
+	cout.rdbuf(result_out_file.rdbuf());
+
+	SSD_Adaptor app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+	test_shell.ScriptRun(sample_script_path.c_str());
+
+	auto file = freopen(test_result_path.c_str(), "rt", stdin);
+	string result;
+	getline(cin, result);
+	EXPECT_EQ(result, "Write 1 0x1234AAAA  ---  Run...Pass");
+	getline(cin, result);
+	EXPECT_EQ(result, "Read 1  ---  Run...Pass");
+	getline(cin, result);
+	EXPECT_EQ(result, "FullWrite 0x43215678  ---  Run...Pass");
+	getline(cin, result);
+	EXPECT_EQ(result, "FullRead  ---  Run...Pass");
+	fclose(file);
+}
 
 TEST_F(TestShellTestFixture, OutputToFile)
 {
@@ -190,7 +233,7 @@ TEST_F(TestShellTestFixture, HelpTest)
 
 	test_shell.Run();
 
-	freopen(test_result_path.c_str(), "rt", stdin);
+	auto file = freopen(test_result_path.c_str(), "rt", stdin);
 	string result;
 	getline(cin, result);
 	EXPECT_EQ(result, string{ "Available commands:" });
@@ -208,6 +251,7 @@ TEST_F(TestShellTestFixture, HelpTest)
 	EXPECT_EQ(result, string{ "Exit: Exit the program" });
 
 	result_out_file.close();
+	fclose(file);
 }
 
 TEST_F(TestShellTestFixture, ExitTest)
@@ -282,7 +326,7 @@ TEST_F(TestShellTestFixture, InputInvalidWrite)
 	string result;
 	test_shell.Run();
 
-	freopen(test_result_path.c_str(), "rt", stdin);
+	auto file = freopen(test_result_path.c_str(), "rt", stdin);
 
 	getline(cin, result);
 	EXPECT_EQ(result, expected_invalid_addr);
@@ -296,6 +340,7 @@ TEST_F(TestShellTestFixture, InputInvalidWrite)
 	EXPECT_EQ(result, expected_invalid_addr);
 
 	result_out_file.close();
+	fclose(file);
 }
 
 TEST_F(TestShellTestFixture, InputInvalidRead)
@@ -320,7 +365,7 @@ TEST_F(TestShellTestFixture, InputInvalidRead)
 	string result;
 	test_shell.Run();
 
-	freopen(test_result_path.c_str(), "rt", stdin);
+	auto file = freopen(test_result_path.c_str(), "rt", stdin);
 
 	getline(cin, result);
 	EXPECT_EQ(result, expected_invalid_addr);
@@ -334,6 +379,7 @@ TEST_F(TestShellTestFixture, InputInvalidRead)
 	EXPECT_EQ(result, expected_invalid_addr);
 
 	result_out_file.close();
+	fclose(file);
 }
 
 TEST_F(TestShellTestFixture, InputInvalidCMD)
@@ -354,7 +400,7 @@ TEST_F(TestShellTestFixture, InputInvalidCMD)
 	string result;
 	test_shell.Run();
 
-	freopen(test_result_path.c_str(), "rt", stdin);
+	auto file = freopen(test_result_path.c_str(), "rt", stdin);
 
 	getline(cin, result);
 	EXPECT_EQ(result, expected_invalid_cmd);
@@ -374,6 +420,7 @@ TEST_F(TestShellTestFixture, InputInvalidCMD)
 	EXPECT_EQ(result, string{ "Exit: Exit the program" });
 	
 	result_out_file.close();
+	fclose(file);
 }
 
 TEST_F(TestShellTestFixture, TestApp1TestWithMock)
@@ -448,7 +495,7 @@ TEST_F(TestShellTestFixture, TestApp1TestWithSSD)
 
 	test_shell.Run();
 
-	freopen(test_result_path.c_str(), "rt", stdin);
+	auto file = freopen(test_result_path.c_str(), "rt", stdin);
 
 	string expected_data = "0xABCDFFFF";
 	string result;
@@ -461,6 +508,7 @@ TEST_F(TestShellTestFixture, TestApp1TestWithSSD)
 	expected_data = "testapp1 pass";
 	getline(cin, result);
 	EXPECT_EQ(result, expected_data);
+	fclose(file);
 }
 
 TEST_F(TestShellTestFixture, TestApp2TestWithSSD)
@@ -481,7 +529,7 @@ TEST_F(TestShellTestFixture, TestApp2TestWithSSD)
 
 	test_shell.Run();
 
-	freopen(test_result_path.c_str(), "rt", stdin);
+	auto file = freopen(test_result_path.c_str(), "rt", stdin);
 
 	string expected_data = "0x12345678";
 	string result;
@@ -494,6 +542,7 @@ TEST_F(TestShellTestFixture, TestApp2TestWithSSD)
 	expected_data = "testapp2 pass";
 	getline(cin, result);
 	EXPECT_EQ(result, expected_data);
+	fclose(file);
 }
 
 TEST_F(TestShellTestFixture, SSDWriteTest)
@@ -608,10 +657,12 @@ TEST_F(TestShellTestFixture, SSDFullReadTest)
 	string result;
 
 	test_shell.Run();
-	freopen(test_result_path.c_str(), "rt", stdin);
+	auto file = freopen(test_result_path.c_str(), "rt", stdin);
 
 	getline(cin, result);
 	EXPECT_EQ(result, expected_data);
+
+	fclose(file);
 }
 
 TEST_F(TestShellTestFixture, DISABLED_SSDEraseRangeTest)

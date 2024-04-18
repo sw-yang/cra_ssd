@@ -1,13 +1,21 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "TestShell.h"
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <sstream>
+
 using namespace std;
 
 uint32_t
 TestShell::Read(const uint32_t addr)
 {
-    return ssd_app->Read(addr);
+    uint32_t data = ssd_app->Read(addr);
+
+    PrintOutALine(INFO, UintToHexString(data));
+
+    return data;
 }
 
 vector<uint32_t>
@@ -15,7 +23,7 @@ TestShell::FullRead(void)
 {
     vector<uint32_t> read_result;
     for (int addr = kMinAddr; addr <= kMaxAddr; addr++)
-        read_result.push_back(ssd_app->Read(addr));
+        read_result.push_back(Read(addr));
     
     return read_result;
 }
@@ -30,7 +38,7 @@ void
 TestShell::FullWrite(const uint32_t data)
 {
     for (int addr = kMinAddr; addr <= kMaxAddr; addr++)
-        ssd_app->Write(addr, data);
+        Write(addr, data);
 }
 
 void
@@ -49,22 +57,26 @@ TestShell::EraseRange(const uint32_t startaddr, const uint32_t endaddr)
 void
 TestShell::TestApp1()
 {
-    bool is_test_pass = true;
+    bool is_test_pass = false;
 
     uint32_t write_pattern = 0xABCDFFFF;
     FullWrite(write_pattern);
 
     vector<uint32_t> read_result = FullRead();
 
-    if (IsDataEqual(read_result, write_pattern))
-        cout << "testapp1 pass" << endl;
+    is_test_pass = IsArrayDataEqual(read_result, write_pattern);
+    if (is_test_pass)
+        PrintOutALine(INFO, "testapp1 pass");
     else
-        cout << "testapp1 fail" << endl;
+        PrintOutALine(INFO, "testapp1 fail");
+
+    return is_test_pass;
 }
 
-void
+bool
 TestShell::TestApp2()
 {
+    bool is_test_pass = false;
     uint32_t first_write_pattern = 0xAAAABBBB;
     uint32_t second_write_pattern = 0x12345678;
     uint32_t loop = 50;
@@ -79,10 +91,13 @@ TestShell::TestApp2()
     
     vector<uint32_t> read_result = ReadRange(start_addr, end_addr);
 
-    if (IsDataEqual(read_result, second_write_pattern))
-        cout << "testapp2 pass" << endl;
+    is_test_pass = IsArrayDataEqual(read_result, second_write_pattern);
+    if (is_test_pass)
+        PrintOutALine(INFO, "testapp2 pass");
     else
-        cout << "testapp2 fail" << endl;
+        PrintOutALine(INFO, "testapp2 fail");
+
+    return is_test_pass;
 }
 
 void 
@@ -107,15 +122,16 @@ TestShell::ReadRange(const uint32_t start_addr, const uint32_t end_addr)
 }
 
 bool
-TestShell::IsDataEqual(vector<uint32_t> actual, uint32_t expected)
+TestShell::IsArrayDataEqual(const vector<uint32_t> actual_arr, const uint32_t expected)
 {
     bool is_test_pass = true;
 
-    for (uint32_t idx = 0; idx < actual.size(); ++idx)
+    for (uint32_t idx = 0; idx < actual_arr.size(); ++idx)
     {
-        if (actual[idx] != expected)
+        if (actual_arr[idx] != expected)
         {
-            cout << "idx : " << uppercase << hex << addr << " not equal!!" << endl;
+            PrintOutALine(INFO, "idx[" + to_string(idx) + "] not equal!!");
+            PrintOutALine(INFO, "actual : " + UintToHexString(actual_arr[idx]) + "expected : " + UintToHexString(expected));
             is_test_pass = false;
         }
     }
@@ -126,22 +142,50 @@ TestShell::IsDataEqual(vector<uint32_t> actual, uint32_t expected)
 void
 TestShell::Help(void)
 {
-   cout << "Available commands:" << endl;
-   cout << "Write <addr> <data>: Write data to address" << endl;
-   cout << "Read <addr>: Read data from address" << endl;
-   cout << "FullWrite <data>: Write data to full address" << endl;
-   cout << "FullRead : Read data from full address" << endl;
-   cout << "Help: Show available commands" << endl;
-   cout << "Exit: Exit the program" << endl;
+    PrintOutALine(INFO, "Available commands:");
+    PrintOutALine(INFO, "Write <addr> <data>: Write data to address");
+    PrintOutALine(INFO, "Read <addr>: Read data from address");
+    PrintOutALine(INFO, "FullWrite <data>: Write data to full address");
+    PrintOutALine(INFO, "FullRead : Read data from full address");
+    PrintOutALine(INFO, "Help: Show available commands");
+    PrintOutALine(INFO, "Exit: Exit the program");
+}
+
+void
+TestShell::PrintOutALine(const PrintLevel level, const string str)
+{
+    if (cur_print_level == level)
+        cout << str << endl;
+}
+
+void
+TestShell::PrintOutALineWithoutEndl(const PrintLevel level, const string str)
+{
+    if (cur_print_level == level)
+        cout << str;
+}
+
+string 
+TestShell::UintToHexString(const uint32_t data)
+{
+    ostringstream data_ss;
+    data_ss << "0x" << hex << uppercase << data;
+
+    return data_ss.str();
 }
 
 void 
 TestShell::Run(void)
 {
     bool isGoing = true;
+    bool isCMDPass;
     while (isGoing)
     {
+        isCMDPass = true;
         if (!Input()) continue;
+        
+        if (cmd != EXIT)
+            PrintOutALineWithoutEndl(ONLY_RUNNER, user_input + "  ---  Run...");
 
         switch (cmd)
         {
@@ -167,10 +211,10 @@ TestShell::Run(void)
                 Help();
                 break;
             case TESTAPP1:
-                TestApp1();
+                isCMDPass = TestApp1();
                 break;
             case TESTAPP2:
-                TestApp2();
+                isCMDPass = TestApp2();
                 break;
             case EXIT:
                 isGoing = false;
@@ -179,14 +223,40 @@ TestShell::Run(void)
                 //must not get here
                 break;
         }
+
+        if (cmd != EXIT)
+        {
+            if (isCMDPass)
+                PrintOutALine(ONLY_RUNNER, "Pass");
+            else
+            {
+                PrintOutALine(ONLY_RUNNER, "FAIL!");
+                return;
+            }
+        }
     }
+}
+
+void 
+TestShell::ScriptRun(const char* script_path)
+{
+    FILE* in_file = freopen(script_path, "rt", stdin);
+    if (in_file == nullptr)
+    {
+        PrintOutALine(INFO, string{ script_path } + " not exist");
+        return;
+    }
+
+    cur_print_level = ONLY_RUNNER;
+    Run();
+
+    fclose(in_file);
 }
 
 bool 
 TestShell::Input(void) 
 {
     const string invalid_cmd_str = "[Error] Invalid CMD";
-    string user_input;
     string str_cmd, str_addr, str_data;
 
     getline(cin, user_input);
@@ -257,7 +327,7 @@ TestShell::Input(void)
     }
     else
     {
-        cout << invalid_cmd_str << endl;
+        PrintOutALine(INFO, invalid_cmd_str);
         Help();
         return false;
     }
@@ -270,7 +340,7 @@ TestShell::ConvertAddrToInt(const string& str_addr)
 {
     if (IsInvalidAddrFormat(str_addr))
     {
-        cout << "[Error] Invalid Address" << endl;
+        PrintOutALine(INFO, "[Error] Invalid Address");
         return false;
     }
 
@@ -279,7 +349,7 @@ TestShell::ConvertAddrToInt(const string& str_addr)
 
     if (IsInvalidAddrRange())
     {
-        cout << "[Error] Invalid Address" << endl;
+        PrintOutALine(INFO, "[Error] Invalid Address");
         return false;
     }
 
@@ -328,7 +398,7 @@ TestShell::ConvertDataToInt(const string& str_data)
 {
     if (IsInvalidDataFormat(str_data))
     {
-        cout << "[Error] Invalid Data" << endl;
+        PrintOutALine(INFO, "[Error] Invalid Data");
         return false;
     }
 
