@@ -7,7 +7,10 @@ using namespace std;
 uint32_t
 TestShell::Read(const uint32_t addr)
 {
-    return ssd_app->Read(addr);
+    uint32_t data = ssd_app->Read(addr);
+    cout << "0x" << uppercase << hex << data << endl;
+
+    return data;
 }
 
 vector<uint32_t>
@@ -15,7 +18,7 @@ TestShell::FullRead(void)
 {
     vector<uint32_t> read_result;
     for (int addr = kMinAddr; addr <= kMaxAddr; addr++)
-        read_result.push_back(ssd_app->Read(addr));
+        read_result.push_back(Read(addr));
     
     return read_result;
 }
@@ -30,7 +33,7 @@ void
 TestShell::FullWrite(const uint32_t data)
 {
     for (int addr = kMinAddr; addr <= kMaxAddr; addr++)
-        ssd_app->Write(addr, data);
+        Write(addr, data);
 }
 
 void
