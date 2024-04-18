@@ -1,5 +1,4 @@
 #include "Reader.h"
-#include "Reader.h"
 
 Reader::Reader(std::vector<std::string>& args, FileManager* nand, FileManager* result) :
 	addr_(0), value_(0), nand_(nand), result_(result)
@@ -26,20 +25,6 @@ bool Reader::isNumber(const std::string& str)
 		}
 	}
 	return true;
-}
-
-unsigned int Reader::hexStringToInt(const std::string& hexStr) {
-	unsigned int result;
-	std::stringstream ss;
-	ss << std::hex << hexStr;
-	ss >> result;
-	return result;
-}
-
-bool Reader::isValidHex(const std::string& str)
-{
-	std::regex pattern("^0x[0-9a-fA-F]{8}$");
-	return std::regex_match(str, pattern);
 }
 
 bool Reader::isValidCommand()

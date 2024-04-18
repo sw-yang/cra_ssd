@@ -25,8 +25,6 @@ private:
 	FileManager* result_;
 
 	bool isNumber(const std::string& str);
-	unsigned int hexStringToInt(const std::string& hexStr);
-	bool isValidHex(const std::string& str);
 	bool isValidCommand();
 	void Parse();
 	void Read();
