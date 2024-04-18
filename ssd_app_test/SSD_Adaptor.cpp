@@ -47,3 +47,15 @@ SSD_Adaptor::GetWriteCMD(const uint32_t addr, const uint32_t data)
     
     return kWriteCMD + " " + to_string(addr) + " " + data_ss.str();
 }
+
+void
+SSD_Adaptor::Erase(const uint32_t addr, const uint32_t size) {
+    system(GetEraseCMD(addr, size).c_str());
+}
+
+string
+SSD_Adaptor::GetEraseCMD(const uint32_t addr, const uint32_t size)
+{
+    const string kWriteCMD = "..\\x64\\Debug\\ssd_app.exe E ";
+    return kWriteCMD + " " + to_string(addr) + " " + to_string(size);
+}

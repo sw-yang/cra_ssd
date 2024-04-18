@@ -131,14 +131,21 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CMD.cpp" />
+    <ClCompile Include="Eraser.cpp" />
     <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Reader.cpp" />
     <ClCompile Include="SSD.cpp" />
+    <ClCompile Include="Writer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Eraser.h" />
     <ClInclude Include="FileManager.h" />
+    <ClInclude Include="iCommand.h" />
+    <ClInclude Include="Reader.h" />
     <ClInclude Include="SSD.h" />
     <ClInclude Include="CMD.h" />
+    <ClInclude Include="Writer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
