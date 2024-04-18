@@ -1,7 +1,6 @@
 #include "Eraser.h"
 
-Eraser::Eraser(std::vector<std::string>& args, FileManager* nand) :
-	addr_(0), range_(0), nand_(nand)
+EraseCmd::EraseCmd(std::vector<std::string>& args)
 {
 	for (std::string& arg : args)
 	{
@@ -9,25 +8,31 @@ Eraser::Eraser(std::vector<std::string>& args, FileManager* nand) :
 	}
 }
 
-void Eraser::Run()
+std::string EraseCmd::ToString()
 {
-	Parse();
-	Erase();
+	std::string ret = "E " + std::to_string(GetAddr()) + " " + std::to_string(GetRange());
+	return ret;
 }
 
-bool Eraser::isNumber(const std::string& str)
+uint32_t EraseCmd::GetAddr()
 {
-	for (char c : str)
+	if (!isValidCommand())
 	{
-		if (!isdigit(c))
-		{
-			return false;
-		}
+		throw std::exception("Invalid args");
 	}
-	return true;
+	return (unsigned int)std::stoi(args_[0]);
 }
 
-bool Eraser::isValidCommand()
+uint32_t EraseCmd::GetRange()
+{
+	if (!isValidCommand())
+	{
+		throw std::exception("Invalid args");
+	}
+	return (unsigned int)std::stoi(args_[1]);
+}
+
+bool EraseCmd::isValidCommand()
 {
 	if (args_.size() != 2) return false;
 	if (!isNumber(args_[0]) || !isNumber(args_[1])) return false;
@@ -38,14 +43,15 @@ bool Eraser::isValidCommand()
 	return true;
 }
 
-void Eraser::Parse()
+
+Eraser::Eraser(iCmd* cmd, FileManager* nand) :
+	cmd_(cmd), addr_(0), range_(0), nand_(nand) {}
+
+void Eraser::Run()
 {
-	if (!isValidCommand())
-	{
-		throw std::exception("Invalid args");
-	}
-	addr_ = (unsigned int)std::stoi(args_[0]);
-	range_ = (unsigned int)std::stoi(args_[1]);
+	addr_ = reinterpret_cast<EraseCmd*>(cmd_)->GetAddr();
+	range_ = reinterpret_cast<EraseCmd*>(cmd_)->GetRange();
+	Erase();
 }
 
 void Eraser::Erase()

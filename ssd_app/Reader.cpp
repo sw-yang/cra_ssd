@@ -1,7 +1,6 @@
 #include "Reader.h"
 
-Reader::Reader(std::vector<std::string>& args, FileManager* nand, FileManager* result) :
-	addr_(0), value_(0), nand_(nand), result_(result)
+ReadCmd::ReadCmd(std::vector<std::string>& args)
 {
 	for (std::string& arg : args)
 	{
@@ -9,25 +8,22 @@ Reader::Reader(std::vector<std::string>& args, FileManager* nand, FileManager* r
 	}
 }
 
-void Reader::Run()
+std::string ReadCmd::ToString()
 {
-	Parse();
-	Read();
+	std::string ret = "R " + std::to_string(GetAddr());
+	return ret;
 }
 
-bool Reader::isNumber(const std::string& str)
+uint32_t ReadCmd::GetAddr()
 {
-	for (char c : str)
+	if (!isValidCommand())
 	{
-		if (!isdigit(c))
-		{
-			return false;
-		}
+		throw std::exception("Invalid args");
 	}
-	return true;
+	return (unsigned int)std::stoi(args_[0]);
 }
 
-bool Reader::isValidCommand()
+bool ReadCmd::isValidCommand()
 {
 	if (args_.size() != 1) return false;
 	if (!isNumber(args_[0])) return false;
@@ -36,13 +32,14 @@ bool Reader::isValidCommand()
 	return true;
 }
 
-void Reader::Parse()
+
+Reader::Reader(iCmd* cmd, FileManager* nand, FileManager* result) :
+	cmd_(cmd), addr_(0), value_(0), nand_(nand), result_(result) {}
+
+void Reader::Run()
 {
-	if (!isValidCommand())
-	{
-		throw std::exception("Invalid args");
-	}
-	addr_ = (unsigned int)std::stoi(args_[0]);
+	addr_ = reinterpret_cast<ReadCmd*>(cmd_)->GetAddr();
+	Read();
 }
 
 void Reader::Read()

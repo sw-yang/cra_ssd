@@ -10,23 +10,32 @@
 
 using namespace std;
 
-class Reader : public iCommand
+class ReadCmd : public iCmd
 {
 public:
-	Reader(std::vector<std::string>& args, FileManager* nand, FileManager* result);
-	void Run() override;
-
+	ReadCmd(std::vector<std::string>& args);
+	std::string ToString();
+	uint32_t GetAddr();
 
 private:
 	std::vector<std::string> args_;
+
+	bool isValidCommand();
+};
+
+class Reader : public iCommand
+{
+public:
+	Reader(iCmd* cmd, FileManager* nand, FileManager* result);
+	void Run() override;
+
+private:
+	iCmd* cmd_;
 	uint32_t addr_;
 	uint32_t value_;
 	FileManager* nand_;
 	FileManager* result_;
 
-	bool isNumber(const std::string& str);
-	bool isValidCommand();
-	void Parse();
 	void Read();
 	string IntToHex(uint32_t integer);
 };

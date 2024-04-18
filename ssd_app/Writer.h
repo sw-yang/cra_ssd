@@ -7,23 +7,34 @@
 #include "iCommand.h"
 #include "FileManager.h"
 
-class Writer : public iCommand
+class WriteCmd : public iCmd
 {
 public:
-	Writer(std::vector<std::string>& args, FileManager* nand);
-	void Run() override;
+	WriteCmd(std::vector<std::string>& args);
+	std::string ToString();
+	uint32_t GetAddr();
+	uint32_t GetValue();
 
 private:
 	std::vector<std::string> args_;
+
+	unsigned int hexStringToInt(const std::string& hexStr);
+	bool isValidHex(const std::string& str);
+	bool isValidCommand();
+};
+
+class Writer : public iCommand
+{
+public:
+	Writer(iCmd* cmd, FileManager* nand);
+	void Run() override;
+
+private:
+	iCmd* cmd_;
 	uint32_t addr_;
 	uint32_t value_;
 	FileManager* nand_;
 
-	bool isNumber(const std::string& str);
-	unsigned int hexStringToInt(const std::string& hexStr);
-	bool isValidHex(const std::string& str);
-	bool isValidCommand();
-	void Parse();
 	void Write();
 };
 
