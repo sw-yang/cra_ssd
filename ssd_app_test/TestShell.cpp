@@ -172,7 +172,7 @@ TestShell::Run(void)
         if (!Input()) continue;
         
         if (cmd != EXIT && cmd != HELP)
-            PrintOutALineWithoutEndl(ONLY_RUNNER, str_cmd + "  ---  Run...");
+            PrintOutALineWithoutEndl(ONLY_RUNNER, user_input + "  ---  Run...");
 
         switch (cmd)
         {
@@ -238,8 +238,7 @@ bool
 TestShell::Input(void) 
 {
     const string invalid_cmd_str = "[Error] Invalid CMD";
-    string user_input;
-    string str_addr, str_data;
+    string str_cmd, str_addr, str_data;
 
     getline(cin, user_input);
     stringstream ss(user_input);

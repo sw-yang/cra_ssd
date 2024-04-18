@@ -67,5 +67,5 @@ private:
     const uint32_t kDataLen = 10;
 
     PrintLevel cur_print_level = INFO;
-    std::string str_cmd;
+    std::string user_input;
 };
