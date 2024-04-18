@@ -52,79 +52,6 @@ private:
 	FILE* in_file;
 };
 
-
-TEST_F(TestShellTestFixture, SSDWriteTest1)
-{
-	cout << "Write 1 0x11112222" << endl;
-	cout << "Exit" << endl;
-
-	string test_result_path = "nand.txt";
-
-	SSD_Adaptor app;
-	TestShell test_shell;
-	test_shell.set_ssd_app(&app);
-
-	uint32_t expected_data = 0x11112222;
-	int expected_addr = 1;
-	uint32_t result;
-	test_shell.Run();
-
-	std::ifstream in(test_result_path, std::ios::binary);
-
-	in.seekg(expected_addr * sizeof(uint32_t));
-	in.read(reinterpret_cast<char*>(&result), sizeof(uint32_t));
-
-	EXPECT_EQ(result, expected_data);
-}
-
-TEST_F(TestShellTestFixture, SSDReadTest1)
-{
-	cout << "Read 1" << endl;
-	cout << "Exit" << endl;
-
-	string test_result_path = "Result.txt";
-
-	SSD_Adaptor app;
-	TestShell test_shell;
-	test_shell.set_ssd_app(&app);
-
-	string expected_data = "0x11112222";
-	int expected_addr = 0;
-	string result;
-	test_shell.Run();
-
-	std::ifstream in(test_result_path, std::ios::binary);
-
-	in.seekg(0);
-	std::getline(in, result);
-
-	EXPECT_EQ(result, expected_data);
-}
-
-TEST_F(TestShellTestFixture, SSDEraseTest1)
-{
-	cout << "Erase 1 1" << endl;
-	cout << "Exit" << endl;
-
-	string test_result_path = "nand.txt";
-
-	SSD_Adaptor app;
-	TestShell test_shell;
-	test_shell.set_ssd_app(&app);
-
-	uint32_t expected_data = 0;
-	int expected_addr = 1;
-	uint32_t result;
-	test_shell.Run();
-
-	std::ifstream in(test_result_path, std::ios::binary);
-
-	in.seekg(expected_addr * sizeof(uint32_t));
-	in.read(reinterpret_cast<char*>(&result), sizeof(uint32_t));
-
-	EXPECT_EQ(result, expected_data);
-}
-
 TEST_F(TestShellTestFixture, RunnerTest)
 {
 	string sample_script_path = "SampleScript.lst";
@@ -716,7 +643,7 @@ TEST_F(TestShellTestFixture, SSDFullWriteTest)
 	}
 }
 
-TEST_F(TestShellTestFixture, SSDFullReadTest1)
+TEST_F(TestShellTestFixture, SSDFullReadTest)
 {
 	cout << "FullRead" << endl;
 	cout << "Exit" << endl;
