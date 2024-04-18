@@ -15,10 +15,17 @@ enum TestShellCMD
     EXIT,
 };
 
+enum PrintLevel
+{
+    INFO,
+    ONLY_RUNNER,
+};
+
 class TestShell
 {
 public:
     void Run();
+    void ScriptRun(const char* script_path);
     void set_ssd_app(ISSDApp* app);
     ISSDApp* get_ssd_app(void) { return ssd_app; } //to be deleted
     std::vector<int> addr_arr;//to be deleted
@@ -40,12 +47,13 @@ private:
     void Write(const uint32_t addr, const uint32_t data);
     void FullWrite(const uint32_t data);
     void Help(void);
-    void TestApp1(void);
-    void TestApp2(void);
+    bool TestApp1(void);
+    bool TestApp2(void);
     void WriteRange(uint32_t start_addr, uint32_t end_addr, uint32_t data);
     std::vector<uint32_t> ReadRange(uint32_t start_addr, uint32_t end_addr);
     bool IsArrayDataEqual(std::vector<uint32_t> actual, uint32_t expected);
-    void PrintOutALine(const std::string str);
+    void PrintOutALine(const PrintLevel level, const std::string str);
+    void PrintOutALineWithoutEndl(const PrintLevel level, const std::string str);
     std::string UintToHexString(const uint32_t data);
 
     ISSDApp* ssd_app;
@@ -58,5 +66,6 @@ private:
     const uint32_t kMaxAddr = 99;
     const uint32_t kDataLen = 10;
 
-    bool PrintEnable = true;
+    PrintLevel cur_print_level = INFO;
+    std::string str_cmd;
 };

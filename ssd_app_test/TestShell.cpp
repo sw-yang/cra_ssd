@@ -1,7 +1,11 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "TestShell.h"
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <sstream>
+
 using namespace std;
 
 uint32_t
@@ -9,7 +13,7 @@ TestShell::Read(const uint32_t addr)
 {
     uint32_t data = ssd_app->Read(addr);
 
-    PrintOutALine(UintToHexString(data));
+    PrintOutALine(INFO, UintToHexString(data));
 
     return data;
 }
@@ -37,25 +41,29 @@ TestShell::FullWrite(const uint32_t data)
         Write(addr, data);
 }
 
-void
+bool
 TestShell::TestApp1()
 {
-    bool is_test_pass = true;
+    bool is_test_pass = false;
 
     uint32_t write_pattern = 0xABCDFFFF;
     FullWrite(write_pattern);
 
     vector<uint32_t> read_result = FullRead();
 
-    if (IsArrayDataEqual(read_result, write_pattern))
-        PrintOutALine("testapp1 pass");
+    is_test_pass = IsArrayDataEqual(read_result, write_pattern);
+    if (is_test_pass)
+        PrintOutALine(INFO, "testapp1 pass");
     else
-        PrintOutALine("testapp1 fail");
+        PrintOutALine(INFO, "testapp1 fail");
+
+    return is_test_pass;
 }
 
-void
+bool
 TestShell::TestApp2()
 {
+    bool is_test_pass = false;
     uint32_t first_write_pattern = 0xAAAABBBB;
     uint32_t second_write_pattern = 0x12345678;
     uint32_t loop = 50;
@@ -70,10 +78,13 @@ TestShell::TestApp2()
     
     vector<uint32_t> read_result = ReadRange(start_addr, end_addr);
 
-    if (IsArrayDataEqual(read_result, second_write_pattern))
-        PrintOutALine("testapp2 pass");
+    is_test_pass = IsArrayDataEqual(read_result, second_write_pattern);
+    if (is_test_pass)
+        PrintOutALine(INFO, "testapp2 pass");
     else
-        PrintOutALine("testapp2 fail");
+        PrintOutALine(INFO, "testapp2 fail");
+
+    return is_test_pass;
 }
 
 void 
@@ -106,8 +117,8 @@ TestShell::IsArrayDataEqual(vector<uint32_t> actual_arr, uint32_t expected)
     {
         if (actual_arr[idx] != expected)
         {
-            PrintOutALine("idx[" + to_string(addr) + "] not equal!!");
-            PrintOutALine("actual : " + UintToHexString(actual_arr[idx]) + "expected : " + UintToHexString(expected));
+            PrintOutALine(INFO, "idx[" + to_string(addr) + "] not equal!!");
+            PrintOutALine(INFO, "actual : " + UintToHexString(actual_arr[idx]) + "expected : " + UintToHexString(expected));
             is_test_pass = false;
         }
     }
@@ -118,20 +129,27 @@ TestShell::IsArrayDataEqual(vector<uint32_t> actual_arr, uint32_t expected)
 void
 TestShell::Help(void)
 {
-    PrintOutALine("Available commands:");
-    PrintOutALine("Write <addr> <data>: Write data to address");
-    PrintOutALine("Read <addr>: Read data from address");
-    PrintOutALine("FullWrite <data>: Write data to full address");
-    PrintOutALine("FullRead : Read data from full address");
-    PrintOutALine("Help: Show available commands");
-    PrintOutALine("Exit: Exit the program");
+    PrintOutALine(INFO, "Available commands:");
+    PrintOutALine(INFO, "Write <addr> <data>: Write data to address");
+    PrintOutALine(INFO, "Read <addr>: Read data from address");
+    PrintOutALine(INFO, "FullWrite <data>: Write data to full address");
+    PrintOutALine(INFO, "FullRead : Read data from full address");
+    PrintOutALine(INFO, "Help: Show available commands");
+    PrintOutALine(INFO, "Exit: Exit the program");
 }
 
 void
-TestShell::PrintOutALine(const string str)
+TestShell::PrintOutALine(const PrintLevel level, const string str)
 {
-    if (PrintEnable)
+    if (cur_print_level == level)
         cout << str << endl;
+}
+
+void
+TestShell::PrintOutALineWithoutEndl(const PrintLevel level, const string str)
+{
+    if (cur_print_level == level)
+        cout << str;
 }
 
 string 
@@ -147,9 +165,14 @@ void
 TestShell::Run(void)
 {
     bool isGoing = true;
+    bool isCMDPass;
     while (isGoing)
     {
+        isCMDPass = true;
         if (!Input()) continue;
+        
+        if (cmd != EXIT && cmd != HELP)
+            PrintOutALineWithoutEndl(ONLY_RUNNER, str_cmd + "  ---  Run...");
 
         switch (cmd)
         {
@@ -167,21 +190,44 @@ TestShell::Run(void)
                 break;
             case HELP:
                 Help();
+                isCMDPass = false;
                 break;
             case TESTAPP1:
-                TestApp1();
+                isCMDPass = TestApp1();
                 break;
             case TESTAPP2:
-                TestApp2();
+                isCMDPass = TestApp2();
                 break;
             case EXIT:
                 isGoing = false;
+                isCMDPass = false;
                 break;
             default:
                 //must not get here
                 break;
         }
+
+        if (isCMDPass)
+            PrintOutALine(ONLY_RUNNER, "Pass");
+        else
+        {
+            PrintOutALine(ONLY_RUNNER, "FAIL!");
+            return;
+        }
     }
+}
+
+void 
+TestShell::ScriptRun(const char* script_path)
+{
+    if (freopen(script_path, "rt", stdin) == nullptr)
+    {
+        PrintOutALine(INFO, string{ script_path } + " not exist");
+        return;
+    }
+
+    cur_print_level = ONLY_RUNNER;
+    Run();
 }
 
 bool 
@@ -189,7 +235,7 @@ TestShell::Input(void)
 {
     const string invalid_cmd_str = "[Error] Invalid CMD";
     string user_input;
-    string str_cmd, str_addr, str_data;
+    string str_addr, str_data;
 
     getline(cin, user_input);
     stringstream ss(user_input);
@@ -240,7 +286,7 @@ TestShell::Input(void)
     }
     else
     {
-        PrintOutALine(invalid_cmd_str);
+        PrintOutALine(INFO, invalid_cmd_str);
         Help();
         return false;
     }
@@ -253,7 +299,7 @@ TestShell::ConvertAddrToInt(const string& str_addr)
 {
     if (IsInvalidAddrFormat(str_addr))
     {
-        PrintOutALine("[Error] Invalid Address");
+        PrintOutALine(INFO, "[Error] Invalid Address");
         return false;
     }
 
@@ -262,7 +308,7 @@ TestShell::ConvertAddrToInt(const string& str_addr)
 
     if (IsInvalidAddrRange())
     {
-        PrintOutALine("[Error] Invalid Address");
+        PrintOutALine(INFO, "[Error] Invalid Address");
         return false;
     }
 
@@ -291,7 +337,7 @@ TestShell::ConvertDataToInt(const string& str_data)
 {
     if (IsInvalidDataFormat(str_data))
     {
-        PrintOutALine("[Error] Invalid Data");
+        PrintOutALine(INFO, "[Error] Invalid Data");
         return false;
     }
 
