@@ -23,6 +23,7 @@ public:
 	void Read(uint32_t address);
 	void Write(uint32_t address, uint32_t value);
 	void Run(Command command_);
+	void Run(string mode, vector<string> args);
 
 private:
 	void ReadNandFile();

@@ -80,11 +80,10 @@ std::string SSD::IntToHex(uint32_t integer)
 
 void SSD::Run(Command command_)
 {
-#if 1
 	if (!command_.getValid()) throw std::invalid_argument("Invalid Command");
 
 	string cmd = command_.getCommand();
-	
+
 	if (cmd == "R")
 	{
 		Read(command_.getAddress());
@@ -93,28 +92,22 @@ void SSD::Run(Command command_)
 	{
 		Write(command_.getAddress(), command_.getValue());
 	}
-#else
+}
 
-	// 명령어 R, W 파싱
-	char mode = 'R';
-	vector<string> tmp_args = { "1", "0x0000000a" };
-	FileManager* tmp_nand = new FileManager("nand.txt");
-
-	switch (mode) {
-	case 'R':
-	case 'r':
+void SSD::Run(string mode, vector<string> args)
+{
+	if (mode == "R")
+	{
 		cmd_ = new Reader();
-		break;
-	case 'W':
-	case 'w':
-		cmd_ = new Writer(tmp_args, tmp_nand);
-		break;
-	default:
-		// error
+	}
+	else if (mode == "W")
+	{
+		cmd_ = new Writer(args, nand_file_);
+	}
+	else
+	{
 		throw std::exception("Invalid address");
 	}
 
 	cmd_->Run();
-
-#endif
 }
