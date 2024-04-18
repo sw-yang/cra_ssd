@@ -109,7 +109,7 @@ TestShell::ReadRange(const uint32_t start_addr, const uint32_t end_addr)
 }
 
 bool
-TestShell::IsArrayDataEqual(vector<uint32_t> actual_arr, uint32_t expected)
+TestShell::IsArrayDataEqual(const vector<uint32_t> actual_arr, const uint32_t expected)
 {
     bool is_test_pass = true;
 
@@ -117,7 +117,7 @@ TestShell::IsArrayDataEqual(vector<uint32_t> actual_arr, uint32_t expected)
     {
         if (actual_arr[idx] != expected)
         {
-            PrintOutALine(INFO, "idx[" + to_string(addr) + "] not equal!!");
+            PrintOutALine(INFO, "idx[" + to_string(idx) + "] not equal!!");
             PrintOutALine(INFO, "actual : " + UintToHexString(actual_arr[idx]) + "expected : " + UintToHexString(expected));
             is_test_pass = false;
         }
