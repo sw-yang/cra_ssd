@@ -19,30 +19,23 @@ private:
 public:
 	Command(vector<string> args) : args(args)
 	{
-		isValid = !isInvalidCommand();
-		if (isValid)
-		{
-			cmd = args[0];
-			address = (unsigned int)stoi(args[1]);
-			if(cmd == "W") value = hexStringToInt(args[2]);
-		}
+		initialize();
 	}
 
-	Command(string str)
+	Command(const string str)
 	{
 		args = split(str);
-		isValid = !isInvalidCommand();
-		if (isValid)
-		{
-			cmd = args[0][0];
-			address = (unsigned int)stoi(args[1]);
-			if (cmd == "W") value = hexStringToInt(args[2]);
-		}
+		initialize();
 	}
 
 	bool operator==(const Command& other) const 
 	{
 		return cmd == other.cmd && address == other.address && value == other.value;
+	}
+	void initialize();
+	void setCommand(const string str) {
+		args = split(str);
+		initialize();
 	}
 	string getCommand() 
 	{
@@ -61,8 +54,15 @@ public:
 		return isValid;
 	}
 	vector<string> split(const string& str);
-	bool isNumber(const string& str);
-	bool isValidHex(const string& str);
 	unsigned int hexStringToInt(const string& hexStr);
-	bool isInvalidCommand();
+	bool isValidCommand();
+	bool isValidAddressType();
+	bool isValidAddress();
+	bool isValidValue();
+
+	const int CMD_POSITION = 0;
+	const int ADDRESS_POSITION = 1;
+	const int VALUE_POSITION = 2;
+	const int NUM_OF_ARGS_READ = 2;
+	const int NUM_OF_ARGS_WRITE = 3;
 };
