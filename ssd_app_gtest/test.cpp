@@ -1,318 +1,10 @@
 #include <cstdio>
 #include "pch.h"
 #include "../ssd_app/SSD.cpp"
-#include "../ssd_app/CMD.cpp"
 #include "../ssd_app/FileManager.cpp"
 #include "../ssd_app/Reader.cpp"
 #include "../ssd_app/Writer.cpp"
 #include "../ssd_app/Eraser.cpp"
-
-class CMDTestFixture : public testing::Test
-{
-protected:
-	vector<string> args;
-};
-
-TEST_F(CMDTestFixture, ValidObjectVectorConstructorTestRead)
-{
-	args.push_back("R");
-	args.push_back("10");
-
-	Command cmd(args);
-
-	EXPECT_EQ(true, cmd.getValid());
-}
-
-TEST_F(CMDTestFixture, ValidObjectVectorConstructorTestWrite)
-{
-	args.push_back("W");
-	args.push_back("10");
-	args.push_back("0xAAAAAAAA");
-
-	Command cmd(args);
-
-	EXPECT_EQ(true, cmd.getValid());
-}
-
-TEST_F(CMDTestFixture, InvalidNumOfArgumentsRead)
-{
-	args.push_back("R");
-	args.push_back("10");
-	args.push_back("0xAAAAAAAA");
-
-	Command cmd(args);
-
-	EXPECT_EQ(false, cmd.getValid());
-}
-
-TEST_F(CMDTestFixture, InvalidNumOfArgumentsWrite)
-{
-	args.push_back("W");
-	args.push_back("10");
-
-	Command cmd(args);
-
-	EXPECT_EQ(false, cmd.getValid());
-}
-
-TEST_F(CMDTestFixture, InvalidCommandTypeTest)
-{
-	args.push_back("A");
-	args.push_back("10");
-	args.push_back("0xAAAAAAAA");
-
-	Command cmd(args);
-
-	EXPECT_EQ(false, cmd.getValid());
-}
-
-TEST_F(CMDTestFixture, AddressOutOfRangeTest)
-{
-	args.push_back("W");
-	args.push_back("100");
-	args.push_back("0xAAAAAAAA");
-
-	Command cmd(args);
-
-	EXPECT_EQ(false, cmd.getValid());
-}
-
-TEST_F(CMDTestFixture, AddressTypeErrorTest)
-{
-	args.push_back("W");
-	args.push_back("1a");
-	args.push_back("0xAAAAAAAA");
-
-	Command cmd(args);
-
-	EXPECT_EQ(false, cmd.getValid());
-}
-
-TEST_F(CMDTestFixture, DataLengthErrorTest)
-{
-	args.push_back("W");
-	args.push_back("10");
-	args.push_back("0xAAAAAAA");
-
-	Command cmd(args);
-
-	EXPECT_EQ(false, cmd.getValid());
-}
-
-TEST_F(CMDTestFixture, DataTypeErrorTest) {
-	args.push_back("W");
-	args.push_back("10");
-	args.push_back("0xAAAAAAAH");
-
-	Command cmd(args);
-
-	EXPECT_EQ(false, cmd.getValid());
-}
-
-class SSDTest : public testing::Test
-{
-protected:
-	void SetUp() override
-	{
-		ssd = new SSD(test_nand, test_result);
-	}
-
-public:
-	void WriteTestFiles(uint32_t* data, size_t size)
-	{
-		std::ofstream out;
-		out.open(test_nand, std::ios::binary | std::ios::trunc);
-		out.write(reinterpret_cast<const char*>(data), size);
-		out.close();
-		out.open(test_result, std::ios::trunc);
-		out.close();
-	}
-
-	void ClearTestFiles()
-	{
-		std::ofstream out;
-		out.open(test_nand, std::ios::binary | std::ios::trunc);
-		out.close();
-		out.open(test_result, std::ios::trunc);
-		out.close();
-	}
-
-	std::string ReadResultFile()
-	{
-		std::ifstream in(test_result);
-		std::string ret;
-		if (in.is_open()) {
-			in >> ret;
-		}
-		return ret;
-	}
-
-	void ReadNandFile(uint32_t* data, size_t size)
-	{
-		std::ifstream in(test_nand, std::ios::binary);
-		in.read(reinterpret_cast<char*>(data), size);
-	}
-
-	SSD* ssd;
-	const std::string test_nand = "test_nand.txt";
-	const std::string test_result = "test_result.txt";
-
-	uint32_t NAND[100] = { 0, };
-	uint32_t ADDRESS = 57;
-};
-
-TEST_F(SSDTest, ThrowExceptionWhenInvalidAddressWhileRead)
-{
-	try
-	{
-		ssd->Read(100);
-		FAIL();
-	}
-	catch (std::exception& e)
-	{
-		EXPECT_EQ(std::string{ "Invalid address" }, std::string{ e.what() });
-	}
-}
-
-TEST_F(SSDTest, ReadDefaultValue)
-{
-	ClearTestFiles();
-
-	ssd->Read(0);
-
-	EXPECT_EQ("0x00000000", ReadResultFile());
-}
-
-TEST_F(SSDTest, ReadWrittenValueFrom0)
-{
-	NAND[0] = 0x48a7;
-	WriteTestFiles(NAND, sizeof(NAND));
-
-	ssd->Read(0);
-
-	EXPECT_EQ("0x000048A7", ReadResultFile());
-}
-
-TEST_F(SSDTest, ReadWrittenValueFromOtherAddress)
-{
-	NAND[ADDRESS] = 0xff25abcd;
-	WriteTestFiles(NAND, sizeof(NAND));
-
-	ssd->Read(ADDRESS);
-
-	EXPECT_EQ("0xFF25ABCD", ReadResultFile());
-}
-
-TEST_F(SSDTest, ResetNandDataWhenFileIsInvalid)
-{
-	uint32_t INVALID_NAND[50] = { 0, };	// invalid size
-	INVALID_NAND[0] = 0x48a7;
-	WriteTestFiles(INVALID_NAND, sizeof(INVALID_NAND));
-
-	ssd->Read(0);
-
-	EXPECT_EQ("0x00000000", ReadResultFile());
-}
-
-TEST_F(SSDTest, ThrowExceptionWhenInvalidAddressWhileWrite)
-{
-	try
-	{
-		ssd->Write(100, 0);
-		FAIL();
-	}
-	catch (std::exception& e)
-	{
-		EXPECT_EQ(std::string{ "Invalid address" }, std::string{ e.what() });
-	}
-}
-
-TEST_F(SSDTest, WriteFirstTime)
-{
-	ClearTestFiles();
-
-	uint32_t data = 0xabcd;
-	ssd->Write(ADDRESS, data);
-
-	ReadNandFile(NAND, sizeof(NAND));
-
-	EXPECT_EQ(NAND[ADDRESS], data);
-}
-
-TEST_F(SSDTest, OverWrite)
-{
-	NAND[ADDRESS] = 0xff25abcd;
-	WriteTestFiles(NAND, sizeof(NAND));
-
-	uint32_t new_data = 0x777;
-	ssd->Write(ADDRESS, new_data);
-
-	ReadNandFile(NAND, sizeof(NAND));
-
-	EXPECT_EQ(NAND[ADDRESS], new_data);
-}
-
-TEST_F(SSDTest, ReadWriteTest)
-{
-
-	ssd->Write(10, 0x11);
-	ssd->Read(10);
-	EXPECT_EQ("0x00000011", ReadResultFile());
-
-	ssd->Write(10, 0x777);
-	ssd->Read(10);
-	EXPECT_EQ("0x00000777", ReadResultFile());
-
-	ssd->Read(20);
-	EXPECT_EQ("0x00000000", ReadResultFile());
-
-	ssd->Write(20, 0x777);
-	ssd->Read(20);
-	EXPECT_EQ("0x00000777", ReadResultFile());
-}
-
-TEST_F(SSDTest, ReadWriteTestWithCommand)
-{
-	ClearTestFiles();
-
-	Command cmd("W 10 0x00000011");
-	ssd->Run(cmd);
-
-	cmd.setCommand("R 10");
-	ssd->Run(cmd);
-	EXPECT_EQ("0x00000011", ReadResultFile());
-
-	cmd.setCommand("R 20");
-	ssd->Run(cmd);
-	EXPECT_EQ("0x00000000", ReadResultFile());
-
-	cmd.setCommand("W 20 0x00000777");
-	ssd->Run(cmd);
-
-	cmd.setCommand("R 20");
-	ssd->Run(cmd);
-	EXPECT_EQ("0x00000777", ReadResultFile());
-}
-
-TEST_F(SSDTest, ReadWriteTestWithInvalidCommand)
-{
-	ClearTestFiles();
-
-	Command cmd("F 10 0x00000011");
-	EXPECT_THROW(ssd->Run(cmd), std::invalid_argument);
-
-	cmd.setCommand("W 1F 0x00000011");
-	EXPECT_THROW(ssd->Run(cmd), std::invalid_argument);
-
-	cmd.setCommand("W -1 0x00000011");
-	EXPECT_THROW(ssd->Run(cmd), std::invalid_argument);
-
-	cmd.setCommand("W 10 0x0000001Z");
-	EXPECT_THROW(ssd->Run(cmd), std::invalid_argument);
-
-	cmd.setCommand("W 10 0x000001F");
-	EXPECT_THROW(ssd->Run(cmd), std::invalid_argument);
-}
 
 class FileManagerTest : public testing::Test
 {
@@ -453,7 +145,7 @@ TEST_F(FileManagerTest, WriteTextFile)
 }
 
 
-class NewSSDTest : public testing::Test
+class SSDTest : public testing::Test
 {
 protected:
 	void SetUp() override
@@ -505,7 +197,49 @@ public:
 	uint32_t ADDRESS = 57;
 };
 
-TEST_F(NewSSDTest, ThrowExceptionWhenInvalidAddressWhileRead)
+TEST_F(SSDTest, ThrowExceptionWhenInvalidMode)
+{
+	try
+	{
+		std::vector<std::string> args = { "100" };
+		ssd->Run("A", args);
+		FAIL();
+	}
+	catch (std::exception& e)
+	{
+		EXPECT_EQ(std::string{ "Invalid mode" }, std::string{ e.what() });
+	}
+}
+
+TEST_F(SSDTest, ThrowExceptionWhenInvalidArgsNumWhileRead)
+{
+	try
+	{
+		std::vector<std::string> args = { "0", "aaa" };
+		ssd->Run("R", args);
+		FAIL();
+	}
+	catch (std::exception& e)
+	{
+		EXPECT_EQ(std::string{ "Invalid args" }, std::string{ e.what() });
+	}
+}
+
+TEST_F(SSDTest, ThrowExceptionWhenInvalidHexWhileRead)
+{
+	try
+	{
+		std::vector<std::string> args = { "0", "0x111111GG" };
+		ssd->Run("R", args);
+		FAIL();
+	}
+	catch (std::exception& e)
+	{
+		EXPECT_EQ(std::string{ "Invalid args" }, std::string{ e.what() });
+	}
+}
+
+TEST_F(SSDTest, ThrowExceptionWhenInvalidAddressWhileRead)
 {
 	try
 	{
@@ -519,7 +253,7 @@ TEST_F(NewSSDTest, ThrowExceptionWhenInvalidAddressWhileRead)
 	}
 }
 
-TEST_F(NewSSDTest, ReadDefaultValue)
+TEST_F(SSDTest, ReadDefaultValue)
 {
 	ClearTestFiles();
 
@@ -529,7 +263,7 @@ TEST_F(NewSSDTest, ReadDefaultValue)
 	EXPECT_EQ("0x00000000", ReadResultFile());
 }
 
-TEST_F(NewSSDTest, ReadWrittenValueFrom0)
+TEST_F(SSDTest, ReadWrittenValueFrom0)
 {
 	NAND[0] = 0x48a7;
 	WriteTestFiles(NAND, sizeof(NAND));
@@ -540,7 +274,7 @@ TEST_F(NewSSDTest, ReadWrittenValueFrom0)
 	EXPECT_EQ("0x000048A7", ReadResultFile());
 }
 
-TEST_F(NewSSDTest, ReadWrittenValueFromOtherAddress)
+TEST_F(SSDTest, ReadWrittenValueFromOtherAddress)
 {
 	NAND[ADDRESS] = 0xff25abcd;
 	WriteTestFiles(NAND, sizeof(NAND));
@@ -552,7 +286,7 @@ TEST_F(NewSSDTest, ReadWrittenValueFromOtherAddress)
 	EXPECT_EQ("0xFF25ABCD", ReadResultFile());
 }
 
-TEST_F(NewSSDTest, ResetNandDataWhenFileIsInvalid)
+TEST_F(SSDTest, ResetNandDataWhenFileIsInvalid)
 {
 	uint32_t INVALID_NAND[50] = { 0, };	// invalid size
 	INVALID_NAND[0] = 0x48a7;
@@ -564,7 +298,7 @@ TEST_F(NewSSDTest, ResetNandDataWhenFileIsInvalid)
 	EXPECT_EQ("0x00000000", ReadResultFile());
 }
 
-TEST_F(NewSSDTest, ThrowExceptionWhenInvalidAddressWhileWrite)
+TEST_F(SSDTest, ThrowExceptionWhenInvalidAddressWhileWrite)
 {
 	try
 	{
@@ -578,7 +312,21 @@ TEST_F(NewSSDTest, ThrowExceptionWhenInvalidAddressWhileWrite)
 	}
 }
 
-TEST_F(NewSSDTest, WriteFirstTime)
+TEST_F(SSDTest, ThrowExceptionWhenInvalidArgsNumWhileWrite)
+{
+	try
+	{
+		std::vector<std::string> args = { "1" };
+		ssd->Run("W", args);
+		FAIL();
+	}
+	catch (std::exception& e)
+	{
+		EXPECT_EQ(std::string{ "Invalid args" }, std::string{ e.what() });
+	}
+}
+
+TEST_F(SSDTest, WriteFirstTime)
 {
 	ClearTestFiles();
 
@@ -592,7 +340,7 @@ TEST_F(NewSSDTest, WriteFirstTime)
 	EXPECT_EQ(NAND[ADDRESS], 0xabcd);
 }
 
-TEST_F(NewSSDTest, OverWrite)
+TEST_F(SSDTest, OverWrite)
 {
 	std::vector<std::string> args;
 	args.push_back(std::to_string(ADDRESS));
@@ -609,7 +357,7 @@ TEST_F(NewSSDTest, OverWrite)
 	EXPECT_EQ(NAND[ADDRESS], 0x777);
 }
 
-TEST_F(NewSSDTest, ReadWriteTest)
+TEST_F(SSDTest, ReadWriteTest)
 {
 	ssd->Run("W", { "10", "0x00000011" });
 	ssd->Run("R", { "10" });
@@ -627,7 +375,7 @@ TEST_F(NewSSDTest, ReadWriteTest)
 	EXPECT_EQ("0x00000777", ReadResultFile());
 }
 
-TEST_F(NewSSDTest, ThrowExceptionWhenInvalidStartAddressWhileErase)
+TEST_F(SSDTest, ThrowExceptionWhenInvalidStartAddressWhileErase)
 {
 	try
 	{
@@ -641,7 +389,21 @@ TEST_F(NewSSDTest, ThrowExceptionWhenInvalidStartAddressWhileErase)
 	}
 }
 
-TEST_F(NewSSDTest, ThrowExceptionWhenRangeIsZeroWhileErase)
+TEST_F(SSDTest, ThrowExceptionWhenInvalidArgsNumWhileErase)
+{
+	try
+	{
+		std::vector<std::string> args = { "0" };
+		ssd->Run("E", args);
+		FAIL();
+	}
+	catch (std::exception& e)
+	{
+		EXPECT_EQ(std::string{ "Invalid args" }, std::string{ e.what() });
+	}
+}
+
+TEST_F(SSDTest, ThrowExceptionWhenRangeIsZeroWhileErase)
 {
 	try
 	{
@@ -655,7 +417,7 @@ TEST_F(NewSSDTest, ThrowExceptionWhenRangeIsZeroWhileErase)
 	}
 }
 
-TEST_F(NewSSDTest, ThrowExceptionWhenRangeOverTenWhileErase)
+TEST_F(SSDTest, ThrowExceptionWhenRangeOverTenWhileErase)
 {
 	try
 	{
@@ -669,7 +431,7 @@ TEST_F(NewSSDTest, ThrowExceptionWhenRangeOverTenWhileErase)
 	}
 }
 
-TEST_F(NewSSDTest, ThrowExceptionWhenInvalidAddressWhileErase)
+TEST_F(SSDTest, ThrowExceptionWhenInvalidAddressWhileErase)
 {
 	try
 	{
@@ -683,7 +445,7 @@ TEST_F(NewSSDTest, ThrowExceptionWhenInvalidAddressWhileErase)
 	}
 }
 
-TEST_F(NewSSDTest, EraseData)
+TEST_F(SSDTest, EraseData)
 {
 	int addr = 0;
 	int range = 7;
@@ -707,7 +469,7 @@ TEST_F(NewSSDTest, EraseData)
 	}
 }
 
-TEST_F(NewSSDTest, EraseAfterWrite)
+TEST_F(SSDTest, EraseAfterWrite)
 {
 	std::vector<std::string> args;
 	args.push_back(std::to_string(ADDRESS));
