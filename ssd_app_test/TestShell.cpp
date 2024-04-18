@@ -54,7 +54,7 @@ TestShell::EraseRange(const uint32_t startaddr, const uint32_t endaddr)
         ssd_app->Erase(addr, 1);
 }
 
-void
+bool
 TestShell::TestApp1()
 {
     bool is_test_pass = false;
