@@ -3,6 +3,8 @@
 #include "../ssd_app/SSD.cpp"
 #include "../ssd_app/CMD.cpp"
 #include "../ssd_app/FileManager.cpp"
+#include "../ssd_app/Reader.cpp"
+#include "../ssd_app/Writer.cpp"
 
 class CMDTestFixture : public testing::Test 
 {
