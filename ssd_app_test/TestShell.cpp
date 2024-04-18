@@ -14,7 +14,7 @@ vector<uint32_t>
 TestShell::FullRead(void)
 {
     vector<uint32_t> read_result;
-    for (int addr = kMinAddr; addr <= kMaxAddr; addr++)
+    for (int addr = Test_Const::kMinAddr; addr <= Test_Const::kMaxAddr; addr++)
         read_result.push_back(ssd_app->Read(addr));
     
     return read_result;
@@ -29,7 +29,7 @@ TestShell::Write(const uint32_t addr, const uint32_t data)
 void
 TestShell::FullWrite(const uint32_t data)
 {
-    for (int addr = kMinAddr; addr <= kMaxAddr; addr++)
+    for (int addr = Test_Const::kMinAddr; addr <= Test_Const::kMaxAddr; addr++)
         ssd_app->Write(addr, data);
 }
 
@@ -198,25 +198,25 @@ TestShell::Input(void)
         cmd = WRITE;
         ss >> str_addr >> str_data;
 
-        if (ConvertAddrToInt(str_addr) == false) return false;
+        if (converter.ConvertAddrToInt(str_addr, addr, addr_arr) == false) return false;
         
-        if (ConvertDataToInt(str_data) == false) return false;
+        if (converter.ConvertDataToInt(str_data, data, data_arr) == false) return false;
     }
     else if (str_cmd == "FullWrite")
     {
         cmd = FULLWRITE;
         ss >> str_data;
 
-        if (ConvertDataToInt(str_data) == false) return false;
+        if (converter.ConvertDataToInt(str_data, data, data_arr) == false) return false;
     }
     else if (str_cmd == "Erase")  // Input : Erase address size
     {
         cmd = ERASE;
         ss >> str_addr >> str_data;
 
-        if (ConvertAddrToInt(str_addr) == false) return false;
+        if (converter.ConvertAddrToInt(str_addr, addr, addr_arr) == false) return false;
 
-        if (ConvertEraseSizeToInt(str_data) == false) return false;
+        if (converter.ConvertEraseSizeToInt(str_data, data, data_arr) == false) return false;
     }
     else if (str_cmd == "EraseRange") // Input : EraseRange startaddress endaddress
     {
@@ -224,16 +224,16 @@ TestShell::Input(void)
         ss >> str_addr >> str_data;
         if (str_addr > str_data) return false;
 
-        if (ConvertAddrToInt(str_addr) == false) return false;
+        if (converter.ConvertAddrToInt(str_addr, addr, addr_arr) == false) return false;
 
-        if (ConvertEraseEndAddrToInt(str_data) == false) return false;
+        if (converter.ConvertEraseEndAddrToInt(str_data, data, data_arr) == false) return false;
     }
     else if (str_cmd == "Read")
     {
         cmd = READ;
         ss >> str_addr;
 
-        if (ConvertAddrToInt(str_addr) == false) return false;
+        if (converter.ConvertAddrToInt(str_addr, addr, addr_arr) == false) return false;
     }
     else if (str_cmd == "FullRead")
     {
@@ -261,136 +261,6 @@ TestShell::Input(void)
         Help();
         return false;
     }
-
-    return true;
-}
-
-bool 
-TestShell::ConvertAddrToInt(const string& str_addr)
-{
-    if (IsInvalidAddrFormat(str_addr))
-    {
-        cout << "[Error] Invalid Address" << endl;
-        return false;
-    }
-
-    addr = stoi(str_addr);
-    addr_arr.push_back(addr); //to be deleted
-
-    if (IsInvalidAddrRange())
-    {
-        cout << "[Error] Invalid Address" << endl;
-        return false;
-    }
-
-    return true;
-}
-
-bool
-TestShell::ConvertEraseEndAddrToInt(const string& str_endaddr)
-{
-    if (IsInvalidAddrFormat(str_endaddr))
-    {
-        cout << "[Error] Invalid Address" << endl;
-        return false;
-    }
-
-    data = stoi(str_endaddr);
-    data_arr.push_back(data); //to be deleted
-
-    if (IsInvalidAddrRange())
-    {
-        cout << "[Error] Invalid Address" << endl;
-        return false;
-    }
-
-    return true;
-}
-bool
-TestShell::IsInvalidAddrFormat(const string& str_addr)
-{
-    if (str_addr.length() > kAddrLen) return true;
-    if (IsDecNum(str_addr) == false) return true;
-
-    return false;
-}
-
-bool
-TestShell::IsInvalidAddrRange(void)
-{
-    if (addr < kMinAddr || addr > kMaxAddr) return true;
-
-    return false;
-}
-
-bool 
-TestShell::ConvertDataToInt(const string& str_data)
-{
-    if (IsInvalidDataFormat(str_data))
-    {
-        cout << "[Error] Invalid Data" << endl;
-        return false;
-    }
-
-    data = stoul(str_data, nullptr, 16);
-
-    data_arr.push_back(data); //to be deleted
-    return true;
-}
-
-bool
-TestShell::ConvertEraseSizeToInt(const string& str_data)
-{
-    if (IsInvalidEraseSizeFormat(str_data))
-    {
-        cout << "[Error] Invalid Data" << endl;
-        return false;
-    }
-
-    data = stoul(str_data, nullptr, 16);
-
-    data_arr.push_back(data); //to be deleted
-    return true;
-}
-
-bool
-TestShell::IsInvalidDataFormat(const string& str_data)
-{
-    if (str_data.length() != kDataLen) return true;
-    if (IsHexNum(str_data) == false) return true;
-
-    return false;
-}
-
-bool
-TestShell::IsInvalidEraseSizeFormat(const string& str_data)
-{
-    if (str_data.length() != 1) return true;
-    if (IsDecNum(str_data) == false) return true;
-
-    return false;
-}
-
-bool 
-TestShell::IsHexNum(const string& str)
-{
-    if(str.find("0x") != 0) return false;
-
-    for (int idx = 2; idx < str.length(); idx++)
-    {
-        if (!(str[idx] >= '0' && str[idx] <= '9') &&
-            !(str[idx] >= 'A' && str[idx] <= 'F'))
-            return false;
-    }
-
-    return true;
-}
-
-bool 
-TestShell::IsDecNum(const std::string& str)
-{
-    for (char digit : str)
-        if (!(digit >= '0' && digit <= '9')) return false;
 
     return true;
 }
