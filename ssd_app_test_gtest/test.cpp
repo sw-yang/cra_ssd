@@ -14,8 +14,9 @@ using namespace std;
 class MockSSDApp : public ISSDApp
 {
 public:
-	MOCK_METHOD(void, Write, (uint32_t addr, uint32_t data), (override));
 	MOCK_METHOD(uint32_t, Read, (uint32_t addr), (override));
+	MOCK_METHOD(void, Write, (uint32_t addr, uint32_t data), (override));
+	MOCK_METHOD(void, Erase, (uint32_t addr, uint32_t size), (override));
 };
 
 TEST(TestCaseName, TestName) 
@@ -132,6 +133,42 @@ TEST_F(TestShellTestFixture, FullReadTest)
 
 	EXPECT_EQ(Issd_app, &app);
 	EXPECT_CALL(app, Read(_)).Times(100);
+	test_shell.Run();
+}
+
+TEST_F(TestShellTestFixture, EraseTest)
+{
+	string user_input = "Erase 0 1";
+	string exit_input = "Exit";
+	cout << user_input << endl;
+	cout << exit_input << endl;
+
+	MockSSDApp app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	ISSDApp* Issd_app = test_shell.get_ssd_app();
+
+	EXPECT_EQ(Issd_app, &app);
+	EXPECT_CALL(app, Erase(_, _)).Times(1);
+	test_shell.Run();
+}
+
+TEST_F(TestShellTestFixture, EraseRangeTest)
+{
+	string user_input = "EraseRange 0 9";
+	string exit_input = "Exit";
+	cout << user_input << endl;
+	cout << exit_input << endl;
+
+	MockSSDApp app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	ISSDApp* Issd_app = test_shell.get_ssd_app();
+
+	EXPECT_EQ(Issd_app, &app);
+	EXPECT_CALL(app, Erase(_, _)).Times(10);
 	test_shell.Run();
 }
 
@@ -506,6 +543,29 @@ TEST_F(TestShellTestFixture, SSDReadTest)
 
 	EXPECT_EQ(result, expected_data);
 }
+TEST_F(TestShellTestFixture, DISABLED_SSDEraseTest)
+{
+	cout << "Erase 0 1" << endl;
+	cout << "Exit" << endl;
+
+	string test_result_path = "nand.txt";
+
+	SSD_Adaptor app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	uint32_t expected_data = 0;
+	int expected_addr = 1;
+	uint32_t result;
+	test_shell.Run();
+
+	std::ifstream in(test_result_path, std::ios::binary);
+
+	in.seekg(expected_addr * sizeof(uint32_t));
+	in.read(reinterpret_cast<char*>(&result), sizeof(uint32_t));
+
+	EXPECT_EQ(result, expected_data);
+}
 
 TEST_F(TestShellTestFixture, SSDFullWriteTest)
 {
@@ -552,4 +612,31 @@ TEST_F(TestShellTestFixture, SSDFullReadTest)
 
 	getline(cin, result);
 	EXPECT_EQ(result, expected_data);
+}
+
+TEST_F(TestShellTestFixture, DISABLED_SSDEraseRangeTest)
+{
+	cout << "EraseRange 0 9" << endl;
+	cout << "Exit" << endl;
+	const uint32_t startaddress = 0;
+	const uint32_t endaddress = 9;
+	string test_result_path = "nand.txt";
+
+	SSD_Adaptor app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	uint32_t expected_data = 0;
+	uint32_t result;
+	test_shell.Run();
+
+	std::ifstream in(test_result_path, std::ios::binary);
+
+	for (int addrindex = startaddress; addrindex < endaddress; addrindex++)
+	{
+		in.seekg(addrindex * sizeof(uint32_t));
+		in.read(reinterpret_cast<char*>(&result), sizeof(uint32_t));
+
+		EXPECT_EQ(result, addrindex);
+	}
 }

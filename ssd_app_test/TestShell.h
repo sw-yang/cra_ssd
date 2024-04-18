@@ -9,6 +9,8 @@ enum TestShellCMD
     FULLREAD,
     WRITE,
     FULLWRITE,
+    ERASE,
+    ERASERANGE,
     HELP,
     TESTAPP1,
     TESTAPP2,
@@ -26,11 +28,14 @@ public:
 private:
     bool Input(void);
     bool ConvertAddrToInt(const std::string& str_addr);
+    bool ConvertEraseEndAddrToInt(const std::string& str_endaddr);
     bool IsInvalidAddrFormat(const std::string& str_addr);
     bool IsInvalidAddrRange(void);
 
-    bool ConvertDataToInt(const std::string& str_addr);
-    bool IsInvalidDataFormat(const std::string& str_addr);
+    bool ConvertDataToInt(const std::string& str_data);
+    bool ConvertEraseSizeToInt(const std::string& str_data);
+    bool IsInvalidDataFormat(const std::string& str_data);
+    bool IsInvalidEraseSizeFormat(const std::string& str_data);
 
     bool IsHexNum(const std::string& str);
     bool IsDecNum(const std::string& str);
@@ -39,6 +44,9 @@ private:
     std::vector<std::uint32_t> FullRead(void);
     void Write(const uint32_t addr, const uint32_t data);
     void FullWrite(const uint32_t data);
+    void Erase(const uint32_t addr, const uint32_t size);
+    void EraseRange(const uint32_t startaddr, const uint32_t endaddr);
+
     void Help(void);
     void TestApp1(void);
     void TestApp2(void);
