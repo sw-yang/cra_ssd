@@ -8,6 +8,7 @@
 #include <vector>
 #include "FileManager.h"
 #include "iCommand.h"
+#include "CmdFactory.h"
 
 using namespace std;
 

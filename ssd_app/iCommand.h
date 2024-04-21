@@ -6,6 +6,7 @@ class iCmd
 {
 public:
 	virtual std::string ToString() = 0;
+	virtual std::string GetMode() = 0;
 
 protected:
 	bool isNumber(const std::string& str)
