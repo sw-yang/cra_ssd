@@ -5,6 +5,7 @@
 #include "../ssd_app/Reader.cpp"
 #include "../ssd_app/Writer.cpp"
 #include "../ssd_app/Eraser.cpp"
+#include "../ssd_app/CmdBuffer.cpp"
 
 class FileManagerTest : public testing::Test
 {
@@ -189,9 +190,23 @@ public:
 		in.read(reinterpret_cast<char*>(data), size);
 	}
 
+	void ReadBufferFile(std::vector<std::string>& cmds)
+	{
+		std::ifstream in(test_buffer);
+
+		std::string line;
+
+		while (std::getline(in, line)) {
+			cmds.push_back(line);
+		}
+
+		in.close();
+	}
+
 	SSD* ssd;
 	const std::string test_nand = "test_nand.txt";
 	const std::string test_result = "test_result.txt";
+	const std::string test_buffer = "test_buffer.txt";
 
 	uint32_t NAND[100] = { 0, };
 	uint32_t ADDRESS = 57;
@@ -488,4 +503,115 @@ TEST_F(SSDTest, EraseAfterWrite)
 	ReadNandFile(NAND, sizeof(NAND));
 
 	EXPECT_EQ(NAND[ADDRESS], 0);
+}
+
+TEST_F(SSDTest, AddAndGetCommand)
+{
+	CmdBuffer* cmd_buffer = ssd->GetCmdBuffer();
+	cmd_buffer->Clear();
+
+	std::vector<std::string> args;
+
+	args.push_back(std::to_string(ADDRESS));
+	args.push_back("0xFF25ABCD");
+	ssd->Run("W", args);
+
+	args.clear();
+	args.push_back(std::to_string(ADDRESS));
+	ssd->Run("R", args);
+
+	args.clear();
+	args.push_back(std::to_string(ADDRESS));
+	args.push_back("9");
+	ssd->Run("E", args);
+
+	std::vector<std::string> cmds;
+	cmd_buffer->GetCmd(cmds);
+
+	EXPECT_EQ(cmds[0], "W 57 0xFF25ABCD");
+	EXPECT_EQ(cmds[1], "R 57");
+	EXPECT_EQ(cmds[2], "E 57 9");
+}
+
+TEST_F(SSDTest, AddAndGetCommandList)
+{
+	CmdBuffer* cmd_buffer = ssd->GetCmdBuffer();
+	cmd_buffer->Clear();
+
+	std::vector<std::string> args;
+
+	args.push_back(std::to_string(ADDRESS));
+	args.push_back("0xFF25ABCD");
+	ssd->Run("W", args);
+
+	std::vector<std::vector<std::string>> cmds;
+	cmd_buffer->GetCmdList(cmds);
+
+	EXPECT_EQ(cmds[0][0], "W");
+	EXPECT_EQ(cmds[0][1], "57");
+	EXPECT_EQ(cmds[0][2], "0xFF25ABCD");
+}
+
+TEST_F(SSDTest, ComapareGetCmdWithBufferFile)
+{
+	CmdBuffer* cmd_buffer = ssd->GetCmdBuffer();
+	cmd_buffer->Clear();
+
+	std::vector<std::string> args;
+
+	args.push_back(std::to_string(ADDRESS));
+	args.push_back("0xFF25ABCD");
+	ssd->Run("W", args);
+
+	args.clear();
+	args.push_back(std::to_string(ADDRESS));
+	ssd->Run("R", args);
+
+	args.clear();
+	args.push_back(std::to_string(ADDRESS));
+	args.push_back("9");
+	ssd->Run("E", args);
+
+	std::vector<std::string> getcmds;
+	cmd_buffer->GetCmd(getcmds);
+
+	std::vector<std::string> filecmds;
+	ReadBufferFile(filecmds);
+
+	for (int i = 0; i < getcmds.size(); i++)
+	{
+		EXPECT_EQ(getcmds[i], filecmds[i]);
+	}
+}
+
+TEST_F(SSDTest, ReturnTrueWhenBufferisFull)
+{
+	CmdBuffer* cmd_buffer = ssd->GetCmdBuffer();
+	cmd_buffer->Clear();
+
+	std::vector<std::string> args;
+	args.push_back(std::to_string(ADDRESS));
+
+	for (int i = 0; i < 10; i++)
+	{
+		ssd->Run("R", args);
+	}
+
+	EXPECT_EQ(cmd_buffer->isFull(), true);
+}
+
+TEST_F(SSDTest, ReturnBufferSize)
+{
+	CmdBuffer* cmd_buffer = ssd->GetCmdBuffer();
+	cmd_buffer->Clear();
+
+	std::vector<std::string> args;
+	args.push_back(std::to_string(ADDRESS));
+
+	for (int i = 0; i < 5; i++)
+	{
+		ssd->Run("R", args);
+	}
+
+	EXPECT_EQ(cmd_buffer->GetSize(), 5);
 }
