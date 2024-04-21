@@ -87,11 +87,21 @@ TEST_F(TestShellTestFixture, RunnerTest)
 	getline(cin, result);
 	EXPECT_EQ(result, "Write 1 0x1234AAAA  ---  Run...Pass");
 	getline(cin, result);
-	EXPECT_EQ(result, "Read 1  ---  Run...Pass");
+	EXPECT_EQ(result, "Read 1  ---  Run...0x1234AAAA");
+	getline(cin, result);
+	EXPECT_EQ(result, "Pass");
 	getline(cin, result);
 	EXPECT_EQ(result, "FullWrite 0x43215678  ---  Run...Pass");
 	getline(cin, result);
-	EXPECT_EQ(result, "FullRead  ---  Run...Pass");
+	EXPECT_EQ(result, "FullRead  ---  Run...0x43215678");
+	for (int loop = 0; loop < 99; ++loop)
+	{
+		getline(cin, result);
+		EXPECT_EQ(result, "0x43215678");
+	}
+	getline(cin, result);
+	EXPECT_EQ(result, "Pass");
+
 	fclose(file);
 }
 
@@ -500,15 +510,8 @@ TEST_F(TestShellTestFixture, TestApp1TestWithSSD)
 
 	auto file = freopen(test_result_path.c_str(), "rt", stdin);
 
-	string expected_data = "0xABCDFFFF";
 	string result;
-	for (int loop = 0; loop < 100; ++loop)
-	{
-		getline(cin, result);
-		EXPECT_EQ(result, expected_data);
-	}
-
-	expected_data = "testapp1 pass";
+	string expected_data = "testapp1 pass";
 	getline(cin, result);
 	EXPECT_EQ(result, expected_data);
 	fclose(file);
@@ -534,15 +537,8 @@ TEST_F(TestShellTestFixture, TestApp2TestWithSSD)
 
 	auto file = freopen(test_result_path.c_str(), "rt", stdin);
 
-	string expected_data = "0x12345678";
 	string result;
-	for (int addr = 0; addr < 6; ++addr)
-	{
-		getline(cin, result);
-		EXPECT_EQ(result, expected_data);
-	}
-
-	expected_data = "testapp2 pass";
+	string expected_data = "testapp2 pass";
 	getline(cin, result);
 	EXPECT_EQ(result, expected_data);
 	fclose(file);
