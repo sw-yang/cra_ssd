@@ -9,9 +9,14 @@ enum PrintLevel
     INFO,
 };
 
-class Logger {
+class Logger 
+{
 public:
-    Logger();
+    static Logger& GetLogger(void)
+    {
+        static Logger logger;
+        return logger;
+    }    
     void SetPrintLevel(const PrintLevel level);
     void PrintOutALine(const PrintLevel level, const std::string str);
     void PrintOutALineWithoutEndl(const PrintLevel level, const std::string str);
@@ -19,4 +24,9 @@ private:
     PrintLevel cur_print_level = INFO;
     std::string file_name = "latest.log";
     std::ofstream log_fout;
+
+    Logger();
+    Logger(const Logger&) = delete;
+    Logger& operator=(const Logger&) = delete;
+    ~Logger();
 };

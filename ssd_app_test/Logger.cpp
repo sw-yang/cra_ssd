@@ -3,8 +3,14 @@
 #include <sstream>
 using namespace std;
 
-Logger::Logger() {
-    ofstream log_fout(file_name, ios_base::out | ios_base::app);
+Logger::Logger() 
+{
+    log_fout.open(file_name, ios_base::out | ios_base::app);
+}
+
+Logger::~Logger()
+{
+    log_fout.close();
 }
 
 void

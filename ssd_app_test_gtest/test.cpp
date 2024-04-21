@@ -42,6 +42,8 @@ public:
 		cout.rdbuf(out_file.rdbuf());
 		//reopen 
 		in_file = freopen(user_input_script.c_str(), "rt", stdin);
+
+		Logger::GetLogger().SetPrintLevel(INFO);
 	}
 	void TearDown(void) 
 	{
