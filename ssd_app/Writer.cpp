@@ -14,6 +14,11 @@ std::string WriteCmd::ToString()
 	return ret;
 }
 
+std::string WriteCmd::GetMode()
+{
+	return "W";
+}
+
 uint32_t WriteCmd::GetAddr()
 {
 	if (!isValidCommand())

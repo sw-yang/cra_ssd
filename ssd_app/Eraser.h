@@ -12,6 +12,7 @@ class EraseCmd : public iCmd
 public:
 	EraseCmd(std::vector<std::string>& args);
 	std::string ToString();
+	std::string GetMode();
 	uint32_t GetAddr();
 	uint32_t GetRange();
 

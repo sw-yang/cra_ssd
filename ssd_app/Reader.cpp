@@ -14,6 +14,11 @@ std::string ReadCmd::ToString()
 	return ret;
 }
 
+std::string ReadCmd::GetMode()
+{
+	return "R";
+}
+
 uint32_t ReadCmd::GetAddr()
 {
 	if (!isValidCommand())

@@ -140,6 +140,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CmdBuffer.h" />
+    <ClInclude Include="CmdFactory.h" />
     <ClInclude Include="Eraser.h" />
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="iCommand.h" />

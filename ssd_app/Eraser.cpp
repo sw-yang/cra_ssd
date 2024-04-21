@@ -14,6 +14,11 @@ std::string EraseCmd::ToString()
 	return ret;
 }
 
+std::string EraseCmd::GetMode()
+{
+	return "E";
+}
+
 uint32_t EraseCmd::GetAddr()
 {
 	if (!isValidCommand())

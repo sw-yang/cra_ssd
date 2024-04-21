@@ -15,6 +15,7 @@ class ReadCmd : public iCmd
 public:
 	ReadCmd(std::vector<std::string>& args);
 	std::string ToString();
+	std::string GetMode();
 	uint32_t GetAddr();
 
 private:
