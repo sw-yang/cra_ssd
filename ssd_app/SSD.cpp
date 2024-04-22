@@ -10,28 +10,83 @@ SSD::SSD(std::string nand_file, std::string result_file, std::string buffer_file
 	cmd_buffer_ = new CmdBuffer(buffer_file);
 }
 
+std::string IntToHex(uint32_t integer)
+{
+	ostringstream ss;
+	ss << hex << uppercase << integer;
+	int zero_fills = 8 - ss.str().length();
+
+	string result = "0x";
+	for (int i = 0; i < zero_fills; ++i) {
+		result += "0";
+	}
+	result += ss.str();
+	return result;
+}
+
 void SSD::Run(string mode, vector<string> args)
 {
+	if (mode == "F")
+	{
+		Flush();
+		return;
+	}
+
 	CmdFactory factory;
 	iCmd* cmd = factory.CreateCmd(mode, args);
+
 	if (mode == "R")
 	{
-		cmd_ = new Reader(cmd, nand_file_, result_file_);
+		uint32_t addr = reinterpret_cast<ReadCmd*>(cmd)->GetAddr();
+		uint32_t val;
+		if (cmd_buffer_->FastRead(addr, val))
+		{
+			result_file_->WriteTextFile(IntToHex(val));
+		}
+		else
+		{
+			iCommand* func = new Reader(cmd, nand_file_, result_file_);
+			func->Run();
+		}
 	}
-	else if (mode == "W")
+	else if (mode == "W" || mode == "E")
 	{
-		cmd_ = new Writer(cmd, nand_file_);
+		if (cmd_buffer_->isFull())
+		{
+			Flush();
+		}
+		else
+		{
+			cmd_buffer_->AddCmd(cmd);
+		}
 	}
-	else if (mode == "E")
-	{
-		cmd_ = new Eraser(cmd, nand_file_);
-	}
-
-	cmd_buffer_->AddCmd(cmd);
-
-	cmd_->Run();
 }
 
 CmdBuffer* SSD::GetCmdBuffer() {
 	return cmd_buffer_;
+}
+
+void SSD::Flush()
+{
+	std::vector<iCmd*> cmds = cmd_buffer_->GetCmdsFastWrite();
+	for (auto& cmd : cmds)
+	{
+		std::string mode = cmd->GetMode();
+		if (mode == "E")
+		{
+			iCommand* func = new Eraser(cmd, nand_file_);
+			func->Run();
+		}
+		else if (mode == "W")
+		{
+			iCommand* func = new Writer(cmd, nand_file_);
+			func->Run();
+		}
+		else
+		{
+			throw std::exception("Invalid mode");
+		}
+	}
+
+	cmd_buffer_->Clear();
 }

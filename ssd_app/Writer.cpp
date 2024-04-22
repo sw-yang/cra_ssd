@@ -10,7 +10,8 @@ WriteCmd::WriteCmd(std::vector<std::string>& args)
 
 std::string WriteCmd::ToString()
 {
-	std::string ret = "W " + std::to_string(GetAddr()) + " " + args_[1];
+	std::string addr = std::to_string(GetAddr());
+	std::string ret = "W " + addr + " " + args_[1];
 	return ret;
 }
 
