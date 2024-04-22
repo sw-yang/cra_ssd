@@ -3,8 +3,6 @@
 #include "Eraser.h"
 #include "Writer.h"
 
-#include <map>
-
 bool CmdBuffer::isFull()
 {
 	return length_ == MAX_BUFFER_SIZE;
@@ -45,145 +43,229 @@ void CmdBuffer::GetiCmdList(std::vector<iCmd*>& cmds)
 	}
 }
 
-bool CmdBuffer::FastRead(uint32_t read_addr, uint32_t& read_val)
+void CmdBuffer::InsertWriteCmd(std::map<uint32_t, uint32_t>& m, iCmd* cmd)
 {
-	std::vector<iCmd*> cmds;
-	GetiCmdList(cmds);
+	WriteCmd* write_cmd = reinterpret_cast<WriteCmd*>(cmd);
+	uint32_t addr = write_cmd->GetAddr();
+	uint32_t val = write_cmd->GetValue();
 
-	std::map<uint32_t, uint32_t> data_map;
+	m[addr] = val;
+}
+
+void CmdBuffer::InsertEraseCmd(std::map<uint32_t, uint32_t>& m, iCmd* cmd)
+{
+	EraseCmd* erase_cmd = reinterpret_cast<EraseCmd*>(cmd);
+	uint32_t addr = erase_cmd->GetAddr();
+	uint32_t range = erase_cmd->GetRange();
+
+	for (uint32_t i = 0; i < range; ++i)
+	{
+		m[addr + i] = 0;
+	}
+}
+
+std::map<uint32_t, uint32_t> CmdBuffer::CreateDataMap(const std::vector<iCmd*>& cmds)
+{
+	std::map<uint32_t, uint32_t> ret;
 
 	for (auto& cmd : cmds)
 	{
 		if (cmd->GetMode() == "W")
 		{
-			WriteCmd* write_cmd = reinterpret_cast<WriteCmd*>(cmd);
-			uint32_t addr = write_cmd->GetAddr();
-			uint32_t val = write_cmd->GetValue();
-
-			data_map[addr] = val;
+			InsertWriteCmd(ret, cmd);
 		}
 		else if (cmd->GetMode() == "E")
 		{
-			EraseCmd* erase_cmd = reinterpret_cast<EraseCmd*>(cmd);
-			uint32_t addr = erase_cmd->GetAddr();
-			uint32_t range = erase_cmd->GetRange();
-
-			for (uint32_t i = 0; i < range; ++i)
-			{
-				data_map[addr + i] = 0;
-			}
+			InsertEraseCmd(ret, cmd);
 		}
 	}
 
-	if (data_map.find(read_addr) != data_map.end())
-	{
-		read_val = data_map[read_addr];
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return ret;
 }
 
-std::vector<iCmd*> CmdBuffer::GetCmdsFastWrite()
+bool CmdBuffer::FastRead(uint32_t read_addr, uint32_t& read_val)
 {
 	std::vector<iCmd*> cmds;
 	GetiCmdList(cmds);
 
-	std::vector<iCmd*> ret;
-	std::vector<iCmd*> fast_cmds_write;
+	std::map<uint32_t, uint32_t> data_map = CreateDataMap(cmds);
 
-	int erase_area[101] = { 0, };
+	if (data_map.find(read_addr) == data_map.end())
+	{
+		return false;
+	}
+
+	read_val = data_map[read_addr];
+	return true;
+}
+
+
+bool CmdBuffer::IsOverWritten(const uint32_t addr, iCmd* cmd)
+{
+	if (cmd->GetMode() != "W")
+	{
+		return false;
+	}
+
+	if (reinterpret_cast<WriteCmd*>(cmd)->GetAddr() == addr)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool CmdBuffer::IsErased(const uint32_t addr, iCmd* cmd)
+{
+	if (cmd->GetMode() != "E")
+	{
+		return false;
+	}
+
+	uint32_t erase_addr = reinterpret_cast<EraseCmd*>(cmd)->GetAddr();
+	uint32_t erase_range = reinterpret_cast<EraseCmd*>(cmd)->GetRange();
+	if (erase_addr <= addr && addr < erase_addr + erase_range)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool CmdBuffer::isRemovableWriteCmd(const std::vector<iCmd*>& cmds, const int cmd_idx)
+{
+	bool is_removable = false;
+	
+	uint32_t write_addr = reinterpret_cast<WriteCmd*>(cmds[cmd_idx])->GetAddr();
+	for (int i = cmd_idx + 1; i < cmds.size(); ++i)
+	{
+		if (IsOverWritten(write_addr, cmds[i]) || IsErased(write_addr, cmds[i]))
+		{
+			is_removable = true;
+			break;
+		}
+	}
+
+	return is_removable;
+}
+
+std::vector<iCmd*> CmdBuffer::OptimizeWriteCmds(const std::vector<iCmd*>& cmds)
+{
+	std::vector<iCmd*> optimized_write_cmds;
 
 	for (int i = 0; i < cmds.size(); ++i)
 	{
-		if (cmds[i]->GetMode() == "W")
+		if (cmds[i]->GetMode() != "W")
 		{
-			uint32_t write_addr = reinterpret_cast<WriteCmd*>(cmds[i])->GetAddr();
-
-			// Check write cmd could be removed
-			for (int j = i + 1; j < cmds.size(); ++j)
-			{
-				if (cmds[j]->GetMode() == "W")
-				{
-					if (reinterpret_cast<WriteCmd*>(cmds[j])->GetAddr() == write_addr)
-					{
-						break;
-					}
-				}
-				else if (cmds[j]->GetMode() == "E")
-				{
-					uint32_t erase_addr = reinterpret_cast<EraseCmd*>(cmds[j])->GetAddr();
-					uint32_t erase_range = reinterpret_cast<EraseCmd*>(cmds[j])->GetRange();
-					if (erase_addr <= write_addr && write_addr < erase_addr + erase_range)
-					{
-						break;
-					}
-				}
-			}
-
-			// Write cmd needed
-			fast_cmds_write.push_back(cmds[i]);
+			continue;
 		}
-		else if (cmds[i]->GetMode() == "E")
-		{
-			uint32_t start = reinterpret_cast<EraseCmd*>(cmds[i])->GetAddr();
-			uint32_t range = reinterpret_cast<EraseCmd*>(cmds[i])->GetRange();
 
-			for (int j = 0; j < range; ++j)
-			{
-				erase_area[start + j] = 1;
-			}
+		if (!isRemovableWriteCmd(cmds, i))
+		{
+			optimized_write_cmds.push_back(cmds[i]);
 		}
 	}
 
-	uint32_t erase_start;
-	bool is_erase = false;
-	for (int i = 0; i < 100; ++i)
+	return optimized_write_cmds;
+}
+
+void CmdBuffer::AddEraseArea(std::set<int>& erase_addrs, iCmd* cmd)
+{
+	uint32_t start = reinterpret_cast<EraseCmd*>(cmd)->GetAddr();
+	uint32_t range = reinterpret_cast<EraseCmd*>(cmd)->GetRange();
+	for (int i = 0; i < range; ++i)
 	{
-		if (erase_area[i] == 1)
-		{
-			if (is_erase == false)
+		erase_addrs.insert(start + i);
+	}
+}
+
+void CmdBuffer::InsertEraseCmd(std::vector<iCmd*>& erase_cmds, int start, int last)
+{
+	int range = last - start + 1;
+
+	std::vector<std::string> erase_args;
+	erase_args.push_back(std::to_string(start));
+	erase_args.push_back(std::to_string(range));
+
+	erase_cmds.push_back(new EraseCmd(erase_args));
+}
+
+std::vector<iCmd*> CmdBuffer::GetMergedEraseCmds(std::set<int>& erase_addrs)
+{
+	std::vector<iCmd*> optimized_erase_cmds;
+
+	int start = -1;
+	int last = -1;
+	for (auto& cur : erase_addrs)
+	{
+		if (start == -1)
+		{	// initial addr
+			start = cur;
+			last = cur;
+			continue;
+		}
+
+		if (cur == last + 1)
+		{	// continueous addr
+			last = cur;
+			if (last - start == 9)
 			{
-				is_erase = true;
-				erase_start = i;
-			}
-			else
-			{
-				uint32_t erase_range = i - erase_start;
-				if (erase_range == 10)
-				{
-					is_erase = false;
-					std::vector<std::string> erase_args;
-					erase_args.push_back(std::to_string(erase_start));
-					erase_args.push_back(std::to_string(erase_range));
-					ret.push_back(new EraseCmd(erase_args));
-				}
+				InsertEraseCmd(optimized_erase_cmds, start, last);
+				start = -1;
+				last = -1;
 			}
 		}
-		else if (erase_area[i] != 1)
-		{
-			if (is_erase == true)
-			{
-				is_erase = false;
-				uint32_t erase_range = i - erase_start;
-				std::vector<std::string> erase_args;
-				erase_args.push_back(std::to_string(erase_start));
-				erase_args.push_back(std::to_string(erase_range));
-				ret.push_back(new EraseCmd(erase_args));
-			}
-			else
-			{
-				continue;
-			}
+		else
+		{	// separated addr
+			InsertEraseCmd(optimized_erase_cmds, start, last);
+			start = cur;
+			last = cur;
 		}
 	}
 
-	for (auto& cmd : fast_cmds_write)
+	if (start != -1)
 	{
-		ret.push_back(cmd);
+		InsertEraseCmd(optimized_erase_cmds, start, last);
 	}
+
+	return optimized_erase_cmds;
+}
+
+std::vector<iCmd*> CmdBuffer::OptimizeEraseCmds(const std::vector<iCmd*>& cmds)
+{
+	std::set<int> erase_addrs;
+
+	for (int i = 0; i < cmds.size(); ++i)
+	{
+		if (cmds[i]->GetMode() != "E")
+		{
+			continue;
+		}
+
+		AddEraseArea(erase_addrs, cmds[i]);
+	}
+
+	return GetMergedEraseCmds(erase_addrs);
+}
+
+std::vector<iCmd*> CmdBuffer::OptimizeCmds(std::vector<iCmd*>& cmds)
+{
+	std::vector<iCmd*> ret;
+	std::vector<iCmd*> optimized_wrtie_cmds = OptimizeWriteCmds(cmds);
+	std::vector<iCmd*> optimized_erase_cmds = OptimizeEraseCmds(cmds);
+
+	ret = optimized_erase_cmds;
+	ret.insert(ret.end(), optimized_wrtie_cmds.begin(), optimized_wrtie_cmds.end());
+
+	return ret;
+}
+
+std::vector<iCmd*> CmdBuffer::GetOptimizedCmds()
+{
+	std::vector<iCmd*> cmds;
+	GetiCmdList(cmds);
+
+	std::vector<iCmd*> ret = OptimizeCmds(cmds);
 
 	return ret;
 }

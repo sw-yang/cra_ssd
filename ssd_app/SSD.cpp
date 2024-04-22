@@ -11,14 +11,17 @@ SSD::SSD(std::string nand_file, std::string result_file, std::string buffer_file
 	cmd_buffer_ = new CmdBuffer(buffer_file_);
 }
 
+void SSD::Run(string mode)
+{
+	if (mode != "F")
+	{
+		throw std::exception("Invalid mode");
+	}
+	Flush();
+}
+
 void SSD::Run(string mode, vector<string> args)
 {
-	if (mode == "F")
-	{
-		Flush();
-		return;
-	}
-
 	CmdFactory factory;
 	iCmd* cmd = factory.CreateCmd(mode, args);
 
@@ -42,10 +45,8 @@ void SSD::Run(string mode, vector<string> args)
 		{
 			Flush();
 		}
-		else
-		{
-			cmd_buffer_->AddCmd(cmd);
-		}
+
+		cmd_buffer_->AddCmd(cmd);
 	}
 }
 
@@ -55,7 +56,7 @@ CmdBuffer* SSD::GetCmdBuffer() {
 
 void SSD::Flush()
 {
-	std::vector<iCmd*> cmds = cmd_buffer_->GetCmdsFastWrite();
+	std::vector<iCmd*> cmds = cmd_buffer_->GetOptimizedCmds();
 	for (auto& cmd : cmds)
 	{
 		std::string mode = cmd->GetMode();

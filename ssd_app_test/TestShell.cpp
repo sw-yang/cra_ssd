@@ -15,7 +15,7 @@ TestShell::Read(const uint32_t addr)
 {
     uint32_t data = ssd_app->Read(addr);
 
-    LOGGER.PrintOutALine(DEBUG, UintToHexString(data));
+    LOGGER.PrintOutALine(DEBUG, UintToHexString(data), __func__);
 
     return data;
 }
@@ -34,31 +34,40 @@ void
 TestShell::Write(const uint32_t addr, const uint32_t data)
 {
     ssd_app->Write(addr, data);
+    LOGGER.PrintOutALine(DEBUG, UintToHexString(data), __func__);
 }
 
 void
 TestShell::FullWrite(const uint32_t data)
 {
     for (int addr = Test_Const::kMinAddr; addr <= Test_Const::kMaxAddr; addr++)
+    {
         Write(addr, data);
+        LOGGER.PrintOutALine(DEBUG, UintToHexString(data), __func__);
+    }
 }
 
 void
 TestShell::Erase(const uint32_t addr, const uint32_t size)
 {
     ssd_app->Erase(addr, size);
+    LOGGER.PrintOutALine(DEBUG, UintToHexString(data), __func__);
 }
 
 void
 TestShell::EraseRange(const uint32_t startaddr, const uint32_t endaddr)
 {
     for (int addr = startaddr; addr <= endaddr; addr++)
+    {
         ssd_app->Erase(addr, 1);
+        LOGGER.PrintOutALine(DEBUG, UintToHexString(addr), __func__);
+    }
 }
 
 bool
 TestShell::TestApp1()
 {
+    LOGGER.SetPrintLevel(ONLY_RUNNER);
     bool is_test_pass = false;
 
     uint32_t write_pattern = 0xABCDFFFF;
@@ -68,16 +77,18 @@ TestShell::TestApp1()
 
     is_test_pass = IsArrayDataEqual(read_result, write_pattern);
     if (is_test_pass)
-        LOGGER.PrintOutALine(INFO, "testapp1 pass");
+        LOGGER.PrintOutALine(INFO, "testapp1 pass", __func__);
     else
-        LOGGER.PrintOutALine(INFO, "testapp1 fail");
+        LOGGER.PrintOutALine(INFO, "testapp1 fail", __func__);
 
+    LOGGER.SetPrintLevel(INFO);
     return is_test_pass;
 }
 
 bool
 TestShell::TestApp2()
 {
+    LOGGER.SetPrintLevel(ONLY_RUNNER);
     bool is_test_pass = false;
     uint32_t first_write_pattern = 0xAAAABBBB;
     uint32_t second_write_pattern = 0x12345678;
@@ -95,10 +106,11 @@ TestShell::TestApp2()
 
     is_test_pass = IsArrayDataEqual(read_result, second_write_pattern);
     if (is_test_pass)
-        LOGGER.PrintOutALine(INFO, "testapp2 pass");
+        LOGGER.PrintOutALine(INFO, "testapp2 pass", __func__);
     else
-        LOGGER.PrintOutALine(INFO, "testapp2 fail");
+        LOGGER.PrintOutALine(INFO, "testapp2 fail", __func__);
 
+    LOGGER.SetPrintLevel(INFO);
     return is_test_pass;
 }
 
@@ -132,8 +144,8 @@ TestShell::IsArrayDataEqual(const vector<uint32_t> actual_arr, const uint32_t ex
     {
         if (actual_arr[idx] != expected)
         {
-            LOGGER.PrintOutALine(INFO, "idx[" + to_string(idx) + "] not equal!!");
-            LOGGER.PrintOutALine(INFO, "actual : " + UintToHexString(actual_arr[idx]) + "expected : " + UintToHexString(expected));
+            LOGGER.PrintOutALine(INFO, "idx[" + to_string(idx) + "] not equal!!", __func__);
+            LOGGER.PrintOutALine(INFO, "actual : " + UintToHexString(actual_arr[idx]) + "expected : " + UintToHexString(expected), __func__);
             is_test_pass = false;
         }
     }
@@ -152,13 +164,13 @@ TestShell::UintToHexString(const uint32_t data)
 void
 TestShell::Help(void)
 {
-    LOGGER.PrintOutALine(INFO, "Available commands:");
-    LOGGER.PrintOutALine(INFO, "Write <addr> <data>: Write data to address");
-    LOGGER.PrintOutALine(INFO, "Read <addr>: Read data from address");
-    LOGGER.PrintOutALine(INFO, "FullWrite <data>: Write data to full address");
-    LOGGER.PrintOutALine(INFO, "FullRead : Read data from full address");
-    LOGGER.PrintOutALine(INFO, "Help: Show available commands");
-    LOGGER.PrintOutALine(INFO, "Exit: Exit the program");
+    LOGGER.PrintOutALine(INFO, "Available commands:", __func__);
+    LOGGER.PrintOutALine(INFO, "Write <addr> <data>: Write data to address", __func__);
+    LOGGER.PrintOutALine(INFO, "Read <addr>: Read data from address", __func__);
+    LOGGER.PrintOutALine(INFO, "FullWrite <data>: Write data to full address", __func__);
+    LOGGER.PrintOutALine(INFO, "FullRead : Read data from full address", __func__);
+    LOGGER.PrintOutALine(INFO, "Help: Show available commands", __func__);
+    LOGGER.PrintOutALine(INFO, "Exit: Exit the program", __func__);
 }
 
 void 
@@ -172,7 +184,7 @@ TestShell::Run(void)
         if (!Input()) continue;
         
         if (cmd != EXIT)
-            LOGGER.PrintOutALineWithoutEndl(ONLY_RUNNER, user_input + "  ---  Run...");
+            LOGGER.PrintOutALineWithoutEndl(ONLY_RUNNER, user_input + "  ---  Run...", __func__);
 
         switch (cmd)
         {
@@ -214,10 +226,10 @@ TestShell::Run(void)
         if (cmd != EXIT)
         {
             if (isCMDPass)
-                LOGGER.PrintOutALine(ONLY_RUNNER, "Pass");
+                LOGGER.PrintOutALine(ONLY_RUNNER, "Pass", __func__);
             else
             {
-                LOGGER.PrintOutALine(ONLY_RUNNER, "FAIL!");
+                LOGGER.PrintOutALine(ONLY_RUNNER, "FAIL!", __func__);
                 return;
             }
         }
@@ -230,7 +242,7 @@ TestShell::ScriptRun(const char* script_path)
     FILE* in_file = freopen(script_path, "rt", stdin);
     if (in_file == nullptr)
     {
-        LOGGER.PrintOutALine(INFO, string{ script_path } + " not exist");
+        LOGGER.PrintOutALine(INFO, string{ script_path } + " not exist", __func__);
         return;
     }
 
@@ -314,7 +326,7 @@ TestShell::Input(void)
     }
     else
     {
-        LOGGER.PrintOutALine(INFO, invalid_cmd_str);
+        LOGGER.PrintOutALine(INFO, invalid_cmd_str, __func__);
         Help();
         return false;
     }
