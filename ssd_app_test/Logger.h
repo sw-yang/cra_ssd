@@ -27,7 +27,11 @@ private:
     std::string file_name = "latest.log";
     std::ofstream log_fout;
     uint32_t kMaxSize = 1024 * 1024;
-    std::string getTimeStr(void);
+    std::string GetTimeStr(void);
+    bool IsNeededDividingLog(const std::string& new_log);
+    void TransformOldLogToZip(void);
+    void BackupLatestLog(void);
+    std::string GetExistOldLog(void);
 
     Logger();
     Logger(const Logger&) = delete;
