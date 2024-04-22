@@ -154,16 +154,16 @@ bool CmdBuffer::FastRead(uint32_t read_addr, uint32_t& read_val)
 				data_map[addr + i] = 0;
 			}
 		}
+	}
 
-		if (data_map.find(read_addr) != data_map.end())
-		{
-			read_val = data_map[read_addr];
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+	if (data_map.find(read_addr) != data_map.end())
+	{
+		read_val = data_map[read_addr];
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 
