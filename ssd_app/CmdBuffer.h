@@ -13,11 +13,8 @@ public:
 
 	bool isFull();
 	uint32_t GetSize();
-	void SetSize(uint32_t length);
 	void Clear();
 	void AddCmd(iCmd* cmd);
-	void GetCmd(std::vector<std::string>& cmds);
-	void GetCmdList(std::vector<std::vector<std::string>>& cmds);
 	void GetiCmdList(std::vector<iCmd*>& cmds);
 	bool FastRead(uint32_t read_addr, uint32_t& read_val);
 	std::vector<iCmd*> GetCmdsFastWrite();

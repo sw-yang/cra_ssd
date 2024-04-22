@@ -18,12 +18,7 @@ uint32_t CmdBuffer::GetSize()
 void CmdBuffer::Clear()
 {
 	std::fstream file = OpenFile(true);
-	SetSize(0);
-}
-
-void CmdBuffer::SetSize(uint32_t length)
-{
-	length_ = length;
+	length_ = 0;
 }
 
 void CmdBuffer::AddCmd(iCmd* cmd)
@@ -39,33 +34,7 @@ void CmdBuffer::AddCmd(iCmd* cmd)
 
 	file.close();
 
-	SetSize(GetSize() + 1);
-}
-
-void CmdBuffer::GetCmd(std::vector<std::string>& cmds)
-{
-	std::fstream file = OpenFile();
-
-	std::string line;
-	while (std::getline(file, line))
-	{
-		cmds.push_back(line);
-	}
-
-	file.close();
-}
-
-void CmdBuffer::GetCmdList(std::vector<std::vector<std::string>>& cmds)
-{
-	std::fstream file = OpenFile();
-
-	std::string line;
-	while (std::getline(file, line))
-	{
-		cmds.push_back(SplitStringToVector(line));
-	}
-
-	file.close();
+	length_++;
 }
 
 void CmdBuffer::GetiCmdList(std::vector<iCmd*>& cmds)
@@ -110,20 +79,6 @@ void CmdBuffer::CreateEmptyFile()
 	{
 		throw std::exception("Fail to open result file");
 	}
-}
-
-std::vector<std::string> CmdBuffer::SplitStringToVector(const std::string& str) {
-	std::vector<std::string> tokens;
-	std::istringstream tokenStream(str);
-	std::string token;
-	while (getline(tokenStream, token, ' '))
-	{
-		if (!token.empty())
-		{
-			tokens.push_back(token);
-		}
-	}
-	return tokens;
 }
 
 bool CmdBuffer::FastRead(uint32_t read_addr, uint32_t& read_val)
