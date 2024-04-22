@@ -24,7 +24,7 @@ private:
 	bool isValidCommand();
 };
 
-class Reader : public iCommand
+class Reader : public iTask
 {
 public:
 	Reader(iCmd* cmd, FileManager* nand, FileManager* result);

@@ -25,7 +25,6 @@ private:
 	FileManager* nand_file_;
 	FileManager* result_file_;
 	CmdBuffer* cmd_buffer_;
-	iCommand* cmd_ = nullptr;
 
 	void Flush();
 };

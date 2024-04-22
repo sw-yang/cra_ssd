@@ -31,8 +31,8 @@ void SSD::Run(string mode, vector<string> args)
 		}
 		else
 		{
-			iCommand* func = new Reader(cmd, nand_file_, result_file_);
-			func->Run();
+			iTask* task = new Reader(cmd, nand_file_, result_file_);
+			task->Run();
 		}
 	}
 	else if (mode == "W" || mode == "E")
@@ -60,13 +60,13 @@ void SSD::Flush()
 		std::string mode = cmd->GetMode();
 		if (mode == "E")
 		{
-			iCommand* func = new Eraser(cmd, nand_file_);
-			func->Run();
+			iTask* task = new Eraser(cmd, nand_file_);
+			task->Run();
 		}
 		else if (mode == "W")
 		{
-			iCommand* func = new Writer(cmd, nand_file_);
-			func->Run();
+			iTask* task = new Writer(cmd, nand_file_);
+			task->Run();
 		}
 		else
 		{

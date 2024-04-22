@@ -22,7 +22,7 @@ private:
 	bool isValidCommand();
 };
 
-class Writer : public iCommand
+class Writer : public iTask
 {
 public:
 	Writer(iCmd* cmd, FileManager* nand);

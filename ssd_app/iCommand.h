@@ -10,7 +10,7 @@ public:
 	virtual std::string GetMode() = 0;
 };
 
-class iCommand
+class iTask
 {
 public:
 	virtual void Run() = 0;

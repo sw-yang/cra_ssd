@@ -25,7 +25,7 @@ private:
 };
 
 
-class Eraser : public iCommand
+class Eraser : public iTask
 {
 public:
 	Eraser(iCmd* cmd, FileManager* nand);
