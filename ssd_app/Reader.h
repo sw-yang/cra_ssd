@@ -19,11 +19,12 @@ public:
 
 private:
 	std::vector<std::string> args_;
+	uint32_t addr_;
 
 	bool isValidCommand();
 };
 
-class Reader : public iCommand
+class Reader : public iTask
 {
 public:
 	Reader(iCmd* cmd, FileManager* nand, FileManager* result);

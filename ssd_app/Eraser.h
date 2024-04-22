@@ -18,12 +18,14 @@ public:
 
 private:
 	std::vector<std::string> args_;
+	uint32_t addr_;
+	uint32_t range_;
 
 	bool isValidCommand();
 };
 
 
-class Eraser : public iCommand
+class Eraser : public iTask
 {
 public:
 	Eraser(iCmd* cmd, FileManager* nand);

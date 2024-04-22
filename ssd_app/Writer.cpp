@@ -6,12 +6,18 @@ WriteCmd::WriteCmd(std::vector<std::string>& args)
 	{
 		args_.push_back(arg);
 	}
+
+	if (!isValidCommand())
+	{
+		throw std::exception("Invalid args");
+	}
+	addr_ = (unsigned int)std::stoi(args_[0]);
+	value_ = NumUtils::hexStringToInt(args_[1]);
 }
 
 std::string WriteCmd::ToString()
 {
-	std::string addr = std::to_string(GetAddr());
-	std::string ret = "W " + addr + " " + args_[1];
+	std::string ret = "W " + std::to_string(addr_) + " " + args_[1];
 	return ret;
 }
 
@@ -22,20 +28,12 @@ std::string WriteCmd::GetMode()
 
 uint32_t WriteCmd::GetAddr()
 {
-	if (!isValidCommand())
-	{
-		throw std::exception("Invalid args");
-	}
-	return (unsigned int)std::stoi(args_[0]);
+	return addr_;
 }
 
 uint32_t WriteCmd::GetValue()
 {
-	if (!isValidCommand())
-	{
-		throw std::exception("Invalid args");
-	}
-	return NumUtils::hexStringToInt(args_[1]);
+	return value_;
 
 }
 

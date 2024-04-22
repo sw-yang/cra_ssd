@@ -6,6 +6,13 @@ EraseCmd::EraseCmd(std::vector<std::string>& args)
 	{
 		args_.push_back(arg);
 	}
+
+	if (!isValidCommand())
+	{
+		throw std::exception("Invalid args");
+	}
+	addr_ = (unsigned int)std::stoi(args_[0]);
+	range_ = (unsigned int)std::stoi(args_[1]);
 }
 
 std::string EraseCmd::ToString()
@@ -21,20 +28,12 @@ std::string EraseCmd::GetMode()
 
 uint32_t EraseCmd::GetAddr()
 {
-	if (!isValidCommand())
-	{
-		throw std::exception("Invalid args");
-	}
-	return (unsigned int)std::stoi(args_[0]);
+	return addr_;
 }
 
 uint32_t EraseCmd::GetRange()
 {
-	if (!isValidCommand())
-	{
-		throw std::exception("Invalid args");
-	}
-	return (unsigned int)std::stoi(args_[1]);
+	return range_;
 }
 
 bool EraseCmd::isValidCommand()

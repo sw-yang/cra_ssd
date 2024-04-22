@@ -18,22 +18,8 @@ public:
         std::vector<std::string> args;
 
         splitString(cmd, mode, args);
-        if (mode == "R")
-        {
-            return new ReadCmd(args);
-        }
-        else if (mode == "W")
-        {
-            return new WriteCmd(args);
-        }
-        else if (mode == "E")
-        {
-            return new EraseCmd(args);
-        }
-        else
-        {
-            throw std::exception("Invalid mode");
-        }
+
+        return CreateCmd(mode, args);
 	}
 
     iCmd* CreateCmd(const std::string& mode, std::vector<std::string>& args)
