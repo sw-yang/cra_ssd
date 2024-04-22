@@ -31,7 +31,7 @@ uint32_t ReadCmd::GetAddr()
 bool ReadCmd::isValidCommand()
 {
 	if (args_.size() != 1) return false;
-	if (!isNumber(args_[0])) return false;
+	if (!NumUtils::isNumber(args_[0])) return false;
 	if (stoi(args_[0]) < 0 || stoi(args_[0]) > 99) return false;
 
 	return true;
@@ -63,19 +63,5 @@ void Reader::Read()
 		}
 		nand_->WriteBinaryFile(nand_data, sizeof(nand_data));
 	}
-	result_->WriteTextFile(IntToHex(nand_data[addr_]));
-}
-
-std::string Reader::IntToHex(uint32_t integer)
-{
-	ostringstream ss;
-	ss << hex << uppercase << integer;
-	int zero_fills = 8 - ss.str().length();
-
-	string result = "0x";
-	for (int i = 0; i < zero_fills; ++i) {
-		result += "0";
-	}
-	result += ss.str();
-	return result;
+	result_->WriteTextFile(NumUtils::IntToHex(nand_data[addr_]));
 }

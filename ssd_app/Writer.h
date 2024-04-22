@@ -2,8 +2,6 @@
 #include <string>
 #include <vector>
 #include <stdexcept>
-#include <sstream>
-#include <regex>
 #include "iCommand.h"
 #include "FileManager.h"
 
@@ -19,8 +17,6 @@ public:
 private:
 	std::vector<std::string> args_;
 
-	unsigned int hexStringToInt(const std::string& hexStr);
-	bool isValidHex(const std::string& str);
 	bool isValidCommand();
 };
 

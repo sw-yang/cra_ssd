@@ -10,20 +10,6 @@ SSD::SSD(std::string nand_file, std::string result_file, std::string buffer_file
 	cmd_buffer_ = new CmdBuffer(buffer_file);
 }
 
-std::string IntToHex(uint32_t integer)
-{
-	ostringstream ss;
-	ss << hex << uppercase << integer;
-	int zero_fills = 8 - ss.str().length();
-
-	string result = "0x";
-	for (int i = 0; i < zero_fills; ++i) {
-		result += "0";
-	}
-	result += ss.str();
-	return result;
-}
-
 void SSD::Run(string mode, vector<string> args)
 {
 	if (mode == "F")
@@ -41,7 +27,7 @@ void SSD::Run(string mode, vector<string> args)
 		uint32_t val;
 		if (cmd_buffer_->FastRead(addr, val))
 		{
-			result_file_->WriteTextFile(IntToHex(val));
+			result_file_->WriteTextFile(NumUtils::IntToHex(val));
 		}
 		else
 		{
