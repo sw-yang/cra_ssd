@@ -28,15 +28,7 @@ Logger::SetPrintLevel(const PrintLevel level)
 void
 Logger::PrintOutALine(const PrintLevel level, const string str, const string functionname)
 {
-    if (cur_print_level >= level) {
-        if (cur_print_level > ONLY_RUNNER) {
-            PrintTime();
-            string space;
-            for (int spacenum = 0; spacenum < 30 - functionname.size() + 2; spacenum++) space += " ";
-            cout << functionname + "()" + space + ": ";
-        }
-        cout << str << endl;
-    }
+    PrintOutALineWithoutEndl(level, str + "\n", functionname);
 }
 
 void 
@@ -45,13 +37,10 @@ Logger::PrintOutALineWithoutEndl(const PrintLevel level, const string str, const
     if (cur_print_level >= level) {
         if (cur_print_level > ONLY_RUNNER) {
             PrintTime();
-            string space;
-            for (int spacenum = 0; spacenum < 30 - functionname.size() + 2; spacenum++) space += " ";
-            cout << functionname + "()" + space + ": ";
+            uint32_t empty_len = 30 - functionname.size() - 2;
+            cout << functionname << "()" << setw(empty_len) << setfill(' ') << " : ";
         }
         cout << str;
-        if (cur_print_level > ONLY_RUNNER)
-            cout << endl;
     }
 }
 
