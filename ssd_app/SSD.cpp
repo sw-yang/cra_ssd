@@ -56,25 +56,28 @@ CmdBuffer* SSD::GetCmdBuffer() {
 
 void SSD::Flush()
 {
+	std::vector<iTask*> tasks;
 	std::vector<iCmd*> cmds = cmd_buffer_->GetOptimizedCmds();
 	for (auto& cmd : cmds)
 	{
 		std::string mode = cmd->GetMode();
 		if (mode == "E")
 		{
-			iTask* task = new Eraser(cmd, nand_file_);
-			task->Run();
+			tasks.push_back(new Eraser(cmd, nand_file_));
 		}
 		else if (mode == "W")
 		{
-			iTask* task = new Writer(cmd, nand_file_);
-			task->Run();
+			tasks.push_back(new Writer(cmd, nand_file_));
 		}
 		else
 		{
 			throw std::exception("Invalid mode");
 		}
 	}
-
 	cmd_buffer_->Clear();
+	
+	for (auto& task : tasks)
+	{
+		task->Run();
+	}
 }
