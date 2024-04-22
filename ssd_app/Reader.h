@@ -3,7 +3,6 @@
 #include <vector>
 #include <stdexcept>
 #include <iostream>
-#include <sstream>
 #include <regex>
 #include "iCommand.h"
 #include "FileManager.h"
@@ -38,7 +37,6 @@ private:
 	FileManager* result_;
 
 	void Read();
-	string IntToHex(uint32_t integer);
 };
 
 

@@ -35,31 +35,16 @@ uint32_t WriteCmd::GetValue()
 	{
 		throw std::exception("Invalid args");
 	}
-	return hexStringToInt(args_[1]);
+	return NumUtils::hexStringToInt(args_[1]);
 
-}
-
-unsigned int WriteCmd::hexStringToInt(const std::string& hexStr)
-{
-	unsigned int result;
-	std::stringstream ss;
-	ss << std::hex << hexStr;
-	ss >> result;
-	return result;
-}
-
-bool WriteCmd::isValidHex(const std::string& str)
-{
-	std::regex pattern("^0x[0-9a-fA-F]{8}$");
-	return std::regex_match(str, pattern);
 }
 
 bool WriteCmd::isValidCommand()
 {
 	if (args_.size() != 2) return false;
-	if (!isNumber(args_[0])) return false;
+	if (!NumUtils::isNumber(args_[0])) return false;
 	if (stoi(args_[0]) < 0 || stoi(args_[0]) > 99) return false;
-	if (!isValidHex(args_[1])) return false;
+	if (!NumUtils::isValidHex(args_[1])) return false;
 
 	return true;
 }

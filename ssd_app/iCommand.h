@@ -1,25 +1,13 @@
 #pragma once
 #include <string>
 #include <iostream>
+#include "NumUtils.h"
 
 class iCmd
 {
 public:
 	virtual std::string ToString() = 0;
 	virtual std::string GetMode() = 0;
-
-protected:
-	bool isNumber(const std::string& str)
-	{
-		for (char c : str)
-		{
-			if (!isdigit(c))
-			{
-				return false;
-			}
-		}
-		return true;
-	}
 };
 
 class iCommand

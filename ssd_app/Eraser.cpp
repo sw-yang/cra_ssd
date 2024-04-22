@@ -40,7 +40,7 @@ uint32_t EraseCmd::GetRange()
 bool EraseCmd::isValidCommand()
 {
 	if (args_.size() != 2) return false;
-	if (!isNumber(args_[0]) || !isNumber(args_[1])) return false;
+	if (!NumUtils::isNumber(args_[0]) || !NumUtils::isNumber(args_[1])) return false;
 	if (stoi(args_[0]) < 0 || stoi(args_[0]) > 99) return false;
 	if (stoi(args_[1]) < 1 || stoi(args_[1]) > 10) return false;
 	if (stoi(args_[0]) + stoi(args_[1]) > 99) return false;
