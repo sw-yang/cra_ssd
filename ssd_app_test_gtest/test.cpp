@@ -808,7 +808,7 @@ TEST_F(TestShellTestFixture, SSDEraseTestWithoutFlush)
 
 TEST_F(TestShellTestFixture, SSDReadTestAfterEraseWithoutFlush)
 {
-	const uint32_t EmptyData = 0x30303030;
+	const string EmptyData = "0x00000000";
 	cout << "Write 1 0x11112222" << endl;
 	cout << "Flush" << endl; // PreCondition Write
 	cout << "Erase 1 1" << endl;
@@ -821,15 +821,13 @@ TEST_F(TestShellTestFixture, SSDReadTestAfterEraseWithoutFlush)
 	TestShell test_shell;
 	test_shell.set_ssd_app(&app);
 
-	uint32_t expected_data = EmptyData; // 빈칸 데이터 0
+	string expected_data = EmptyData; // 빈칸 데이터 0
 	int expected_addr = 1;
-	uint32_t result;
+	string result;
 	test_shell.Run();
 
-	std::ifstream in(test_result_path, std::ios::binary);
-
-	in.seekg(expected_addr * sizeof(uint32_t));
-	in.read(reinterpret_cast<char*>(&result), sizeof(uint32_t));
+	std::ifstream in(test_result_path, std::ios::in);
+	in >> result;
 
 	EXPECT_EQ(result, expected_data);
 }
