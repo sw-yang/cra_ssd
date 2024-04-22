@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <fstream>
+#include <vector>
 
 enum PrintLevel
 {
@@ -31,7 +32,7 @@ private:
     bool IsNeededDividingLog(const std::string& new_log);
     void TransformOldLogToZip(void);
     void BackupLatestLog(void);
-    std::string GetExistOldLog(void);
+    std::vector<std::string> GetExistOldLog(void);
 
     Logger();
     Logger(const Logger&) = delete;

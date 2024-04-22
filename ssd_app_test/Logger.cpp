@@ -102,8 +102,10 @@ Logger::GetTimeStr(void)
     return time_str;
 }
 
-string Logger::GetExistOldLog(void)
+vector<string>
+Logger::GetExistOldLog(void)
 {
+    vector<string> path_arr;
     for (auto& entry : filesystem::directory_iterator{ "./" })
     {
         auto _path = entry.path();
@@ -115,20 +117,22 @@ string Logger::GetExistOldLog(void)
             auto old_log_name = _path.string().erase(ext_pos);
             if (filesystem::exists(old_log_name + string{ ".zip" }))
                 continue;
-            return _path.string();
+            path_arr.push_back(_path.string());
         }
     }
-    return "";
+
+    return path_arr;
 }
 
 void
 Logger::TransformOldLogToZip(void)
 {
-    string old_log_path = GetExistOldLog();
-    if (old_log_path != "")
+    vector<string> old_log_path_arr = GetExistOldLog();
+    for (auto& old_log_path : old_log_path_arr)
     {
-        string new_file_name = old_log_path.erase(old_log_path.find(".log")) + string{ ".zip" };
-        filesystem::rename(old_log_path, new_file_name);
+        string new_file_name = old_log_path;
+        new_file_name = new_file_name.erase(new_file_name.find(".log")) + string{ ".zip" };
+        filesystem::rename(old_log_path, new_file_name);   
     }
 }
 

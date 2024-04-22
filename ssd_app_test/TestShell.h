@@ -29,7 +29,7 @@ public:
     std::vector<uint32_t> addr_arr;//to be deleted
     std::vector<uint32_t> data_arr;//to be deleted
 private:
-    bool Input(void);;
+    bool Input(void);
 
     uint32_t Read(const uint32_t addr);
     std::vector<std::uint32_t> FullRead(void);
