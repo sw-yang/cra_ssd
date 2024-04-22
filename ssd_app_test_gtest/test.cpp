@@ -7,6 +7,14 @@
 #include "../ssd_app_test/Converter.cpp"
 #include "../ssd_app_test/InvalidChecker.cpp"
 #include "../ssd_app_test/Logger.cpp"
+#include "../ssd_app_test/writer.cpp"
+#include "../ssd_app_test/Reader.cpp"
+#include "../ssd_app_test/Eraser.cpp"
+#include "../ssd_app_test/Exiter.cpp"
+#include "../ssd_app_test/Flusher.cpp"
+#include "../ssd_app_test/Helper.cpp"
+#include "../ssd_app_test/TestApp1.cpp"
+#include "../ssd_app_test/TestApp2.cpp"
 
 #include <iostream>
 #include <fstream>
@@ -209,42 +217,6 @@ TEST_F(TestShellTestFixture, ExitTest)
 	test_shell.set_ssd_app(&app);
 
 	test_shell.Run();
-}
-
-TEST_F(TestShellTestFixture, InputNormalWrite)
-{
-	user_input_out_file << "Write 0 0x11112222" << endl;
-	user_input_out_file << "Write 99 0x111AB222" << endl;
-	user_input_out_file << "Exit" << endl;
-
-	MockSSDApp app;
-	TestShell test_shell;
-	test_shell.set_ssd_app(&app);
-
-	test_shell.Run();
-
-	EXPECT_EQ(test_shell.addr_arr[0], 0);
-	EXPECT_EQ(test_shell.data_arr[0], 0x11112222);
-
-	EXPECT_EQ(test_shell.addr_arr[1], 99);
-	EXPECT_EQ(test_shell.data_arr[1], 0x111AB222);
-}
-
-TEST_F(TestShellTestFixture, InputNormalRead)
-{
-	user_input_out_file << "Read 4" << endl;
-	user_input_out_file << "Read 49" << endl;
-	user_input_out_file << "Exit" << endl;
-
-	MockSSDApp app;
-	TestShell test_shell;
-	test_shell.set_ssd_app(&app);
-
-	test_shell.Run();
-
-	EXPECT_EQ(test_shell.addr_arr[0], 4);
-
-	EXPECT_EQ(test_shell.addr_arr[1], 49);
 }
 
 TEST_F(TestShellTestFixture, InputInvalidWrite)

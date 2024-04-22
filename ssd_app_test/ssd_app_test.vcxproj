@@ -135,20 +135,38 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Converter.cpp" />
+    <ClCompile Include="CommandFactory.h" />
+    <ClCompile Include="Eraser.cpp" />
+    <ClCompile Include="Exiter.cpp" />
+    <ClCompile Include="Flusher.cpp" />
+    <ClCompile Include="Helper.cpp" />
     <ClCompile Include="InvalidChecker.cpp" />
     <ClCompile Include="ISSDApp.h" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Reader.cpp" />
     <ClCompile Include="SSD_Adaptor.cpp" />
+    <ClCompile Include="TestApp1.cpp" />
+    <ClCompile Include="TestApp2.cpp" />
     <ClCompile Include="TestShell.cpp" />
+    <ClCompile Include="Writer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Converter.h" />
+    <ClInclude Include="Eraser.h" />
+    <ClInclude Include="Exiter.h" />
+    <ClInclude Include="Flusher.h" />
+    <ClInclude Include="Helper.h" />
+    <ClInclude Include="ICommand.h" />
     <ClInclude Include="InvalidChecker.h" />
     <ClInclude Include="Logger.h" />
+    <ClInclude Include="Reader.h" />
     <ClInclude Include="SSD_Adaptor.h" />
+    <ClInclude Include="TestApp1.h" />
+    <ClInclude Include="TestApp2.h" />
     <ClInclude Include="TestShell.h" />
     <ClInclude Include="Test_Const.h" />
+    <ClInclude Include="Writer.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\ssd_app_test_gtest\log.txt" />
