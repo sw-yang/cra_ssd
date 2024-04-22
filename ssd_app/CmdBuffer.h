@@ -18,7 +18,7 @@ public:
 	void AddCmd(iCmd* cmd);
 	void GetCmd(std::vector<std::string>& cmds);
 	void GetCmdList(std::vector<std::vector<std::string>>& cmds);
-	void GetiCmdList(std::vector<iCmd*> cmds);
+	void GetiCmdList(std::vector<iCmd*>& cmds);
 	uint32_t FastRead(uint32_t addr);
 	std::vector<iCommand*> GetCmdsFastWrite();
 

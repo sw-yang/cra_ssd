@@ -552,6 +552,34 @@ TEST_F(SSDTest, AddAndGetCommandList)
 	EXPECT_EQ(cmds[0][2], "0xFF25ABCD");
 }
 
+TEST_F(SSDTest, AddAndGetCommandListICmd)
+{
+	CmdBuffer* cmd_buffer = ssd->GetCmdBuffer();
+	cmd_buffer->Clear();
+
+	std::vector<std::string> args;
+
+	args.push_back(std::to_string(ADDRESS));
+	args.push_back("0xFFFFFFFF");
+	ssd->Run("W", args);
+
+	args.clear();
+	args.push_back(std::to_string(ADDRESS));
+	ssd->Run("R", args);
+
+	args.clear();
+	args.push_back(std::to_string(ADDRESS));
+	args.push_back("9");
+	ssd->Run("E", args);
+
+	std::vector<iCmd*> cmds;
+	cmd_buffer->GetiCmdList(cmds);
+
+	EXPECT_EQ(cmds[0]->ToString(), "W 57 0xFFFFFFFF");
+	EXPECT_EQ(cmds[1]->ToString(), "R 57");
+	EXPECT_EQ(cmds[2]->ToString(), "E 57 9");
+}
+
 TEST_F(SSDTest, ComapareGetCmdWithBufferFile)
 {
 	CmdBuffer* cmd_buffer = ssd->GetCmdBuffer();
