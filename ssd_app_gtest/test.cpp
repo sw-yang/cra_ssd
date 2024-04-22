@@ -327,7 +327,7 @@ TEST_F(SSDTest, ThrowExceptionWhenInvalidAddressWhileWrite)
 	}
 }
 
-TEST_F(SSDTest, DISABLED_ThrowExceptionWhenInvalidArgsNumWhileWrite)
+TEST_F(SSDTest, ThrowExceptionWhenInvalidArgsNumWhileWrite)
 {
 	try
 	{
