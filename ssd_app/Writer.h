@@ -16,6 +16,8 @@ public:
 
 private:
 	std::vector<std::string> args_;
+	uint32_t addr_;
+	uint32_t value_;
 
 	bool isValidCommand();
 };

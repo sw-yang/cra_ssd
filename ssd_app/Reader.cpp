@@ -6,11 +6,18 @@ ReadCmd::ReadCmd(std::vector<std::string>& args)
 	{
 		args_.push_back(arg);
 	}
+
+	if (!isValidCommand())
+	{
+		throw std::exception("Invalid args");
+	}
+	addr_ = (unsigned int)std::stoi(args_[0]);
+
 }
 
 std::string ReadCmd::ToString()
 {
-	std::string ret = "R " + std::to_string(GetAddr());
+	std::string ret = "R " + std::to_string(addr_);
 	return ret;
 }
 
@@ -21,11 +28,7 @@ std::string ReadCmd::GetMode()
 
 uint32_t ReadCmd::GetAddr()
 {
-	if (!isValidCommand())
-	{
-		throw std::exception("Invalid args");
-	}
-	return (unsigned int)std::stoi(args_[0]);
+	return addr_;
 }
 
 bool ReadCmd::isValidCommand()
