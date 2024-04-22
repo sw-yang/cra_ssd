@@ -19,7 +19,6 @@ public:
 	SSD(string nand_file = "nand.txt", string result_file = "result.txt", string buffer_file = "buffer.txt");
 
 	void Run(string mode, vector<string> args);
-	void Run(string mode);
 	CmdBuffer* GetCmdBuffer();
 
 private:
