@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <fstream>
+#include <vector>
 
 enum PrintLevel
 {
@@ -22,9 +23,16 @@ public:
     void PrintOutALineWithoutEndl(const PrintLevel level, const std::string str, const std::string functionname = "");
 private:
     void PrintTime(void);
+    void LogALine(const std::string str);
     PrintLevel cur_print_level = INFO;
     std::string file_name = "latest.log";
     std::ofstream log_fout;
+    uint32_t kMaxSize = 1024 * 1024;
+    std::string GetTimeStr(void);
+    bool IsNeededDividingLog(const std::string& new_log);
+    void TransformOldLogToZip(void);
+    void BackupLatestLog(void);
+    std::vector<std::string> GetExistOldLog(void);
 
     Logger();
     Logger(const Logger&) = delete;

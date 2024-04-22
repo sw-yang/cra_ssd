@@ -4,6 +4,7 @@
 #include <string>
 #include <cstdlib>
 #include "SSD_Adaptor.h"
+#include <iomanip>
 
 using namespace std;
 uint32_t
@@ -24,7 +25,7 @@ string
 SSD_Adaptor::GetReadResult(void)
 {
     string result_file_name = "result.txt";
-    ifstream fin(result_file_name, std::ios::in);
+    ifstream fin(result_file_name, ios::in);
 
     char data[11];
     fin.getline(data, sizeof(data));
@@ -42,10 +43,10 @@ string
 SSD_Adaptor::GetWriteCMD(const uint32_t addr, const uint32_t data)
 {
     const string kWriteCMD = "..\\x64\\Debug\\ssd_app.exe W ";
-    std::ostringstream data_ss;
-    data_ss << "0x" << hex << uppercase << data;
-    
-    return kWriteCMD + " " + to_string(addr) + " " + data_ss.str();
+    ostringstream data_ss;
+    data_ss << "0x" << setfill('0') << hex << setw(8) << uppercase << data;
+    auto ret = kWriteCMD + " " + to_string(addr) + " " + data_ss.str();
+    return ret;
 }
 
 void

@@ -44,7 +44,8 @@ InvalidChecker::IsHexNum(const string& str)
     for (int idx = 2; idx < str.length(); idx++)
     {
         if (!(str[idx] >= '0' && str[idx] <= '9') &&
-            !(str[idx] >= 'A' && str[idx] <= 'F'))
+            !(str[idx] >= 'A' && str[idx] <= 'F') &&
+            !(str[idx] >= 'a' && str[idx] <= 'f'))
             return false;
     }
 
