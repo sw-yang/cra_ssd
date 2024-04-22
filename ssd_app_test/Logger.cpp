@@ -48,7 +48,7 @@ Logger::PrintTime(ostringstream& out_ss)
     std::time_t now_time = std::chrono::system_clock::to_time_t(now);
     std::tm* local_time = std::localtime(&now_time);
 
-    log_fout << '['
+    out_ss << '['
         << (local_time->tm_year - 100) << '.'
         << (local_time->tm_mon + 1) << '.'
         << local_time->tm_mday << ' '
