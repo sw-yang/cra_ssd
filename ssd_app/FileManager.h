@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <fstream>
+#include <vector>
 
 class FileManager
 {
@@ -11,6 +12,9 @@ public:
 	void ReadBinaryFile(uint32_t* data, size_t size, std::streampos start = 0);
 	void WriteBinaryFile(uint32_t* data, size_t size, std::streampos start = 0);
 	void WriteTextFile(std::string data);
+	void ReadBufferFile(std::vector<std::string>& lines);
+	void WriteBufferFile(std::string line);
+	void ClearBufferFile();
 
 private:
 	void CreateEmptyFile();

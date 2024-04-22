@@ -17,7 +17,7 @@ uint32_t CmdBuffer::GetSize()
 
 void CmdBuffer::Clear()
 {
-	std::fstream file = OpenFile(true);
+	buffer_->ClearBufferFile();
 	length_ = 0;
 }
 
@@ -27,57 +27,21 @@ void CmdBuffer::AddCmd(iCmd* cmd)
 
 	std::string line = cmd->ToString();
 
-	std::fstream file = OpenFile();
-
-	file.seekp(0, std::ios::end);
-	file << line << "\n";
-
-	file.close();
+	buffer_->WriteBufferFile(line);
 
 	length_++;
 }
 
 void CmdBuffer::GetiCmdList(std::vector<iCmd*>& cmds)
 {
-	std::fstream file = OpenFile();
+	std::vector<std::string> lines;
+	buffer_->ReadBufferFile(lines);
 
 	CmdFactory factory;
-	std::string line;
-
-	while (std::getline(file, line))
+	
+	for (auto& line : lines) 
 	{
 		cmds.push_back(factory.CreateCmd(line));
-	}
-
-	file.close();
-}
-
-std::fstream CmdBuffer::OpenFile(bool isTrunc)
-{
-	std::fstream file;
-	int openmode = std::ios::in | std::ios::out;
-
-	if (isTrunc)
-	{
-		openmode |= std::ios::trunc;
-	}
-
-	file.open(file_name_, openmode);
-	if (!file.is_open())
-	{
-		CreateEmptyFile();
-		file.open(file_name_, openmode);
-	}
-
-	return std::move(file);
-}
-
-void CmdBuffer::CreateEmptyFile()
-{
-	std::ofstream out(file_name_);
-	if (!out.is_open())
-	{
-		throw std::exception("Fail to open result file");
 	}
 }
 

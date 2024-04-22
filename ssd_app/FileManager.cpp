@@ -63,3 +63,41 @@ size_t FileManager::GetFileSize(std::fstream& file)
 	file.seekg(0, std::ios::end);
 	return file.tellg();
 }
+
+void FileManager::ReadBufferFile(std::vector<std::string>& lines) 
+{
+	std::fstream file = OpenFile(false);
+
+	std::string line;
+	while (std::getline(file, line))
+	{
+		lines.push_back(line);
+	}
+
+	file.close();
+}
+
+void FileManager::WriteBufferFile(std::string line)
+{
+	std::fstream file = OpenFile(false);
+
+	file.seekp(0, std::ios::end);
+	file << line << "\n";
+
+	file.close();
+}
+
+void FileManager::ClearBufferFile()
+{
+	std::fstream file;
+	int openmode = std::ios::trunc;
+	
+	file.open(file_name_, openmode);
+	if (!file.is_open())
+	{
+		CreateEmptyFile();
+		file.open(file_name_, openmode);
+	}
+
+	file.close();
+}
