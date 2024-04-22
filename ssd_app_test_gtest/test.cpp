@@ -83,16 +83,15 @@ TEST_F(TestShellTestFixture, RunnerTest)
 	string full_read_cmd = "FullRead\n";
 	string exit_cmd = "Exit\n";
 
-	script_fout.write(write_cmd.c_str(), write_cmd.length());
-	script_fout.write(read_cmd.c_str(), read_cmd.length());
-	script_fout.write(full_write_cmd.c_str(), full_write_cmd.length());
-	script_fout.write(full_read_cmd.c_str(), full_read_cmd.length());
-	script_fout.write(exit_cmd.c_str(), exit_cmd.length());
+	script_fout<<write_cmd;
+	script_fout<<read_cmd;
+	script_fout<<full_write_cmd;
+	script_fout<<full_read_cmd;
+	script_fout<<exit_cmd;
 	script_fout.close();
 
 	string test_result_path = "./test_result.txt";
-	ofstream result_out_file;
-	result_out_file.open(test_result_path, ofstream::trunc | ofstream::out);
+	ofstream result_out_file(test_result_path, ofstream::trunc | ofstream::out);
 	cout.rdbuf(result_out_file.rdbuf());
 
 	SSD_Adaptor app;
@@ -100,18 +99,16 @@ TEST_F(TestShellTestFixture, RunnerTest)
 	test_shell.set_ssd_app(&app);
 	test_shell.ScriptRun(sample_script_path.c_str());
 
-	auto file = freopen(test_result_path.c_str(), "rt", stdin);
+	ifstream result_input_file(test_result_path);
 	string result;
-	getline(cin, result);
+	std::getline(result_input_file, result);
 	EXPECT_EQ(result, "Write 1 0x1234AAAA  ---  Run...Pass");
-	getline(cin, result);
+	std::getline(result_input_file, result);
 	EXPECT_EQ(result, "Read 1  ---  Run...Pass");
-	getline(cin, result);
+	std::getline(result_input_file, result);
 	EXPECT_EQ(result, "FullWrite 0x43215678  ---  Run...Pass");
-	getline(cin, result);
+	std::getline(result_input_file, result);
 	EXPECT_EQ(result, "FullRead  ---  Run...Pass");
-
-	fclose(file);
 }
 
 TEST_F(TestShellTestFixture, OutputToFile)
@@ -123,9 +120,9 @@ TEST_F(TestShellTestFixture, OutputToFile)
 	cout << write_input << endl;
 	cout << read_input << endl;
 
-	getline(cin, user_input);
+	std::getline(cin, user_input);
 	EXPECT_EQ(user_input, write_input);
-	getline(cin, user_input);
+	std::getline(cin, user_input);
 	EXPECT_EQ(user_input, read_input);
 }
 
@@ -297,34 +294,22 @@ TEST_F(TestShellTestFixture, HelpTest)
 
 	test_shell.Run();
 
-	string time = GetTime();
-	string functionname = "Help";
-	string space;
-	for (int spacenum = 0; spacenum < 30 - functionname.size() + 2; spacenum++) space += " ";
-    functionname += "()" + space + ": ";
-	string expectresult;
-
-	auto file = freopen(test_result_path.c_str(), "rt", stdin);
+	ifstream result_input_file(test_result_path);
 	string result;
-	getline(cin, result);
-	EXPECT_EQ(result, time + "Run()                             : " + string{ "Help  ---  Run..." });
-	getline(cin, result);
-	EXPECT_EQ(result, time + functionname + string{ "Available commands:" });
-	getline(cin, result);
-	EXPECT_EQ(result, time + functionname + string{ "Write <addr> <data>: Write data to address" });
-	getline(cin, result);
-	EXPECT_EQ(result, time + functionname + string{ "Read <addr>: Read data from address" });
-	getline(cin, result);
-	EXPECT_EQ(result, time + functionname + string{ "FullWrite <data>: Write data to full address" });
-	getline(cin, result);
-	EXPECT_EQ(result, time + functionname + string{ "FullRead : Read data from full address" });
-	getline(cin, result);
-	EXPECT_EQ(result, time + functionname + string{ "Help: Show available commands" });
-	getline(cin, result);
-	EXPECT_EQ(result, time + functionname + string{ "Exit: Exit the program" });
-
-	result_out_file.close();
-	fclose(file);
+	std::getline(result_input_file, result);
+	EXPECT_EQ(result, "Help  ---  Run...Available commands:");
+	std::getline(result_input_file, result);
+	EXPECT_EQ(result, "Write <addr> <data>: Write data to address");
+	std::getline(result_input_file, result);
+	EXPECT_EQ(result, "Read <addr>: Read data from address");
+	std::getline(result_input_file, result);
+	EXPECT_EQ(result, "FullWrite <data>: Write data to full address");
+	std::getline(result_input_file, result);
+	EXPECT_EQ(result, "FullRead : Read data from full address");
+	std::getline(result_input_file, result);
+	EXPECT_EQ(result, "Help: Show available commands");
+	std::getline(result_input_file, result);
+	EXPECT_EQ(result, "Exit: Exit the program");
 }
 
 TEST_F(TestShellTestFixture, ExitTest)
@@ -399,21 +384,17 @@ TEST_F(TestShellTestFixture, InputInvalidWrite)
 	string result;
 	test_shell.Run();
 
-	auto file = freopen(test_result_path.c_str(), "rt", stdin);
-
-	getline(cin, result);
+	ifstream result_input_file(test_result_path);
+	std::getline(result_input_file, result);
 	EXPECT_EQ(result, expected_invalid_addr);
-	getline(cin, result);
+	std::getline(result_input_file, result);
 	EXPECT_EQ(result, expected_invalid_addr);
-	getline(cin, result);
+	std::getline(result_input_file, result);
 	EXPECT_EQ(result, expected_invalid_data);
-	getline(cin, result);
+	std::getline(result_input_file, result);
 	EXPECT_EQ(result, expected_invalid_addr);
-	getline(cin, result);
+	std::getline(result_input_file, result);
 	EXPECT_EQ(result, expected_invalid_addr);
-
-	result_out_file.close();
-	fclose(file);
 }
 
 TEST_F(TestShellTestFixture, InputInvalidRead)
@@ -438,21 +419,17 @@ TEST_F(TestShellTestFixture, InputInvalidRead)
 	string result;
 	test_shell.Run();
 
-	auto file = freopen(test_result_path.c_str(), "rt", stdin);
-
-	getline(cin, result);
+	ifstream result_input_file(test_result_path);
+	std::getline(result_input_file, result);
 	EXPECT_EQ(result, expected_invalid_addr);
-	getline(cin, result);
+	std::getline(result_input_file, result);
 	EXPECT_EQ(result, expected_invalid_addr);
-	getline(cin, result);
+	std::getline(result_input_file, result);
 	EXPECT_EQ(result, expected_invalid_addr);
-	getline(cin, result);
+	std::getline(result_input_file, result);
 	EXPECT_EQ(result, expected_invalid_addr);
-	getline(cin, result);
+	std::getline(result_input_file, result);
 	EXPECT_EQ(result, expected_invalid_addr);
-
-	result_out_file.close();
-	fclose(file);
 }
 
 TEST_F(TestShellTestFixture, InputInvalidCMD)
@@ -473,33 +450,24 @@ TEST_F(TestShellTestFixture, InputInvalidCMD)
 	string result;
 	test_shell.Run();
 
-	auto file = freopen(test_result_path.c_str(), "rt", stdin);
+	ifstream result_input_file(test_result_path);
 
-	string time = GetTime();
-	string functionname = "Help";
-	string space;
-	for (int spacenum = 0; spacenum < 30 - functionname.size() + 2; spacenum++) space += " ";
-	functionname += "()" + space + ": ";
-
-	getline(cin, result);
-	EXPECT_EQ(result, time + "Input()                           : " + expected_invalid_cmd);
-	getline(cin, result);
-	EXPECT_EQ(result, time + functionname + string{ "Available commands:" });
-	getline(cin, result);
-	EXPECT_EQ(result, time + functionname + string{ "Write <addr> <data>: Write data to address" });
-	getline(cin, result);
-	EXPECT_EQ(result, time + functionname + string{ "Read <addr>: Read data from address" });
-	getline(cin, result);
-	EXPECT_EQ(result, time + functionname + string{ "FullWrite <data>: Write data to full address" });
-	getline(cin, result);
-	EXPECT_EQ(result, time + functionname + string{ "FullRead : Read data from full address" });
-	getline(cin, result);
-	EXPECT_EQ(result, time + functionname + string{ "Help: Show available commands" });
-	getline(cin, result);
-	EXPECT_EQ(result, time + functionname + string{ "Exit: Exit the program" });
-	
-	result_out_file.close();
-	fclose(file);
+	std::getline(result_input_file, result);
+	EXPECT_EQ(result, expected_invalid_cmd);
+	std::getline(result_input_file, result);
+	EXPECT_EQ(result, "Available commands:");
+	std::getline(result_input_file, result);
+	EXPECT_EQ(result, "Write <addr> <data>: Write data to address");
+	std::getline(result_input_file, result);
+	EXPECT_EQ(result, "Read <addr>: Read data from address");
+	std::getline(result_input_file, result);
+	EXPECT_EQ(result, "FullWrite <data>: Write data to full address");
+	std::getline(result_input_file, result);
+	EXPECT_EQ(result, "FullRead : Read data from full address");
+	std::getline(result_input_file, result);
+	EXPECT_EQ(result, "Help: Show available commands");
+	std::getline(result_input_file, result);
+	EXPECT_EQ(result, "Exit: Exit the program");
 }
 TEST_F(TestShellTestFixture, TestApp1TestWithMock)
 {
@@ -573,23 +541,12 @@ TEST_F(TestShellTestFixture, TestApp1TestWithSSD)
 
 	test_shell.Run();
 
-	auto file = freopen(test_result_path.c_str(), "rt", stdin);
-
+	ifstream result_input_file(test_result_path);
 	string result;
-	string expected_data1 = "testapp1  ---  Run...";
-	string expected_data2 = "Pass";
+	string expected = "testapp1  ---  Run...Pass";
 
-	string time = GetTime();
-	string functionname = "Run";
-	string space;
-	for (int spacenum = 0; spacenum < 30 - functionname.size() + 2; spacenum++) space += " ";
-	functionname += "()" + space + ": ";
-
-	getline(cin, result);
-	EXPECT_EQ(result, time + functionname + expected_data1);
-	getline(cin, result);
-	EXPECT_EQ(result, time + functionname + expected_data2);
-	fclose(file);
+	std::getline(result_input_file, result);
+	EXPECT_EQ(result, expected);
 }
 
 TEST_F(TestShellTestFixture, TestApp2TestWithSSD)
@@ -610,23 +567,12 @@ TEST_F(TestShellTestFixture, TestApp2TestWithSSD)
 
 	test_shell.Run();
 
-	auto file = freopen(test_result_path.c_str(), "rt", stdin);
-
+	ifstream result_input_file(test_result_path);
 	string result;
-	string expected_data1 = "testapp2  ---  Run...";
-	string expected_data2 = "Pass";
+	string expected = "testapp2  ---  Run...Pass";
 
-	string time = GetTime();
-	string functionname = "Run";
-	string space;
-	for (int spacenum = 0; spacenum < 30 - functionname.size() + 2; spacenum++) space += " ";
-	functionname += "()" + space + ": ";
-
-	getline(cin, result);
-	EXPECT_EQ(result, time + functionname + expected_data1);
-	getline(cin, result);
-	EXPECT_EQ(result, time + functionname + expected_data2);
-	fclose(file);
+	std::getline(result_input_file, result);
+	EXPECT_EQ(result, expected);
 }
 
 TEST_F(TestShellTestFixture, SSDWriteTest)
