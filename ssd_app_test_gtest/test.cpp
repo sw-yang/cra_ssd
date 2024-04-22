@@ -22,6 +22,7 @@ public:
 	MOCK_METHOD(uint32_t, Read, (uint32_t addr), (override));
 	MOCK_METHOD(void, Write, (uint32_t addr, uint32_t data), (override));
 	MOCK_METHOD(void, Erase, (uint32_t addr, uint32_t size), (override));
+	MOCK_METHOD(void, Flush, (), (override));
 };
 
 TEST(TestCaseName, TestName) 
@@ -254,6 +255,27 @@ TEST_F(TestShellTestFixture, EraseRangeTest)
 	test_shell.Run();
 }
 
+TEST_F(TestShellTestFixture, FlushTest)
+{
+	string user_input = "Flush";
+	string exit_input = "Exit";
+	cout << user_input << endl;
+	cout << exit_input << endl;
+
+	string test_result_path = "./test_result.txt";
+	ofstream result_out_file;
+	result_out_file.open(test_result_path, ofstream::trunc | ofstream::out);
+	cout.rdbuf(result_out_file.rdbuf());
+	MockSSDApp app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	ISSDApp* Issd_app = test_shell.get_ssd_app();
+
+	EXPECT_EQ(Issd_app, &app);
+	EXPECT_CALL(app, Flush()).Times(1);
+	test_shell.Run();
+}
 TEST_F(TestShellTestFixture, HelpTest)
 {
 	string help_input = "Help";
@@ -556,6 +578,7 @@ TEST_F(TestShellTestFixture, TestApp2TestWithSSD)
 TEST_F(TestShellTestFixture, SSDWriteTest)
 {
 	cout << "Write 1 0x11112222" << endl;
+	cout << "Flush" << endl;
 	cout << "Exit" << endl;
 
 	string test_result_path = "nand.txt";
@@ -579,7 +602,9 @@ TEST_F(TestShellTestFixture, SSDWriteTest)
 
 TEST_F(TestShellTestFixture, SSDReadTest)
 {
+	cout << "Write 1 0x11112222" << endl;
 	cout << "Read 1" << endl;
+	cout << "Flush" << endl;
 	cout << "Exit" << endl;
 
 	string test_result_path = "Result.txt";
@@ -602,7 +627,9 @@ TEST_F(TestShellTestFixture, SSDReadTest)
 }
 TEST_F(TestShellTestFixture, SSDEraseTest)
 {
+	cout << "Write 0 0x11112222" << endl;
 	cout << "Erase 0 1" << endl;
+	cout << "Flush" << endl;
 	cout << "Exit" << endl;
 
 	string test_result_path = "nand.txt";
@@ -627,6 +654,7 @@ TEST_F(TestShellTestFixture, SSDEraseTest)
 TEST_F(TestShellTestFixture, SSDFullWriteTest)
 {
 	cout << "FullWrite 0x12345678" << endl;
+	cout << "Flush" << endl;
 	cout << "Exit" << endl;
 
 	string test_result_path = "nand.txt";
@@ -653,6 +681,7 @@ TEST_F(TestShellTestFixture, SSDFullWriteTest)
 TEST_F(TestShellTestFixture, SSDFullReadTest)
 {
 	cout << "FullRead" << endl;
+	cout << "Flush" << endl;
 	cout << "Exit" << endl;
 
 	string test_result_path = "Result.txt";
@@ -674,6 +703,187 @@ TEST_F(TestShellTestFixture, SSDFullReadTest)
 
 TEST_F(TestShellTestFixture, SSDEraseRangeTest)
 {
+	cout << "FullWrite 0x12345678" << endl;
+	cout << "EraseRange 0 9" << endl;
+	cout << "Flush" << endl;
+	cout << "Exit" << endl;
+	const uint32_t startaddress = 0;
+	const uint32_t endaddress = 9;
+	string test_result_path = "nand.txt";
+
+	SSD_Adaptor app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	uint32_t expected_data = 0;
+	uint32_t result;
+	test_shell.Run();
+
+	std::ifstream in(test_result_path, std::ios::binary);
+
+	for (int addrindex = startaddress; addrindex < endaddress; addrindex++)
+	{
+		in.seekg(addrindex * sizeof(uint32_t));
+		in.read(reinterpret_cast<char*>(&result), sizeof(uint32_t));
+
+		EXPECT_EQ(result, expected_data);
+	}
+}
+
+TEST_F(TestShellTestFixture, SSDWriteTestWithoutFlush)
+{
+	cout << "Erase 1 1" << endl; // PreCondition ExpectData : 0
+	cout << "Flush" << endl;
+	cout << "Write 1 0x11112222" << endl;
+	cout << "Exit" << endl;
+
+	string test_result_path = "nand.txt";
+
+	SSD_Adaptor app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	uint32_t expected_data = 0;
+	int expected_addr = 1;
+	uint32_t result;
+	test_shell.Run();
+
+	std::ifstream in(test_result_path, std::ios::binary);
+
+	in.seekg(expected_addr * sizeof(uint32_t));
+	in.read(reinterpret_cast<char*>(&result), sizeof(uint32_t));
+
+	EXPECT_EQ(result, expected_data);
+}
+
+TEST_F(TestShellTestFixture, SSDReadTestWithoutFlush)
+{
+	cout << "Write 1 0x11112222" << endl;
+	cout << "Read 1" << endl;
+	cout << "Exit" << endl;
+
+	string test_result_path = "Result.txt";
+
+	SSD_Adaptor app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	string expected_data = "0x11112222";
+	int expected_addr = 0;
+	string result;
+	test_shell.Run();
+
+	std::ifstream in(test_result_path, std::ios::binary);
+
+	in.seekg(0);
+	std::getline(in, result);
+
+	EXPECT_EQ(result, expected_data);
+}
+TEST_F(TestShellTestFixture, SSDEraseTestWithoutFlush)
+{
+	cout << "Write 1 0x11112222" << endl;
+	cout << "Flush" << endl; // PreCondition Write
+	cout << "Erase 1 1" << endl;
+	cout << "Exit" << endl;
+
+	string test_result_path = "nand.txt";
+
+	SSD_Adaptor app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	uint32_t expected_data = 0x11112222;
+	int expected_addr = 1;
+	uint32_t result;
+	test_shell.Run();
+
+	std::ifstream in(test_result_path, std::ios::binary);
+
+	in.seekg(expected_addr * sizeof(uint32_t));
+	in.read(reinterpret_cast<char*>(&result), sizeof(uint32_t));
+
+	EXPECT_EQ(result, expected_data);
+}
+
+TEST_F(TestShellTestFixture, SSDReadTestAfterEraseWithoutFlush)
+{
+	const string EmptyData = "0x00000000";
+	cout << "Write 1 0x11112222" << endl;
+	cout << "Flush" << endl; // PreCondition Write
+	cout << "Erase 1 1" << endl;
+	cout << "Read 1" << endl;
+	cout << "Exit" << endl;
+
+	string test_result_path = "result.txt";
+
+	SSD_Adaptor app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	string expected_data = EmptyData; // 빈칸 데이터 0
+	int expected_addr = 1;
+	string result;
+	test_shell.Run();
+
+	std::ifstream in(test_result_path, std::ios::in);
+	in >> result;
+
+	EXPECT_EQ(result, expected_data);
+}
+
+TEST_F(TestShellTestFixture, SSDFullWriteTestWithoutFlush)
+{
+	cout << "FullWrite 0x12345678" << endl;
+	cout << "Exit" << endl;
+
+	string test_result_path = "nand.txt";
+
+	SSD_Adaptor app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	uint32_t expected_data = 0x12345678;
+	uint32_t result;
+	test_shell.Run();
+
+	std::ifstream in(test_result_path, std::ios::binary);
+
+	for (int expected_addr = 0; expected_addr < 100; expected_addr++)
+	{
+		in.seekg(expected_addr * sizeof(uint32_t));
+		in.read(reinterpret_cast<char*>(&result), sizeof(uint32_t));
+
+		EXPECT_EQ(result, expected_data);
+	}
+}
+
+TEST_F(TestShellTestFixture, SSDFullReadTestWithoutFlush)
+{
+	cout << "FullWrite 0x12345678" << endl;
+	cout << "FullRead" << endl;
+	cout << "Exit" << endl;
+
+	string test_result_path = "Result.txt";
+
+	SSD_Adaptor app;
+	TestShell test_shell;
+	test_shell.set_ssd_app(&app);
+
+	string expected_data = "0x12345678";
+	string result;
+
+	test_shell.Run();
+	std::ifstream in(test_result_path, std::ios::in);
+	in.seekg(0);
+	in >> result;
+
+	EXPECT_EQ(result, expected_data);
+}
+
+TEST_F(TestShellTestFixture, SSDEraseRangeTestWithoutFlush)
+{
+	cout << "FullWrite 0x12345678" << endl;
 	cout << "EraseRange 0 9" << endl;
 	cout << "Exit" << endl;
 	const uint32_t startaddress = 0;

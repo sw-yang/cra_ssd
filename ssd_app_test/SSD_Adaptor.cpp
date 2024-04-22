@@ -60,3 +60,9 @@ SSD_Adaptor::GetEraseCMD(const uint32_t addr, const uint32_t size)
     const string kWriteCMD = "..\\x64\\Debug\\ssd_app.exe E ";
     return kWriteCMD + " " + to_string(addr) + " " + to_string(size);
 }
+
+void
+SSD_Adaptor::Flush(void)
+{
+    system("..\\x64\\Debug\\ssd_app.exe F");
+}
