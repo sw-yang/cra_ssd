@@ -26,32 +26,29 @@ Logger::SetPrintLevel(const PrintLevel level)
 }
 
 void
-Logger::PrintOutALine(const PrintLevel level, const string str, const string functionname)
+Logger::PrintOutALine(const PrintLevel level, const string str, const string func_name)
 {
-    PrintOutALineWithoutEndl(level, str + "\n", functionname);
+    PrintOutALineWithoutEndl(level, str + "\n", func_name);
 }
 
 void 
-Logger::PrintOutALineWithoutEndl(const PrintLevel level, const string str, const string functionname)
+Logger::PrintOutALineWithoutEndl(const PrintLevel level, const string str, const string func_name)
 {
     if (cur_print_level >= level) {
-        if (cur_print_level > ONLY_RUNNER) {
-            PrintTime();
-            uint32_t empty_len = 30 - functionname.size() - 2;
-            cout << functionname << "()" << setw(empty_len) << setfill(' ') << " : ";
-        }
+        if (cur_print_level > ONLY_RUNNER)
+            LogALine(level, str, func_name);
         cout << str;
     }
 }
 
 void
-Logger::PrintTime(void) 
+Logger::PrintTime(ostringstream& out_ss)
 {
     auto now = std::chrono::system_clock::now();
     std::time_t now_time = std::chrono::system_clock::to_time_t(now);
     std::tm* local_time = std::localtime(&now_time);
 
-    std::cout << '['
+    log_fout << '['
         << (local_time->tm_year - 100) << '.'
         << (local_time->tm_mon + 1) << '.'
         << local_time->tm_mday << ' '
@@ -144,14 +141,31 @@ Logger::IsNeededDividingLog(const string& new_log)
     return uint32_t(log_fout.tellp()) + new_log.length() > kMaxSize;
 }
 
-void 
-Logger::LogALine(const string str)
+string
+Logger::MakeLogString(const PrintLevel level, const string str, const string func_name)
 {
-    if (IsNeededDividingLog(str))
+    ostringstream out_ss;
+
+    PrintTime(out_ss);
+    string level_prefix = (level == INFO ? "[INFO] " : level == DEBUG ? "[DEBUG] " : "[ONLY_RUNNER] ");
+    out_ss << func_name << "()" << setw(30 - func_name.size() - 2) << setfill(' ')
+        << " : " << level_prefix << str;
+
+    if (str.back() != '\n')
+        out_ss << endl;
+
+    return out_ss.str();
+}
+
+void 
+Logger::LogALine(const PrintLevel level, const string str, const string func_name)
+{
+    string out_str = MakeLogString(level, str, func_name);
+    if (IsNeededDividingLog(out_str))
     {
         TransformOldLogToZip();
         BackupLatestLog();
     }
 
-    log_fout << str << endl;
+    log_fout << out_str;
 }
