@@ -26,7 +26,6 @@ public:
     void Run();
     void ScriptRun(const char* script_path);
     void set_ssd_app(ISSDApp* app);
-    ISSDApp* get_ssd_app(void) { return ssd_app; } //to be deleted
     std::vector<uint32_t> addr_arr;//to be deleted
     std::vector<uint32_t> data_arr;//to be deleted
 private:
