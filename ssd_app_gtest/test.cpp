@@ -688,15 +688,10 @@ TEST_F(SSDTest, CheckBufferSizeWhenOpen)
 	}
 
 	EXPECT_EQ(cmd_buffer->GetSize(), 5);
-}
 
-TEST_F(SSDTest, CheckBufferSizeWhenReopen)
-{
-	CmdBuffer* cmd_buffer = ssd->GetCmdBuffer();
-
-	std::vector<std::string> args;
-	args.push_back(std::to_string(ADDRESS));
-	args.push_back("0x12345678");
+	delete(ssd);
+	ssd = new SSD(test_nand, test_result, test_buffer);
+	cmd_buffer = ssd->GetCmdBuffer();
 
 	for (int i = 0; i < 6; i++)
 	{
