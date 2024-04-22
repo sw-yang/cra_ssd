@@ -11,6 +11,8 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <chrono>
+#include <ctime>
 using namespace testing;
 using namespace std;
 
@@ -32,10 +34,10 @@ TEST(TestCaseName, TestName)
 	EXPECT_EQ(test_shell.get_ssd_app(), &app);
 }
 
-class TestShellTestFixture : public testing::Test 
+class TestShellTestFixture : public testing::Test
 {
 public:
-	void SetUp(void) 
+	void SetUp(void)
 	{
 		//open new test script file
 		out_file.open(user_input_script, ofstream::trunc | ofstream::out);
@@ -45,10 +47,23 @@ public:
 
 		Logger::GetLogger().SetPrintLevel(INFO);
 	}
-	void TearDown(void) 
+	void TearDown(void)
 	{
 		out_file.close();
 		fclose(in_file);
+	}
+	string GetTime(void)
+	{
+		auto now = std::chrono::system_clock::now();
+		std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+		std::tm* local_time = std::localtime(&now_time);
+
+		string time = "[" + to_string(local_time->tm_year - 100) + "."
+			+ to_string(local_time->tm_mon + 1) + "."
+			+ to_string(local_time->tm_mday) + " "
+			+ to_string(local_time->tm_hour) + ":"
+			+ to_string(local_time->tm_min) + "] ";
+		return time;
 	}
 	string user_input_script = "./test_script.txt";
 private:
@@ -89,20 +104,11 @@ TEST_F(TestShellTestFixture, RunnerTest)
 	getline(cin, result);
 	EXPECT_EQ(result, "Write 1 0x1234AAAA  ---  Run...Pass");
 	getline(cin, result);
-	EXPECT_EQ(result, "Read 1  ---  Run...0x1234AAAA");
-	getline(cin, result);
-	EXPECT_EQ(result, "Pass");
+	EXPECT_EQ(result, "Read 1  ---  Run...Pass");
 	getline(cin, result);
 	EXPECT_EQ(result, "FullWrite 0x43215678  ---  Run...Pass");
 	getline(cin, result);
-	EXPECT_EQ(result, "FullRead  ---  Run...0x43215678");
-	for (int loop = 0; loop < 99; ++loop)
-	{
-		getline(cin, result);
-		EXPECT_EQ(result, "0x43215678");
-	}
-	getline(cin, result);
-	EXPECT_EQ(result, "Pass");
+	EXPECT_EQ(result, "FullRead  ---  Run...Pass");
 
 	fclose(file);
 }
@@ -147,6 +153,11 @@ TEST_F(TestShellTestFixture, FullWriteTest)
 	cout << user_input << endl;
 	cout << exit_input << endl;
 
+	string test_result_path = "./test_result.txt";
+	ofstream result_out_file;
+	result_out_file.open(test_result_path, ofstream::trunc | ofstream::out);
+	cout.rdbuf(result_out_file.rdbuf());
+
 	MockSSDApp app;
 	TestShell test_shell;
 	test_shell.set_ssd_app(&app);
@@ -165,6 +176,10 @@ TEST_F(TestShellTestFixture, ReadTest)
 	cout << user_input << endl;
 	cout << exit_input << endl;
 
+	string test_result_path = "./test_result.txt";
+	ofstream result_out_file;
+	result_out_file.open(test_result_path, ofstream::trunc | ofstream::out);
+	cout.rdbuf(result_out_file.rdbuf());
 	MockSSDApp app;
 	TestShell test_shell;
 	test_shell.set_ssd_app(&app);
@@ -183,6 +198,10 @@ TEST_F(TestShellTestFixture, FullReadTest)
 	cout << user_input << endl;
 	cout << exit_input << endl;
 
+	string test_result_path = "./test_result.txt";
+	ofstream result_out_file;
+	result_out_file.open(test_result_path, ofstream::trunc | ofstream::out);
+	cout.rdbuf(result_out_file.rdbuf());
 	MockSSDApp app;
 	TestShell test_shell;
 	test_shell.set_ssd_app(&app);
@@ -201,6 +220,10 @@ TEST_F(TestShellTestFixture, EraseTest)
 	cout << user_input << endl;
 	cout << exit_input << endl;
 
+	string test_result_path = "./test_result.txt";
+	ofstream result_out_file;
+	result_out_file.open(test_result_path, ofstream::trunc | ofstream::out);
+	cout.rdbuf(result_out_file.rdbuf());
 	MockSSDApp app;
 	TestShell test_shell;
 	test_shell.set_ssd_app(&app);
@@ -219,6 +242,10 @@ TEST_F(TestShellTestFixture, EraseRangeTest)
 	cout << user_input << endl;
 	cout << exit_input << endl;
 
+	string test_result_path = "./test_result.txt";
+	ofstream result_out_file;
+	result_out_file.open(test_result_path, ofstream::trunc | ofstream::out);
+	cout.rdbuf(result_out_file.rdbuf());
 	MockSSDApp app;
 	TestShell test_shell;
 	test_shell.set_ssd_app(&app);
@@ -248,22 +275,31 @@ TEST_F(TestShellTestFixture, HelpTest)
 
 	test_shell.Run();
 
+	string time = GetTime();
+	string functionname = "Help";
+	string space;
+	for (int spacenum = 0; spacenum < 30 - functionname.size() + 2; spacenum++) space += " ";
+    functionname += "()" + space + ": ";
+	string expectresult;
+
 	auto file = freopen(test_result_path.c_str(), "rt", stdin);
 	string result;
 	getline(cin, result);
-	EXPECT_EQ(result, string{ "Available commands:" });
+	EXPECT_EQ(result, time + "Run()                             : " + string{ "Help  ---  Run..." });
 	getline(cin, result);
-	EXPECT_EQ(result, string{ "Write <addr> <data>: Write data to address" });
+	EXPECT_EQ(result, time + functionname + string{ "Available commands:" });
 	getline(cin, result);
-	EXPECT_EQ(result, string{ "Read <addr>: Read data from address" });
+	EXPECT_EQ(result, time + functionname + string{ "Write <addr> <data>: Write data to address" });
 	getline(cin, result);
-	EXPECT_EQ(result, string{ "FullWrite <data>: Write data to full address" });
+	EXPECT_EQ(result, time + functionname + string{ "Read <addr>: Read data from address" });
 	getline(cin, result);
-	EXPECT_EQ(result, string{ "FullRead : Read data from full address" });
+	EXPECT_EQ(result, time + functionname + string{ "FullWrite <data>: Write data to full address" });
 	getline(cin, result);
-	EXPECT_EQ(result, string{ "Help: Show available commands" });
+	EXPECT_EQ(result, time + functionname + string{ "FullRead : Read data from full address" });
 	getline(cin, result);
-	EXPECT_EQ(result, string{ "Exit: Exit the program" });
+	EXPECT_EQ(result, time + functionname + string{ "Help: Show available commands" });
+	getline(cin, result);
+	EXPECT_EQ(result, time + functionname + string{ "Exit: Exit the program" });
 
 	result_out_file.close();
 	fclose(file);
@@ -417,27 +453,32 @@ TEST_F(TestShellTestFixture, InputInvalidCMD)
 
 	auto file = freopen(test_result_path.c_str(), "rt", stdin);
 
+	string time = GetTime();
+	string functionname = "Help";
+	string space;
+	for (int spacenum = 0; spacenum < 30 - functionname.size() + 2; spacenum++) space += " ";
+	functionname += "()" + space + ": ";
+
 	getline(cin, result);
-	EXPECT_EQ(result, expected_invalid_cmd);
+	EXPECT_EQ(result, time + "Input()                           : " + expected_invalid_cmd);
 	getline(cin, result);
-	EXPECT_EQ(result, string{ "Available commands:" });
+	EXPECT_EQ(result, time + functionname + string{ "Available commands:" });
 	getline(cin, result);
-	EXPECT_EQ(result, string{ "Write <addr> <data>: Write data to address" });
+	EXPECT_EQ(result, time + functionname + string{ "Write <addr> <data>: Write data to address" });
 	getline(cin, result);
-	EXPECT_EQ(result, string{ "Read <addr>: Read data from address" });
+	EXPECT_EQ(result, time + functionname + string{ "Read <addr>: Read data from address" });
 	getline(cin, result);
-	EXPECT_EQ(result, string{ "FullWrite <data>: Write data to full address" });
+	EXPECT_EQ(result, time + functionname + string{ "FullWrite <data>: Write data to full address" });
 	getline(cin, result);
-	EXPECT_EQ(result, string{ "FullRead : Read data from full address" });
+	EXPECT_EQ(result, time + functionname + string{ "FullRead : Read data from full address" });
 	getline(cin, result);
-	EXPECT_EQ(result, string{ "Help: Show available commands" });
+	EXPECT_EQ(result, time + functionname + string{ "Help: Show available commands" });
 	getline(cin, result);
-	EXPECT_EQ(result, string{ "Exit: Exit the program" });
+	EXPECT_EQ(result, time + functionname + string{ "Exit: Exit the program" });
 	
 	result_out_file.close();
 	fclose(file);
 }
-
 TEST_F(TestShellTestFixture, TestApp1TestWithMock)
 {
 	string user_input = "testapp1";
@@ -513,9 +554,19 @@ TEST_F(TestShellTestFixture, TestApp1TestWithSSD)
 	auto file = freopen(test_result_path.c_str(), "rt", stdin);
 
 	string result;
-	string expected_data = "testapp1 pass";
+	string expected_data1 = "testapp1  ---  Run...";
+	string expected_data2 = "Pass";
+
+	string time = GetTime();
+	string functionname = "Run";
+	string space;
+	for (int spacenum = 0; spacenum < 30 - functionname.size() + 2; spacenum++) space += " ";
+	functionname += "()" + space + ": ";
+
 	getline(cin, result);
-	EXPECT_EQ(result, expected_data);
+	EXPECT_EQ(result, time + functionname + expected_data1);
+	getline(cin, result);
+	EXPECT_EQ(result, time + functionname + expected_data2);
 	fclose(file);
 }
 
@@ -540,9 +591,19 @@ TEST_F(TestShellTestFixture, TestApp2TestWithSSD)
 	auto file = freopen(test_result_path.c_str(), "rt", stdin);
 
 	string result;
-	string expected_data = "testapp2 pass";
+	string expected_data1 = "testapp2  ---  Run...";
+	string expected_data2 = "Pass";
+
+	string time = GetTime();
+	string functionname = "Run";
+	string space;
+	for (int spacenum = 0; spacenum < 30 - functionname.size() + 2; spacenum++) space += " ";
+	functionname += "()" + space + ": ";
+
 	getline(cin, result);
-	EXPECT_EQ(result, expected_data);
+	EXPECT_EQ(result, time + functionname + expected_data1);
+	getline(cin, result);
+	EXPECT_EQ(result, time + functionname + expected_data2);
 	fclose(file);
 }
 
