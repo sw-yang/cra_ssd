@@ -1,4 +1,5 @@
 #include "CmdBuffer.h"
+#include "CmdFactory.h"
 
 bool CmdBuffer::isFull()
 {
@@ -63,14 +64,16 @@ void CmdBuffer::GetCmdList(std::vector<std::vector<std::string>>& cmds)
 	file.close();
 }
 
-void CmdBuffer::GetiCmdList(std::vector<iCmd*> cmds)
+void CmdBuffer::GetiCmdList(std::vector<iCmd*>& cmds)
 {
 	std::fstream file = OpenFile();
 
+	CmdFactory factory;
 	std::string line;
+
 	while (std::getline(file, line))
 	{
-
+		cmds.push_back(factory.CreateCmd(line));
 	}
 
 	file.close();
