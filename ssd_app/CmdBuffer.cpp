@@ -3,6 +3,14 @@
 #include "Eraser.h"
 #include "Writer.h"
 
+CmdBuffer::CmdBuffer(FileManager* buffer) :
+	buffer_(buffer) 
+{
+	std::vector<std::string> lines;
+	buffer_->ReadBufferFile(lines);
+	length_ = lines.size();
+}
+
 bool CmdBuffer::isFull()
 {
 	return length_ == MAX_BUFFER_SIZE;

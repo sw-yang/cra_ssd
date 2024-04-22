@@ -585,7 +585,6 @@ TEST_F(SSDTest, EraseAfterWrite)
 TEST_F(SSDTest, AddAndGetCommandListICmd)
 {
 	CmdBuffer* cmd_buffer = ssd->GetCmdBuffer();
-	cmd_buffer->Clear();
 
 	std::vector<std::string> args;
 
@@ -612,7 +611,6 @@ TEST_F(SSDTest, AddAndGetCommandListICmd)
 TEST_F(SSDTest, ComapareGetCmdWithBufferFile)
 {
 	CmdBuffer* cmd_buffer = ssd->GetCmdBuffer();
-	cmd_buffer->Clear();
 
 	std::vector<std::string> args;
 
@@ -673,4 +671,37 @@ TEST_F(SSDTest, ReturnBufferSize)
 	}
 
 	EXPECT_EQ(cmd_buffer->GetSize(), 5);
+}
+
+TEST_F(SSDTest, CheckBufferSizeWhenOpen)
+{
+	CmdBuffer* cmd_buffer = ssd->GetCmdBuffer();
+	cmd_buffer->Clear();
+
+	std::vector<std::string> args;
+	args.push_back(std::to_string(ADDRESS));
+	args.push_back("0xFFFFFFFF");
+
+	for (int i = 0; i < 5; i++)
+	{
+		ssd->Run("W", args);
+	}
+
+	EXPECT_EQ(cmd_buffer->GetSize(), 5);
+}
+
+TEST_F(SSDTest, CheckBufferSizeWhenReopen)
+{
+	CmdBuffer* cmd_buffer = ssd->GetCmdBuffer();
+
+	std::vector<std::string> args;
+	args.push_back(std::to_string(ADDRESS));
+	args.push_back("0x12345678");
+
+	for (int i = 0; i < 6; i++)
+	{
+		ssd->Run("W", args);
+	}
+
+	EXPECT_EQ(cmd_buffer->GetSize(), 1);
 }

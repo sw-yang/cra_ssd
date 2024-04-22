@@ -11,8 +11,7 @@
 class CmdBuffer
 {
 public:
-	CmdBuffer(FileManager* buffer) :
-		buffer_(buffer) {}
+	CmdBuffer(FileManager* buffer);
 
 	bool isFull();
 	uint32_t GetSize();
