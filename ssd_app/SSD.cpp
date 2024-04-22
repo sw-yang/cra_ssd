@@ -26,10 +26,15 @@ std::string IntToHex(uint32_t integer)
 
 void SSD::Run(string mode, vector<string> args)
 {
+	if (mode == "F")
+	{
+		Flush();
+		return;
+	}
+
 	CmdFactory factory;
 	iCmd* cmd = factory.CreateCmd(mode, args);
 
-	
 	if (mode == "R")
 	{
 		uint32_t addr = reinterpret_cast<ReadCmd*>(cmd)->GetAddr();
