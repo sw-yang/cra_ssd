@@ -128,7 +128,7 @@ Logger::TransformOldLogToZip(void)
     if (old_log_path != "")
     {
         string new_file_name = old_log_path.erase(old_log_path.find(".log")) + string{ ".zip" };
-        filesystem::copy(old_log_path, new_file_name);
+        filesystem::rename(old_log_path, new_file_name);
     }
 }
 
