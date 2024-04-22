@@ -355,7 +355,7 @@ TEST_F(SSDTest, WriteFirstTime)
 	args.push_back(std::to_string(ADDRESS));
 	args.push_back("0x0000ABCD");
 	ssd->Run("W", args);
-	ssd->Run("F");
+	ssd->Run("F", {});
 
 	ReadNandFile(NAND, sizeof(NAND));
 
@@ -368,13 +368,13 @@ TEST_F(SSDTest, OverWrite)
 	args.push_back(std::to_string(ADDRESS));
 	args.push_back("0xFF25ABCD");
 	ssd->Run("W", args);
-	ssd->Run("F");
+	ssd->Run("F", {});
 
 	args.clear();
 	args.push_back(std::to_string(ADDRESS));
 	args.push_back("0x00000777");
 	ssd->Run("W", args);
-	ssd->Run("F");
+	ssd->Run("F", {});
 
 	ReadNandFile(NAND, sizeof(NAND));
 
@@ -550,7 +550,7 @@ TEST_F(SSDTest, EraseData)
 	args.push_back(std::to_string(addr));
 	args.push_back(std::to_string(range));
 	ssd->Run("E", args);
-	ssd->Run("F");
+	ssd->Run("F", {});
 
 	ReadNandFile(NAND, sizeof(NAND));
 	for (int i = addr; i < range; ++i)
@@ -565,7 +565,7 @@ TEST_F(SSDTest, EraseAfterWrite)
 	args.push_back(std::to_string(ADDRESS));
 	args.push_back("0xFF25ABCD");
 	ssd->Run("W", args);
-	ssd->Run("F");
+	ssd->Run("F", {});
 
 	ReadNandFile(NAND, sizeof(NAND));
 
@@ -575,7 +575,7 @@ TEST_F(SSDTest, EraseAfterWrite)
 	args.push_back(std::to_string(ADDRESS));
 	args.push_back("1");
 	ssd->Run("E", args);
-	ssd->Run("F");
+	ssd->Run("F", {});
 
 	ReadNandFile(NAND, sizeof(NAND));
 
