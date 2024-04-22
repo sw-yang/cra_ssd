@@ -347,7 +347,7 @@ TEST_F(SSDTest, ThrowExceptionWhenInvalidArgsNumWhileWrite)
 	}
 }
 
-TEST_F(SSDTest, DISABLED_WriteFirstTime)
+TEST_F(SSDTest, WriteFirstTime)
 {
 	ClearTestFiles();
 
@@ -355,23 +355,26 @@ TEST_F(SSDTest, DISABLED_WriteFirstTime)
 	args.push_back(std::to_string(ADDRESS));
 	args.push_back("0x0000ABCD");
 	ssd->Run("W", args);
+	ssd->Run("F");
 
 	ReadNandFile(NAND, sizeof(NAND));
 
 	EXPECT_EQ(NAND[ADDRESS], 0xabcd);
 }
 
-TEST_F(SSDTest, DISABLED_OverWrite)
+TEST_F(SSDTest, OverWrite)
 {
 	std::vector<std::string> args;
 	args.push_back(std::to_string(ADDRESS));
 	args.push_back("0xFF25ABCD");
 	ssd->Run("W", args);
+	ssd->Run("F");
 
 	args.clear();
 	args.push_back(std::to_string(ADDRESS));
 	args.push_back("0x00000777");
 	ssd->Run("W", args);
+	ssd->Run("F");
 
 	ReadNandFile(NAND, sizeof(NAND));
 
@@ -397,6 +400,69 @@ TEST_F(SSDTest, ReadWriteTest)
 	ssd->Run("R", { "20" });
 	EXPECT_EQ("0x00000777", ReadResultFile());
 }
+
+TEST_F(SSDTest, ReadWriteTest2)
+{
+	ClearTestFiles();
+
+	ssd->Run("W", { "1", "0x00000011" });
+	ssd->Run("W", { "2", "0x00000022" });
+	ssd->Run("W", { "3", "0x00000033" });
+	ssd->Run("W", { "1", "0x00000111" });
+	ssd->Run("W", { "2", "0x00000222" });
+	ssd->Run("W", { "3", "0x00000333" });
+	ssd->Run("W", { "1", "0x00001111" });
+	ssd->Run("W", { "2", "0x00002222" });
+	ssd->Run("W", { "3", "0x00003333" });
+	ssd->Run("W", { "4", "0x00004444" });
+
+	ssd->Run("R", { "1" });
+	EXPECT_EQ("0x00001111", ReadResultFile());
+
+	ssd->Run("R", { "2" });
+	EXPECT_EQ("0x00002222", ReadResultFile());
+
+	ssd->Run("R", { "3" });
+	EXPECT_EQ("0x00003333", ReadResultFile());
+
+	ssd->Run("R", { "4" });
+	EXPECT_EQ("0x00004444", ReadResultFile());
+}
+
+TEST_F(SSDTest, ReadWriteEraseTest)
+{
+	ClearTestFiles();
+
+	ssd->Run("W", { "7", "0x00000011" });
+	ssd->Run("W", { "1", "0x00000011" });
+	ssd->Run("W", { "2", "0x00000022" });
+	ssd->Run("W", { "3", "0x00000033" });
+	ssd->Run("E", { "0", "3" });
+	ssd->Run("W", { "1", "0x00000111" });
+	ssd->Run("W", { "2", "0x00000222" });
+	ssd->Run("W", { "3", "0x00000333" });
+	ssd->Run("E", { "1", "5" });
+	ssd->Run("W", { "2", "0x00002222" });
+	ssd->Run("W", { "4", "0x00004444" });
+	ssd->Run("E", { "5", "3" });
+
+	ssd->Run("R", { "1" });
+	EXPECT_EQ("0x00000000", ReadResultFile());
+
+	ssd->Run("R", { "2" });
+	EXPECT_EQ("0x00002222", ReadResultFile());
+
+	ssd->Run("R", { "3" });
+	EXPECT_EQ("0x00000000", ReadResultFile());
+
+	ssd->Run("R", { "4" });
+	EXPECT_EQ("0x00004444", ReadResultFile());
+
+	ssd->Run("R", { "7" });
+	EXPECT_EQ("0x00000000", ReadResultFile());
+}
+
+
 
 TEST_F(SSDTest, ThrowExceptionWhenInvalidStartAddressWhileErase)
 {
@@ -468,7 +534,7 @@ TEST_F(SSDTest, ThrowExceptionWhenInvalidAddressWhileErase)
 	}
 }
 
-TEST_F(SSDTest, DISABLED_EraseData)
+TEST_F(SSDTest, EraseData)
 {
 	int addr = 0;
 	int range = 7;
@@ -484,6 +550,7 @@ TEST_F(SSDTest, DISABLED_EraseData)
 	args.push_back(std::to_string(addr));
 	args.push_back(std::to_string(range));
 	ssd->Run("E", args);
+	ssd->Run("F");
 
 	ReadNandFile(NAND, sizeof(NAND));
 	for (int i = addr; i < range; ++i)
@@ -492,12 +559,13 @@ TEST_F(SSDTest, DISABLED_EraseData)
 	}
 }
 
-TEST_F(SSDTest, DISABLED_EraseAfterWrite)
+TEST_F(SSDTest, EraseAfterWrite)
 {
 	std::vector<std::string> args;
 	args.push_back(std::to_string(ADDRESS));
 	args.push_back("0xFF25ABCD");
 	ssd->Run("W", args);
+	ssd->Run("F");
 
 	ReadNandFile(NAND, sizeof(NAND));
 
@@ -507,6 +575,7 @@ TEST_F(SSDTest, DISABLED_EraseAfterWrite)
 	args.push_back(std::to_string(ADDRESS));
 	args.push_back("1");
 	ssd->Run("E", args);
+	ssd->Run("F");
 
 	ReadNandFile(NAND, sizeof(NAND));
 
