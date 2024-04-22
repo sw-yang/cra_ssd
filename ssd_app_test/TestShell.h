@@ -13,6 +13,7 @@ enum TestShellCMD
     FULLWRITE,
     ERASE,
     ERASERANGE,
+    FLUSH,
     HELP,
     TESTAPP1,
     TESTAPP2,
@@ -37,6 +38,7 @@ private:
     void FullWrite(const uint32_t data);
     void Erase(const uint32_t addr, const uint32_t size);
     void EraseRange(const uint32_t startaddr, const uint32_t endaddr);
+    void Flush(void);
 
     void Help(void);
     bool TestApp1(void);

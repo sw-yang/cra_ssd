@@ -64,6 +64,13 @@ TestShell::EraseRange(const uint32_t startaddr, const uint32_t endaddr)
     }
 }
 
+void
+TestShell::Flush(void)
+{
+    ssd_app->Flush();
+    LOGGER.PrintOutALine(DEBUG, "FLUSH", __func__);
+}
+
 bool
 TestShell::TestApp1()
 {
@@ -206,6 +213,9 @@ TestShell::Run(void)
             case ERASERANGE:
                 EraseRange(addr, data);
                 break;
+            case FLUSH:
+                Flush();
+                break;
             case HELP:
                 Help();
                 break;
@@ -307,6 +317,10 @@ TestShell::Input(void)
     else if (str_cmd == "FullRead")
     {
         cmd = FULLREAD;
+    }
+    else if (str_cmd == "Flush")
+    {
+        cmd = FLUSH;
     }
     else if (str_cmd == "Help")
     {
