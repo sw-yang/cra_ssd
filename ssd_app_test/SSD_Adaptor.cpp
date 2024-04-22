@@ -17,7 +17,7 @@ SSD_Adaptor::Read(const uint32_t  addr)
 string 
 SSD_Adaptor::GetReadCMD(const uint32_t addr)
 {
-    const string kReadCMD = "..\\x64\\Debug\\ssd_app.exe R";
+    const string kReadCMD = ssd_app_path + " R";
     return kReadCMD + " " + to_string(addr);
 }
 
@@ -42,7 +42,7 @@ SSD_Adaptor::Write(const uint32_t addr, const uint32_t data) {
 string
 SSD_Adaptor::GetWriteCMD(const uint32_t addr, const uint32_t data)
 {
-    const string kWriteCMD = "..\\x64\\Debug\\ssd_app.exe W ";
+    const string kWriteCMD = ssd_app_path + " W ";
     ostringstream data_ss;
     data_ss << "0x" << setfill('0') << hex << setw(8) << uppercase << data;
     auto ret = kWriteCMD + " " + to_string(addr) + " " + data_ss.str();
@@ -57,12 +57,12 @@ SSD_Adaptor::Erase(const uint32_t addr, const uint32_t size) {
 string
 SSD_Adaptor::GetEraseCMD(const uint32_t addr, const uint32_t size)
 {
-    const string kWriteCMD = "..\\x64\\Debug\\ssd_app.exe E ";
+    const string kWriteCMD = ssd_app_path + " E ";
     return kWriteCMD + " " + to_string(addr) + " " + to_string(size);
 }
 
 void
 SSD_Adaptor::Flush(void)
 {
-    system("..\\x64\\Debug\\ssd_app.exe F");
+    system((ssd_app_path + " F").c_str());
 }
