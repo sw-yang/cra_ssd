@@ -1,19 +1,21 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "TestShell.h"
+#include "Logger.h"
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <sstream>
 
 using namespace std;
+#define LOGGER Logger::GetLogger()
 
 uint32_t
 TestShell::Read(const uint32_t addr)
 {
     uint32_t data = ssd_app->Read(addr);
 
-    PrintOutALine(INFO, UintToHexString(data));
+    LOGGER.PrintOutALine(DEBUG, UintToHexString(data));
 
     return data;
 }
@@ -66,9 +68,9 @@ TestShell::TestApp1()
 
     is_test_pass = IsArrayDataEqual(read_result, write_pattern);
     if (is_test_pass)
-        PrintOutALine(INFO, "testapp1 pass");
+        LOGGER.PrintOutALine(INFO, "testapp1 pass");
     else
-        PrintOutALine(INFO, "testapp1 fail");
+        LOGGER.PrintOutALine(INFO, "testapp1 fail");
 
     return is_test_pass;
 }
@@ -93,9 +95,9 @@ TestShell::TestApp2()
 
     is_test_pass = IsArrayDataEqual(read_result, second_write_pattern);
     if (is_test_pass)
-        PrintOutALine(INFO, "testapp2 pass");
+        LOGGER.PrintOutALine(INFO, "testapp2 pass");
     else
-        PrintOutALine(INFO, "testapp2 fail");
+        LOGGER.PrintOutALine(INFO, "testapp2 fail");
 
     return is_test_pass;
 }
@@ -130,8 +132,8 @@ TestShell::IsArrayDataEqual(const vector<uint32_t> actual_arr, const uint32_t ex
     {
         if (actual_arr[idx] != expected)
         {
-            PrintOutALine(INFO, "idx[" + to_string(idx) + "] not equal!!");
-            PrintOutALine(INFO, "actual : " + UintToHexString(actual_arr[idx]) + "expected : " + UintToHexString(expected));
+            LOGGER.PrintOutALine(INFO, "idx[" + to_string(idx) + "] not equal!!");
+            LOGGER.PrintOutALine(INFO, "actual : " + UintToHexString(actual_arr[idx]) + "expected : " + UintToHexString(expected));
             is_test_pass = false;
         }
     }
@@ -139,39 +141,24 @@ TestShell::IsArrayDataEqual(const vector<uint32_t> actual_arr, const uint32_t ex
     return is_test_pass;
 }
 
-void
-TestShell::Help(void)
-{
-    PrintOutALine(INFO, "Available commands:");
-    PrintOutALine(INFO, "Write <addr> <data>: Write data to address");
-    PrintOutALine(INFO, "Read <addr>: Read data from address");
-    PrintOutALine(INFO, "FullWrite <data>: Write data to full address");
-    PrintOutALine(INFO, "FullRead : Read data from full address");
-    PrintOutALine(INFO, "Help: Show available commands");
-    PrintOutALine(INFO, "Exit: Exit the program");
-}
-
-void
-TestShell::PrintOutALine(const PrintLevel level, const string str)
-{
-    if (cur_print_level == level)
-        cout << str << endl;
-}
-
-void
-TestShell::PrintOutALineWithoutEndl(const PrintLevel level, const string str)
-{
-    if (cur_print_level == level)
-        cout << str;
-}
-
-string 
+string
 TestShell::UintToHexString(const uint32_t data)
 {
     ostringstream data_ss;
     data_ss << "0x" << hex << uppercase << data;
 
     return data_ss.str();
+}
+void
+TestShell::Help(void)
+{
+    LOGGER.PrintOutALine(INFO, "Available commands:");
+    LOGGER.PrintOutALine(INFO, "Write <addr> <data>: Write data to address");
+    LOGGER.PrintOutALine(INFO, "Read <addr>: Read data from address");
+    LOGGER.PrintOutALine(INFO, "FullWrite <data>: Write data to full address");
+    LOGGER.PrintOutALine(INFO, "FullRead : Read data from full address");
+    LOGGER.PrintOutALine(INFO, "Help: Show available commands");
+    LOGGER.PrintOutALine(INFO, "Exit: Exit the program");
 }
 
 void 
@@ -185,7 +172,7 @@ TestShell::Run(void)
         if (!Input()) continue;
         
         if (cmd != EXIT)
-            PrintOutALineWithoutEndl(ONLY_RUNNER, user_input + "  ---  Run...");
+            LOGGER.PrintOutALineWithoutEndl(ONLY_RUNNER, user_input + "  ---  Run...");
 
         switch (cmd)
         {
@@ -227,10 +214,10 @@ TestShell::Run(void)
         if (cmd != EXIT)
         {
             if (isCMDPass)
-                PrintOutALine(ONLY_RUNNER, "Pass");
+                LOGGER.PrintOutALine(ONLY_RUNNER, "Pass");
             else
             {
-                PrintOutALine(ONLY_RUNNER, "FAIL!");
+                LOGGER.PrintOutALine(ONLY_RUNNER, "FAIL!");
                 return;
             }
         }
@@ -243,11 +230,11 @@ TestShell::ScriptRun(const char* script_path)
     FILE* in_file = freopen(script_path, "rt", stdin);
     if (in_file == nullptr)
     {
-        PrintOutALine(INFO, string{ script_path } + " not exist");
+        LOGGER.PrintOutALine(INFO, string{ script_path } + " not exist");
         return;
     }
 
-    cur_print_level = ONLY_RUNNER;
+    LOGGER.SetPrintLevel(ONLY_RUNNER);
     Run();
 
     fclose(in_file);
@@ -327,7 +314,7 @@ TestShell::Input(void)
     }
     else
     {
-        PrintOutALine(INFO, invalid_cmd_str);
+        LOGGER.PrintOutALine(INFO, invalid_cmd_str);
         Help();
         return false;
     }

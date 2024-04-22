@@ -19,12 +19,6 @@ enum TestShellCMD
     EXIT,
 };
 
-enum PrintLevel
-{
-    INFO,
-    ONLY_RUNNER,
-};
-
 class TestShell
 {
 public:
@@ -50,8 +44,6 @@ private:
     void WriteRange(uint32_t start_addr, uint32_t end_addr, uint32_t data);
     std::vector<uint32_t> ReadRange(uint32_t start_addr, uint32_t end_addr);
     bool IsArrayDataEqual(const std::vector<uint32_t> actual, const uint32_t expected);
-    void PrintOutALine(const PrintLevel level, const std::string str);
-    void PrintOutALineWithoutEndl(const PrintLevel level, const std::string str);
     std::string UintToHexString(const uint32_t data);
 
     ISSDApp* ssd_app;
@@ -59,7 +51,6 @@ private:
     uint32_t addr;
     uint32_t data;
 
-    PrintLevel cur_print_level = INFO;
     std::string user_input;
     Converter converter;
 };

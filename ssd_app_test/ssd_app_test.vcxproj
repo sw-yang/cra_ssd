@@ -136,6 +136,7 @@
     <ClCompile Include="Converter.cpp" />
     <ClCompile Include="InvalidChecker.cpp" />
     <ClCompile Include="ISSDApp.h" />
+    <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SSD_Adaptor.cpp" />
     <ClCompile Include="TestShell.cpp" />
@@ -143,6 +144,7 @@
   <ItemGroup>
     <ClInclude Include="Converter.h" />
     <ClInclude Include="InvalidChecker.h" />
+    <ClInclude Include="Logger.h" />
     <ClInclude Include="SSD_Adaptor.h" />
     <ClInclude Include="TestShell.h" />
     <ClInclude Include="Test_Const.h" />
