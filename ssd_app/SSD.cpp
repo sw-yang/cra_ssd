@@ -7,7 +7,8 @@ SSD::SSD(std::string nand_file, std::string result_file, std::string buffer_file
 {
 	nand_file_ = new FileManager(nand_file);
 	result_file_ = new FileManager(result_file);
-	cmd_buffer_ = new CmdBuffer(buffer_file);
+	buffer_file_ = new FileManager(buffer_file);
+	cmd_buffer_ = new CmdBuffer(buffer_file_);
 }
 
 void SSD::Run(string mode)

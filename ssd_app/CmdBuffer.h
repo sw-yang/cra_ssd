@@ -6,28 +6,23 @@
 #include <map>
 #include <set>
 #include "iCommand.h"
+#include "FileManager.h"
 
 class CmdBuffer
 {
 public:
-	CmdBuffer(std::string file_name) :
-		file_name_(file_name) {}
+	CmdBuffer(FileManager* buffer) :
+		buffer_(buffer) {}
 
 	bool isFull();
 	uint32_t GetSize();
-	void SetSize(uint32_t length);
 	void Clear();
 	void AddCmd(iCmd* cmd);
-	void GetCmd(std::vector<std::string>& cmds);
-	void GetCmdList(std::vector<std::vector<std::string>>& cmds);
 	void GetiCmdList(std::vector<iCmd*>& cmds);
 	bool FastRead(uint32_t read_addr, uint32_t& read_val);
 	std::vector<iCmd*> GetOptimizedCmds();
 
 private:
-	void CreateEmptyFile();
-	std::fstream OpenFile(bool isTrunc = false);
-	std::vector<std::string> SplitStringToVector(const std::string& str);
 	void InsertWriteCmd(std::map<uint32_t, uint32_t>& m, iCmd* cmd);
 	void InsertEraseCmd(std::map<uint32_t, uint32_t>& m, iCmd* cmd);
 	std::map<uint32_t, uint32_t> CreateDataMap(const std::vector<iCmd*>& cmds);
@@ -43,5 +38,5 @@ private:
 
 	uint32_t length_;
 	const uint32_t MAX_BUFFER_SIZE = 10;
-	std::string file_name_;
+	FileManager* buffer_;
 };

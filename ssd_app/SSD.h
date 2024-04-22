@@ -25,6 +25,8 @@ public:
 private:
 	FileManager* nand_file_;
 	FileManager* result_file_;
+	FileManager* buffer_file_;
+
 	CmdBuffer* cmd_buffer_;
 
 	void Flush();

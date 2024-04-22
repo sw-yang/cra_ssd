@@ -582,48 +582,6 @@ TEST_F(SSDTest, EraseAfterWrite)
 	EXPECT_EQ(NAND[ADDRESS], 0);
 }
 
-TEST_F(SSDTest, AddAndGetCommand)
-{
-	CmdBuffer* cmd_buffer = ssd->GetCmdBuffer();
-	cmd_buffer->Clear();
-
-	std::vector<std::string> args;
-
-	args.push_back(std::to_string(ADDRESS));
-	args.push_back("0xFF25ABCD");
-	ssd->Run("W", args);
-
-	args.clear();
-	args.push_back(std::to_string(ADDRESS));
-	args.push_back("9");
-	ssd->Run("E", args);
-
-	std::vector<std::string> cmds;
-	cmd_buffer->GetCmd(cmds);
-
-	EXPECT_EQ(cmds[0], "W 57 0xFF25ABCD");
-	EXPECT_EQ(cmds[1], "E 57 9");
-}
-
-TEST_F(SSDTest, AddAndGetCommandList)
-{
-	CmdBuffer* cmd_buffer = ssd->GetCmdBuffer();
-	cmd_buffer->Clear();
-
-	std::vector<std::string> args;
-
-	args.push_back(std::to_string(ADDRESS));
-	args.push_back("0xFF25ABCD");
-	ssd->Run("W", args);
-
-	std::vector<std::vector<std::string>> cmds;
-	cmd_buffer->GetCmdList(cmds);
-
-	EXPECT_EQ(cmds[0][0], "W");
-	EXPECT_EQ(cmds[0][1], "57");
-	EXPECT_EQ(cmds[0][2], "0xFF25ABCD");
-}
-
 TEST_F(SSDTest, AddAndGetCommandListICmd)
 {
 	CmdBuffer* cmd_buffer = ssd->GetCmdBuffer();
@@ -671,15 +629,15 @@ TEST_F(SSDTest, ComapareGetCmdWithBufferFile)
 	args.push_back("9");
 	ssd->Run("E", args);
 
-	std::vector<std::string> getcmds;
-	cmd_buffer->GetCmd(getcmds);
+	std::vector<iCmd*> getcmds;
+	cmd_buffer->GetiCmdList(getcmds);
 
 	std::vector<std::string> filecmds;
 	ReadBufferFile(filecmds);
 
 	for (int i = 0; i < getcmds.size(); i++)
 	{
-		EXPECT_EQ(getcmds[i], filecmds[i]);
+		EXPECT_EQ(getcmds[i]->ToString(), filecmds[i]);
 	}
 }
 
