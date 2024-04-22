@@ -1,23 +1,23 @@
 #include <iostream>
 #include <vector>
 #include "Converter.h"
+#include "ICommand.h"
 
 using namespace std;
 bool
-Converter::ConvertAddrToInt(const string& str_addr, uint32_t& addr, vector<uint32_t>& addr_arr)
+Converter::ConvertAddrToInt(const string& str_addr, uint32_t& addr)
 {
     if (invalidchecker.IsInvalidAddrFormat(str_addr))
     {
-        cout << "[Error] Invalid Address" << endl;
+        LOGGER.PrintOutALine(INFO, "[Error] Invalid Address", __func__);
         return false;
     }
 
     addr = stoi(str_addr);
-    addr_arr.push_back(addr); //to be deleted
 
     if (invalidchecker.IsInvalidAddrRange(addr))
     {
-        cout << "[Error] Invalid Address" << endl;
+        LOGGER.PrintOutALine(INFO, "[Error] Invalid Address", __func__);
         return false;
     }
 
@@ -25,20 +25,19 @@ Converter::ConvertAddrToInt(const string& str_addr, uint32_t& addr, vector<uint3
 }
 
 bool
-Converter::ConvertEraseEndAddrToInt(const string& str_endaddr, uint32_t& data, vector<uint32_t>& data_arr)
+Converter::ConvertEraseEndAddrToInt(const string& str_endaddr, uint32_t& data)
 {
     if (invalidchecker.IsInvalidAddrFormat(str_endaddr))
     {
-        cout << "[Error] Invalid Address" << endl;
+        LOGGER.PrintOutALine(INFO, "[Error] Invalid Address", __func__);
         return false;
     }
 
     data = stoi(str_endaddr);
-    data_arr.push_back(data); //to be deleted
 
     if (invalidchecker.IsInvalidAddrRange(data))
     {
-        cout << "[Error] Invalid Address" << endl;
+        LOGGER.PrintOutALine(INFO, "[Error] Invalid Address", __func__);
         return false;
     }
 
@@ -46,31 +45,29 @@ Converter::ConvertEraseEndAddrToInt(const string& str_endaddr, uint32_t& data, v
 }
 
 bool
-Converter::ConvertDataToInt(const string& str_data, uint32_t& data, vector<uint32_t>& data_arr)
+Converter::ConvertDataToInt(const string& str_data, uint32_t& data)
 {
     if (invalidchecker.IsInvalidDataFormat(str_data))
     {
-        cout << "[Error] Invalid Data" << endl;
+        LOGGER.PrintOutALine(INFO, "[Error] Invalid Data", __func__);
         return false;
     }
 
     data = stoul(str_data, nullptr, 16);
 
-    data_arr.push_back(data); //to be deleted
     return true;
 }
 
 bool
-Converter::ConvertEraseSizeToInt(const string& str_data, uint32_t& data, vector<uint32_t>& data_arr)
+Converter::ConvertEraseSizeToInt(const string& str_data, uint32_t& data)
 {
     if (invalidchecker.IsInvalidEraseSizeFormat(str_data))
     {
-        cout << "[Error] Invalid Data" << endl;
+        LOGGER.PrintOutALine(INFO, "[Error] Invalid Data", __func__);
         return false;
     }
 
     data = stoul(str_data, nullptr, 16);
 
-    data_arr.push_back(data); //to be deleted
     return true;
 }
