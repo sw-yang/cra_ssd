@@ -1,10 +1,11 @@
 #include <gtest/gtest.h>
+#include <stdlib.h>
 
 int main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
     RUN_ALL_TESTS();
 
-    while (1);
+    system("pause");
     return 0;
 }
