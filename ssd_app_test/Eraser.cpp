@@ -10,13 +10,13 @@ Eraser::Parsing(stringstream& ss)
 
         if (CONVERTER.ConvertAddrToInt(str_addr, addr) == false)
         {
-            LOGGER.PrintOutALine(INFO, "[Error] Invalid Address", __func__);
+            LOGGER.PrintOutALine(DEBUG, "[Error] Invalid Address", __func__);
             return false;
         }
 
         if (CONVERTER.ConvertEraseSizeToInt(str_data, data) == false)
         {
-            LOGGER.PrintOutALine(INFO, "[Error] Invalid Data", __func__);
+            LOGGER.PrintOutALine(DEBUG, "[Error] Invalid Data", __func__);
             return false;
         }
     }
@@ -27,13 +27,13 @@ Eraser::Parsing(stringstream& ss)
 
         if (CONVERTER.ConvertAddrToInt(str_addr, addr) == false)
         {
-            LOGGER.PrintOutALine(INFO, "[Error] Invalid Address", __func__);
+            LOGGER.PrintOutALine(DEBUG, "[Error] Invalid Address", __func__);
             return false;
         }
 
         if (CONVERTER.ConvertEraseEndAddrToInt(str_data, data) == false)
         {
-            LOGGER.PrintOutALine(INFO, "[Error] Invalid Data", __func__);
+            LOGGER.PrintOutALine(DEBUG, "[Error] Invalid Data", __func__);
             return false;
         }
     }
@@ -45,14 +45,14 @@ Eraser::Run(void)
     if (shellcmd == ERASE)
     {
         ssd_app->Erase(addr, data);
-        LOGGER.PrintOutALine(DEBUG, UintToHexString(data), __func__);
+        LOGGER.PrintOutALine(INFO, UintToHexString(data), __func__);
     }
     else if (shellcmd == ERASERANGE)
     {
         for (int idx = addr; idx <= data; idx++)
         {
             ssd_app->Erase(idx, 1);
-            LOGGER.PrintOutALine(DEBUG, UintToHexString(idx), __func__);
+            LOGGER.PrintOutALine(INFO, UintToHexString(idx), __func__);
         }
     }
     return true;

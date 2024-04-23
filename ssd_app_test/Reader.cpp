@@ -10,7 +10,7 @@ Reader::Parsing(stringstream& ss)
 
         if (CONVERTER.ConvertAddrToInt(str_addr, addr) == false)
         {
-            LOGGER.PrintOutALine(INFO, "[Error] Invalid Address", __func__);
+            LOGGER.PrintOutALine(DEBUG, "[Error] Invalid Address", __func__);
             return false;
         }
     }
@@ -36,7 +36,7 @@ Reader::Run(void)
         {
             readdata = ssd_app->Read(addr);
             read_result.push_back(readdata);
-            LOGGER.PrintOutALine(DEBUG, UintToHexString(readdata), __func__);
+            LOGGER.PrintOutALine(INFO, UintToHexString(readdata), __func__);
         }
     }
     return true;

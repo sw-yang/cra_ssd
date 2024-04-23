@@ -11,12 +11,12 @@ Writer::Parsing(stringstream& ss)
 
         if (CONVERTER.ConvertAddrToInt(str_addr, addr) == false)
         {
-            LOGGER.PrintOutALine(INFO, "[Error] Invalid Address", __func__);
+            LOGGER.PrintOutALine(DEBUG, "[Error] Invalid Address", __func__);
             return false;
         }
         if (CONVERTER.ConvertDataToInt(str_data, data) == false)
         {
-            LOGGER.PrintOutALine(INFO, "[Error] Invalid Data", __func__);
+            LOGGER.PrintOutALine(DEBUG, "[Error] Invalid Data", __func__);
             return false;
         }
     }
@@ -26,7 +26,7 @@ Writer::Parsing(stringstream& ss)
 
         if (CONVERTER.ConvertDataToInt(str_data, data) == false)
         {
-            LOGGER.PrintOutALine(INFO, "[Error] Invalid Data", __func__);
+            LOGGER.PrintOutALine(DEBUG, "[Error] Invalid Data", __func__);
             return false;
         }
     }
@@ -39,14 +39,14 @@ Writer::Run(void)
     if (shellcmd == WRITE)
     {
         ssd_app->Write(addr, data);
-        LOGGER.PrintOutALine(DEBUG, UintToHexString(data), __func__);
+        LOGGER.PrintOutALine(INFO, UintToHexString(data), __func__);
     }
     else if (shellcmd == FULLWRITE)
     {
         for (int addr = Test_Const::kMinAddr; addr <= Test_Const::kMaxAddr; addr++)
         {
             ssd_app->Write(addr, data);
-            LOGGER.PrintOutALine(DEBUG, UintToHexString(data), __func__);
+            LOGGER.PrintOutALine(INFO, UintToHexString(data), __func__);
         }
     }
     return true;

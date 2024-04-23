@@ -19,12 +19,14 @@ public:
         return logger;
     }    
     void SetPrintLevel(const PrintLevel level);
+    PrintLevel GetPrintLevel(void);
+
     void PrintOutALine(const PrintLevel level, const std::string str, const std::string functionname = "");
     void PrintOutALineWithoutEndl(const PrintLevel level, const std::string str, const std::string functionname = "");
 private:
     void PrintTime(std::ostringstream& out_ss);
     void LogALine(const PrintLevel level, const std::string str, const std::string functionname = "");
-    PrintLevel cur_print_level = INFO;
+    PrintLevel cur_print_level = DEBUG;
     std::string file_name = "latest.log";
     std::ofstream log_fout;
     uint32_t kMaxSize = 1024 * 1024;

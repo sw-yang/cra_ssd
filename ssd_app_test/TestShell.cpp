@@ -15,14 +15,14 @@ using namespace std;
 void
 TestShell::PrintRunnerCMDStart(void)
 {
-    if (ShellCMD != EXIT)
+    if (ShellCMD != EXIT && LOGGER.GetPrintLevel() == ONLY_RUNNER)
         LOGGER.PrintOutALineWithoutEndl(ONLY_RUNNER, user_input + "  ---  Run...", __func__);
 }
 
 void 
 TestShell::PrintRunnerCMDEnd(bool isPassed)
 {
-    if (ShellCMD != EXIT)
+    if (ShellCMD != EXIT && LOGGER.GetPrintLevel() == ONLY_RUNNER)
     {
         if (isPassed)
             LOGGER.PrintOutALine(ONLY_RUNNER, "Pass", __func__);
@@ -74,7 +74,7 @@ TestShell::CreateCommand(void) {
     icmd = cmdfactory.CreateCommand(str_cmd, ssd_app);
     if (icmd == NULL)
     {
-        LOGGER.PrintOutALine(INFO, "[Error] Invalid CMD", __func__);
+        LOGGER.PrintOutALine(DEBUG, "[Error] Invalid CMD", __func__);
         icmd = cmdfactory.CreateCommand("Help", ssd_app);
         icmd->Run();
         return false; 
