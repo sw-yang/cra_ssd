@@ -57,7 +57,7 @@ public:
     {
         return shellcmd;
     }
-//protected:
+protected:
     TestShellCMD shellcmd;
     ISSDApp* ssd_app;
 };
