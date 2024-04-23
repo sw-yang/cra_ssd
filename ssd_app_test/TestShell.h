@@ -13,7 +13,10 @@ public:
     void ScriptRun(const char* script_path);
     void set_ssd_app(ISSDApp* app);
 private:
+    void PrintRunnerCMDStart();
+    void PrintRunnerCMDEnd(bool isPassed);
     bool CreateCommand(void);
+    TestShellCMD ShellCMD = HELP;
     ISSDApp* ssd_app;
     ICommand* icmd;
     std::string user_input;
