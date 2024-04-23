@@ -12,7 +12,6 @@ TestApp1::Parsing(stringstream& ss)
 bool 
 TestApp1::Run(void)
 {
-    LOGGER.SetPrintLevel(ONLY_RUNNER);
     is_test_pass = false;
 
     Writer writer("FullWrite", ssd_app);
@@ -32,6 +31,5 @@ TestApp1::Run(void)
     else
         LOGGER.PrintOutALine(INFO, "testapp1 fail", __func__);
 
-    LOGGER.SetPrintLevel(INFO);
     return is_test_pass;
 }

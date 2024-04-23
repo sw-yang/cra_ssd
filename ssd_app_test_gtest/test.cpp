@@ -140,7 +140,7 @@ TEST_F(TestShellTestFixture, FullReadTest)
 
 TEST_F(TestShellTestFixture, EraseTest)
 {
-	user_input_out_file << "Erase 0 1" << endl;
+	user_input_out_file << "Erase 0 10" << endl;
 	user_input_out_file << "Exit" << endl;
 
 	MockSSDApp app;
@@ -193,7 +193,7 @@ TEST_F(TestShellTestFixture, HelpTest)
 
 	string result;
 	getline(result_input_file, result);
-	EXPECT_EQ(result, "Help  ---  Run...Available commands:");
+	EXPECT_EQ(result, "Available commands:");
 	getline(result_input_file, result);
 	EXPECT_EQ(result, "Write <addr> <data>: Write data to address");
 	getline(result_input_file, result);
@@ -359,6 +359,7 @@ TEST_F(TestShellTestFixture, TestApp1TestWithSSD)
 	SSD_Adaptor app;
 	TestShell test_shell;
 	test_shell.set_ssd_app(&app);
+	LOGGER.SetPrintLevel(ONLY_RUNNER);
 
 	test_shell.Run();
 
@@ -377,6 +378,7 @@ TEST_F(TestShellTestFixture, TestApp2TestWithSSD)
 	SSD_Adaptor app;
 	TestShell test_shell;
 	test_shell.set_ssd_app(&app);
+	LOGGER.SetPrintLevel(ONLY_RUNNER);
 
 	test_shell.Run();
 

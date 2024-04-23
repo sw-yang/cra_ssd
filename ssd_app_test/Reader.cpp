@@ -10,7 +10,7 @@ Reader::Parsing(stringstream& ss)
 
         if (CONVERTER.ConvertAddrToInt(str_addr, addr) == false)
         {
-            LOGGER.PrintOutALine(INFO, "[Error] Invalid Address", __func__);
+            LOGGER.PrintOutALine(DEBUG, "[Error] Invalid Address", __func__);
             return false;
         }
     }

@@ -25,6 +25,11 @@ Logger::SetPrintLevel(const PrintLevel level)
     cur_print_level = level;
 }
 
+PrintLevel 
+Logger::GetPrintLevel(void)
+{
+    return cur_print_level;
+}
 void
 Logger::PrintOutALine(const PrintLevel level, const string str, const string func_name)
 {

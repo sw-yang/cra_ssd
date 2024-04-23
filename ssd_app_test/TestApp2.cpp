@@ -11,7 +11,6 @@ TestApp2::Parsing(stringstream& ss)
 bool
 TestApp2::Run(void)
 {
-    LOGGER.SetPrintLevel(ONLY_RUNNER);
     is_test_pass = false;
     uint32_t first_write_pattern = 0xAAAABBBB;
     uint32_t second_write_pattern = 0x12345678;
@@ -32,7 +31,6 @@ TestApp2::Run(void)
     else
         LOGGER.PrintOutALine(INFO, "testapp2 fail", __func__);
 
-    LOGGER.SetPrintLevel(INFO);
     return is_test_pass;
 }
 
