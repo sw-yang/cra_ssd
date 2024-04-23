@@ -9,15 +9,26 @@ Writer::Parsing(stringstream& ss)
     {
         ss >> str_addr >> str_data;
 
-        if (CONVERTER.ConvertAddrToInt(str_addr, addr) == false) return false;
-
-        if (CONVERTER.ConvertDataToInt(str_data, data) == false) return false;
+        if (CONVERTER.ConvertAddrToInt(str_addr, addr) == false)
+        {
+            LOGGER.PrintOutALine(INFO, "[Error] Invalid Address", __func__);
+            return false;
+        }
+        if (CONVERTER.ConvertDataToInt(str_data, data) == false)
+        {
+            LOGGER.PrintOutALine(INFO, "[Error] Invalid Data", __func__);
+            return false;
+        }
     }
     else if (shellcmd == FULLWRITE)
     {
         ss >> str_data;
 
-        if (CONVERTER.ConvertDataToInt(str_data, data) == false) return false;
+        if (CONVERTER.ConvertDataToInt(str_data, data) == false)
+        {
+            LOGGER.PrintOutALine(INFO, "[Error] Invalid Data", __func__);
+            return false;
+        }
     }
     return true;
 }
