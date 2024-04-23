@@ -17,15 +17,3 @@ Helper::Run(void)
     LOGGER.PrintOutALine(INFO, "Exit: Exit the program", __func__);
     return true;
 }
-
-TestShellCMD
-Helper::GetCMD(void)
-{
-    return shellcmd;
-}
-
-void
-Helper::set_ssd_app(ISSDApp* app)
-{
-    ssd_app = app;
-}

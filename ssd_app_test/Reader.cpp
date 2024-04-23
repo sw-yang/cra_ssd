@@ -38,18 +38,6 @@ Reader::Run(void)
     return true;
 }
 
-TestShellCMD
-Reader::GetCMD(void)
-{
-    return shellcmd;
-}
-
-void
-Reader::set_ssd_app(ISSDApp* app)
-{
-    ssd_app = app;
-}
-
 vector<uint32_t>
 Reader::GetResult(void)
 {

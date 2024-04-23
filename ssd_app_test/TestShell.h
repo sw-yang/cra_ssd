@@ -12,7 +12,6 @@ public:
     void Run();
     void ScriptRun(const char* script_path);
     void set_ssd_app(ISSDApp* app);
-    ISSDApp* get_ssd_app(void) { return ssd_app; } //to be deleted
 private:
     bool CreateCommand(void);
     ISSDApp* ssd_app;

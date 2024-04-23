@@ -40,15 +40,3 @@ Writer::Run(void)
     }
     return true;
 }
-
-TestShellCMD
-Writer::GetCMD(void)
-{
-    return shellcmd;
-}
-
-void
-Writer::set_ssd_app(ISSDApp* app)
-{
-    ssd_app = app;
-}

@@ -3,15 +3,13 @@
 #include"ICommand.h"
 class TestApp1 : public ICommand {
 public:
-    TestApp1(TestShellCMD cmd) : shellcmd(cmd) {};
-    virtual bool Parsing(stringstream& SS) override;
-    virtual bool Run(void) override;
-    virtual TestShellCMD GetCMD(void) override;
-    virtual void set_ssd_app(ISSDApp* app) override;
+    TestApp1(string cmd, ISSDApp* ssd_application)
+    {
+        shellcmd = TESTAPP1;
+        ssd_app = ssd_application;
+    };
+    bool Parsing(stringstream& SS) override;
+    bool Run(void) override;
 private:
-    TestShellCMD shellcmd;
-    uint32_t addr;
-    uint32_t data;
     bool is_test_pass;
-    ISSDApp* ssd_app;
 };
