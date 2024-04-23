@@ -8,12 +8,14 @@ Helper::Parsing(stringstream& ss)
 bool
 Helper::Run(void)
 {
-    LOGGER.PrintOutALine(DEBUG, "Available commands:", __func__);
-    LOGGER.PrintOutALine(DEBUG, "Write <addr> <data>: Write data to address", __func__);
-    LOGGER.PrintOutALine(DEBUG, "Read <addr>: Read data from address", __func__);
-    LOGGER.PrintOutALine(DEBUG, "FullWrite <data>: Write data to full address", __func__);
-    LOGGER.PrintOutALine(DEBUG, "FullRead : Read data from full address", __func__);
-    LOGGER.PrintOutALine(DEBUG, "Help: Show available commands", __func__);
-    LOGGER.PrintOutALine(DEBUG, "Exit: Exit the program", __func__);
+    LOGGER.PrintOutALine(INFO, "Available commands:", __func__);
+    LOGGER.PrintOutALine(INFO, "Write <addr> <data>: Write data to address", __func__);
+    LOGGER.PrintOutALine(INFO, "Read <addr>: Read data from address", __func__);
+    LOGGER.PrintOutALine(INFO, "Erase <addr> <range> : Erase a range of data from addr", __func__);
+    LOGGER.PrintOutALine(INFO, "Flush : Flush wirte buffer", __func__);
+    LOGGER.PrintOutALine(INFO, "FullWrite <data>: Write data to full address", __func__);
+    LOGGER.PrintOutALine(INFO, "FullRead : Read data from full address", __func__);
+    LOGGER.PrintOutALine(INFO, "Help: Show available commands", __func__);
+    LOGGER.PrintOutALine(INFO, "Exit: Exit the program", __func__);
     return true;
 }
