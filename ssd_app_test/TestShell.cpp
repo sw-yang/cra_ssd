@@ -64,15 +64,14 @@ TestShell::CreateCommand(void) {
     ss >> str_cmd;
 
     CommandFactory cmdfactory;
-    icmd = cmdfactory.CreateCommand(str_cmd);
+    icmd = cmdfactory.CreateCommand(str_cmd, ssd_app);
     if (icmd == NULL)
     {
         LOGGER.PrintOutALine(INFO, "[Error] Invalid CMD", __func__);
-        icmd = cmdfactory.CreateCommand("Help");
+        icmd = cmdfactory.CreateCommand("Help", ssd_app);
         icmd->Run();
         return false; 
     }
-    icmd->set_ssd_app(ssd_app);
     if (icmd->Parsing(ss) == false)
     {
         return false;

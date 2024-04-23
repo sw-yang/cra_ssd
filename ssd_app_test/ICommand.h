@@ -57,10 +57,6 @@ public:
     {
         return shellcmd;
     }
-    void set_ssd_app(ISSDApp* app)
-    {
-        ssd_app = app;
-    }
 //protected:
     TestShellCMD shellcmd;
     ISSDApp* ssd_app;

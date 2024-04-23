@@ -15,16 +15,14 @@ TestApp1::Run(void)
     LOGGER.SetPrintLevel(ONLY_RUNNER);
     is_test_pass = false;
 
-    Writer writer(FULLWRITE);
-    writer.set_ssd_app(ssd_app);
+    Writer writer("FullWrite", ssd_app);
     stringstream ss;
     uint32_t write_pattern = 0xABCDFFFF;
     ss << UintToHexString(write_pattern);
     writer.Parsing(ss);
     writer.Run();
 
-    Reader reader(FULLREAD);
-    reader.set_ssd_app(ssd_app);
+    Reader reader("FullRead", ssd_app);
     reader.Run();
     vector<uint32_t> read_result = reader.GetResult();
 

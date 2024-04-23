@@ -2,9 +2,10 @@
 #include"ICommand.h"
 class Exiter : public ICommand {
 public:
-    Exiter(TestShellCMD cmd)
+    Exiter(string cmd, ISSDApp* ssd_application)
     {
-        shellcmd = cmd;
+        shellcmd = EXIT;
+        ssd_app = ssd_application;
     };
     virtual bool Parsing(stringstream& SS) override;
     virtual bool Run(void) override;

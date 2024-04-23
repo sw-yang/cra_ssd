@@ -41,8 +41,7 @@ TestApp2::WriteRange(const uint32_t start_addr, const uint32_t end_addr, const u
 {
     for (uint32_t addr = start_addr; addr < end_addr; ++addr)
     {
-        Writer writer(WRITE);
-        writer.set_ssd_app(ssd_app);
+        Writer writer("Write", ssd_app);
         stringstream ss;
         ss << to_string(addr)<< " " << UintToHexString(data);
         writer.Parsing(ss);
@@ -53,10 +52,9 @@ TestApp2::WriteRange(const uint32_t start_addr, const uint32_t end_addr, const u
 vector<uint32_t>
 TestApp2::ReadRange(const uint32_t start_addr, const uint32_t end_addr)
 {
-    Reader reader(READ);
+    Reader reader("Read", ssd_app);
     for (uint32_t addr = start_addr; addr < end_addr; ++addr)
     {
-        reader.set_ssd_app(ssd_app);
         stringstream ss;
         ss << to_string(addr);
         reader.Parsing(ss);

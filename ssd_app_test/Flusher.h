@@ -3,9 +3,10 @@
 #include"ICommand.h"
 class Flusher : public ICommand {
 public:
-    Flusher(TestShellCMD cmd)
+    Flusher(string cmd, ISSDApp* ssd_application)
     {
-        shellcmd = cmd;
+        shellcmd = FLUSH;
+        ssd_app = ssd_application;
     };
     virtual bool Parsing(stringstream& SS) override;
     virtual bool Run(void) override;

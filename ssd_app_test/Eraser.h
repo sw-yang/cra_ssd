@@ -2,9 +2,10 @@
 #include"ICommand.h"
 class Eraser : public ICommand {
 public:
-    Eraser(TestShellCMD cmd)
+    Eraser(string cmd, ISSDApp* ssd_application)
     {
-        shellcmd = cmd;
+        shellcmd = (cmd == "Erase") ? ERASE : ERASERANGE;
+        ssd_app = ssd_application;
     };
     virtual bool Parsing(stringstream& SS) override;
     virtual bool Run(void) override;

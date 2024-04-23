@@ -3,9 +3,10 @@
 #include"ICommand.h"
 class Reader : public ICommand {
 public:
-    Reader(TestShellCMD cmd)
+    Reader(string cmd, ISSDApp* ssd_application)
     {
-        shellcmd = cmd;
+        shellcmd = (cmd == "Read") ? READ : FULLREAD;
+        ssd_app = ssd_application;
     };
     virtual bool Parsing(stringstream& SS) override;
     virtual bool Run(void) override;

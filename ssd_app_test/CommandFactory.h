@@ -13,46 +13,38 @@ using namespace std;
 
 class CommandFactory {
 public:
-    ICommand* CreateCommand(string cmd) {
+    ICommand* CreateCommand(string cmd, ISSDApp* ssd_app) {
         if (cmd == "Write" || cmd == "FullWrite")
         {
-            TestShellCMD shellcmd = (cmd =="Write") ? WRITE : FULLWRITE;
-            return new Writer(shellcmd);
+            return new Writer(cmd, ssd_app);
         }
         else if (cmd == "Read" || cmd == "FullRead")
         {
-            TestShellCMD shellcmd = (cmd == "Read") ? READ : FULLREAD;
-            return new Reader(shellcmd);
+            return new Reader(cmd, ssd_app);
         }
         else if (cmd == "Erase" || cmd == "EraseRange")
         {
-            TestShellCMD shellcmd = (cmd =="Erase") ? ERASE : ERASERANGE;
-            return new Eraser(shellcmd);
+            return new Eraser(cmd, ssd_app);
         }
         else if (cmd == "Flush")
         {
-            TestShellCMD shellcmd = FLUSH;
-            return new Flusher(shellcmd);
+            return new Flusher(cmd, ssd_app);
         }
         else if (cmd == "Help")
         {
-            TestShellCMD shellcmd = HELP;
-            return new Helper(shellcmd);
+            return new Helper(cmd, ssd_app);
         }
         else if (cmd == "testapp1")
         {
-            TestShellCMD shellcmd = TESTAPP1;
-            return new TestApp1(shellcmd);
+            return new TestApp1(cmd, ssd_app);
         }
         else if (cmd == "testapp2")
         {
-            TestShellCMD shellcmd = TESTAPP2;
-            return new TestApp2(shellcmd);
+            return new TestApp2(cmd, ssd_app);
         }
         else if (cmd == "Exit") 
         {
-            TestShellCMD shellcmd = EXIT;
-            return new Exiter(shellcmd);
+            return new Exiter(cmd, ssd_app);
         }
         else
         {

@@ -4,9 +4,10 @@
 #include"ICommand.h"
 class Helper : public ICommand {
 public:
-    Helper(TestShellCMD cmd)
+    Helper(string cmd, ISSDApp* ssd_application)
     {
-        shellcmd = cmd;
+        shellcmd = HELP;
+        ssd_app = ssd_application;
     };
     virtual bool Parsing(stringstream& SS) override;
     virtual bool Run(void) override;
