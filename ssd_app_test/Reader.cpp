@@ -36,7 +36,7 @@ Reader::Run(void)
         {
             readdata = ssd_app->Read(addr);
             read_result.push_back(readdata);
-            LOGGER.PrintOutALine(INFO, UintToHexString(readdata), __func__);
+            LOGGER.PrintOutALine(DEBUG, UintToHexString(readdata), __func__);
         }
     }
     return true;

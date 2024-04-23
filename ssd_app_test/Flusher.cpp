@@ -10,6 +10,6 @@ bool
 Flusher::Run(void)
 {
     ssd_app->Flush();
-    LOGGER.PrintOutALine(DEBUG, "FLUSH", __func__);
+    LOGGER.PrintOutALine(INFO, "FLUSH", __func__);
     return true;
 }
