@@ -11,32 +11,39 @@
 
 using namespace std;
 #define LOGGER Logger::GetLogger()
+
+void
+TestShell::PrintRunnerCMDStart(void)
+{
+    if (ShellCMD != EXIT)
+        LOGGER.PrintOutALineWithoutEndl(ONLY_RUNNER, user_input + "  ---  Run...", __func__);
+}
+
+void 
+TestShell::PrintRunnerCMDEnd(bool isPassed)
+{
+    if (ShellCMD != EXIT)
+    {
+        if (isPassed)
+            LOGGER.PrintOutALine(ONLY_RUNNER, "Pass", __func__);
+        else
+        {
+            LOGGER.PrintOutALine(ONLY_RUNNER, "FAIL!", __func__);
+            return;
+        }
+    }
+}
+
 void 
 TestShell::Run(void)
 {
-    bool isCMDPass;
-    TestShellCMD ShellCMD = HELP;
     while (ShellCMD != EXIT)
     {
-        isCMDPass = true;
         if (!CreateCommand()) continue;
 
-        ShellCMD = icmd->GetCMD();
-        
-        if (ShellCMD != EXIT)
-            LOGGER.PrintOutALineWithoutEndl(ONLY_RUNNER, user_input + "  ---  Run...", __func__);
-        isCMDPass = icmd->Run();
-
-        if (ShellCMD != EXIT)
-        {
-            if (isCMDPass)
-                LOGGER.PrintOutALine(ONLY_RUNNER, "Pass", __func__);
-            else
-            {
-                LOGGER.PrintOutALine(ONLY_RUNNER, "FAIL!", __func__);
-                return;
-            }
-        }
+        PrintRunnerCMDStart();
+        bool isPassed = icmd->Run();
+        PrintRunnerCMDEnd(isPassed);
     }
 }
 
@@ -76,6 +83,7 @@ TestShell::CreateCommand(void) {
     {
         return false;
     }
+    ShellCMD = icmd->GetCMD();
 }
 
 void 
