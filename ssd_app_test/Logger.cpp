@@ -40,10 +40,9 @@ void
 Logger::PrintOutALineWithoutEndl(const PrintLevel level, const string str, const string func_name)
 {
     if (cur_print_level >= level) {
-        if (cur_print_level > ONLY_RUNNER)
-            LogALine(level, str, func_name);
         cout << str;
     }
+    LogALine(level, str, func_name);
 }
 
 void
