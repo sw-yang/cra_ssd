@@ -199,6 +199,10 @@ TEST_F(TestShellTestFixture, HelpTest)
 	getline(result_input_file, result);
 	EXPECT_EQ(result, "Read <addr>: Read data from address");
 	getline(result_input_file, result);
+	EXPECT_EQ(result, "Erase <addr> <range> : Erase a range of data from addr");
+	getline(result_input_file, result);
+	EXPECT_EQ(result, "Flush : Flush wirte buffer");
+	getline(result_input_file, result);
 	EXPECT_EQ(result, "FullWrite <data>: Write data to full address");
 	getline(result_input_file, result);
 	EXPECT_EQ(result, "FullRead : Read data from full address");
@@ -300,6 +304,10 @@ TEST_F(TestShellTestFixture, InputInvalidCMD)
 	EXPECT_EQ(result, "Write <addr> <data>: Write data to address");
 	getline(result_input_file, result);
 	EXPECT_EQ(result, "Read <addr>: Read data from address");
+	getline(result_input_file, result);
+	EXPECT_EQ(result, "Erase <addr> <range> : Erase a range of data from addr");
+	getline(result_input_file, result);
+	EXPECT_EQ(result, "Flush : Flush wirte buffer");
 	getline(result_input_file, result);
 	EXPECT_EQ(result, "FullWrite <data>: Write data to full address");
 	getline(result_input_file, result);
