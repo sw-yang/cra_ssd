@@ -8,7 +8,11 @@ Reader::Parsing(stringstream& ss)
     {
         ss >> str_addr;
 
-        if (CONVERTER.ConvertAddrToInt(str_addr, addr) == false) return false;
+        if (CONVERTER.ConvertAddrToInt(str_addr, addr) == false)
+        {
+            LOGGER.PrintOutALine(INFO, "[Error] Invalid Address", __func__);
+            return false;
+        }
     }
     else if (shellcmd == FULLREAD)
     {
