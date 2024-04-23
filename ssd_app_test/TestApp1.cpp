@@ -37,15 +37,3 @@ TestApp1::Run(void)
     LOGGER.SetPrintLevel(INFO);
     return is_test_pass;
 }
-
-TestShellCMD
-TestApp1::GetCMD(void)
-{
-    return shellcmd;
-}
-
-void
-TestApp1::set_ssd_app(ISSDApp * app)
-{
-    ssd_app = app;
-}

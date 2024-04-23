@@ -30,8 +30,6 @@ class ICommand
 public:
     virtual bool Parsing(stringstream& SS) = 0;
     virtual bool Run(void) = 0;
-    virtual TestShellCMD GetCMD(void) = 0;
-    virtual void set_ssd_app(ISSDApp* app) = 0;
     string UintToHexString(const uint32_t data)
     {
         ostringstream data_ss;
@@ -55,4 +53,15 @@ public:
 
         return is_test_pass;
     }
+    TestShellCMD GetCMD(void)
+    {
+        return shellcmd;
+    }
+    void set_ssd_app(ISSDApp* app)
+    {
+        ssd_app = app;
+    }
+//protected:
+    TestShellCMD shellcmd;
+    ISSDApp* ssd_app;
 };

@@ -36,17 +36,6 @@ TestApp2::Run(void)
     return is_test_pass;
 }
 
-TestShellCMD
-TestApp2::GetCMD(void)
-{
-    return shellcmd;
-}
-
-void
-TestApp2::set_ssd_app(ISSDApp* app)
-{
-    ssd_app = app;
-}
 void
 TestApp2::WriteRange(const uint32_t start_addr, const uint32_t end_addr, const uint32_t data)
 {

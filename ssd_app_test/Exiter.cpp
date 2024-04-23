@@ -11,14 +11,3 @@ Exiter::Run(void)
 {
     return true;
 }
-
-TestShellCMD
-Exiter::GetCMD(void)
-{
-    return shellcmd;
-}
-void
-Exiter::set_ssd_app(ISSDApp* app)
-{
-    ssd_app = app;
-}

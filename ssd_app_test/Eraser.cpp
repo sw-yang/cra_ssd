@@ -41,15 +41,3 @@ Eraser::Run(void)
     }
     return true;
 }
-
-TestShellCMD 
-Eraser::GetCMD(void)
-{
-    return shellcmd;
-}
-
-void
-Eraser::set_ssd_app(ISSDApp* app)
-{
-    ssd_app = app;
-}
