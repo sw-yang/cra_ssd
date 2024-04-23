@@ -140,7 +140,7 @@ TEST_F(TestShellTestFixture, FullReadTest)
 
 TEST_F(TestShellTestFixture, EraseTest)
 {
-	user_input_out_file << "Erase 0 1" << endl;
+	user_input_out_file << "Erase 0 10" << endl;
 	user_input_out_file << "Exit" << endl;
 
 	MockSSDApp app;

@@ -30,7 +30,6 @@ InvalidChecker::IsInvalidDataFormat(const string& str_data)
 bool
 InvalidChecker::IsInvalidEraseSizeFormat(const string& str_data)
 {
-    if (str_data.length() != 1) return true;
     if (IsDecNum(str_data) == false) return true;
 
     return false;

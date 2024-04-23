@@ -60,8 +60,7 @@ Converter::ConvertEraseSizeToInt(const string& str_data, uint32_t& data)
     {
         return false;
     }
-
-    data = stoul(str_data, nullptr, 16);
-
+    data = stoul(str_data);
+    if (data > 10) return false;
     return true;
 }
